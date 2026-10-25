@@ -75,8 +75,9 @@ export async function mountTrain(canvas: HTMLCanvasElement, opts: TrainOptions):
   const camera = new PerspectiveCamera(24, 1, 0.1, 160);
 
   /* Luces: sol naranja de la Quebrada arriba a la derecha, relleno frío desde el cielo navy */
-  scene.add(new HemisphereLight(0xbfd3f5, 0x1b3a6b, 1.3));
-  scene.add(new AmbientLight(0x22365e, 0.6));
+  /* Relleno frío neutro (atmósfera charcoal del hero), no navy: el navy queda en la pintura del tren */
+  scene.add(new HemisphereLight(0xd6dbe4, 0x2a2d34, 1.25));
+  scene.add(new AmbientLight(0x3a3d45, 0.55));
   const sun = new DirectionalLight(0xffc08a, 2.8);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);

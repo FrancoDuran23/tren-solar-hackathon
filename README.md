@@ -32,6 +32,14 @@ Self-hosted vía paquetes `@fontsource` (subset latino, `font-display: swap`): U
 
 Logos reales de la comunidad en `public/brand/`: `jujuydev-logo-white.webp` (sobre navy: nav, footer, cuerpo del ticket), `jujuydev-logo.webp` (sobre papel: stub del ticket, CTA final), `jujuydev-isotipo.png` (favicon, eyebrow, centro del QR). `solar-train-quebrada.jpg` y `solar-train-sky.jpg` son recortes del poster `guideline-solar-train-poster.jpg` (hero, textura del ticket, CTA final).
 
+## Cuenta, perfil y estado (T16–T18)
+
+Ingreso **solo con Google** (Better Auth + Neon Postgres). Después del login hay que completar el perfil al 100% para ver el estado propio del top 35 y para despachar el proyecto atado a la cuenta. No hay lista pública de ranking.
+
+Setup (Neon, redirect URIs de Google, `curl` del fin de semana): **`docs/auth-ranking.md`**.
+
+Sin `DATABASE_URL` / Google / `BETTER_AUTH_SECRET` el sitio igual buildea: el botón de ingreso avisa que todavía no está habilitado.
+
 ## Variables de entorno (form de entrega, T06)
 
 Ver `.env.example`.
@@ -50,7 +58,7 @@ Repo destino: `FrancoDuran23/tren-solar-hackathon`. Rama `main` ⇒ producción,
 
 1. Pushear el código al repo: `git remote add origin git@github.com:FrancoDuran23/tren-solar-hackathon.git && git push -u origin main` (y la rama de PR para el preview).
 2. Vercel → Add New Project → importar `FrancoDuran23/tren-solar-hackathon`. Production Branch = `main`; Node.js 22.x en Settings → General (Astro 7 exige ≥ 22.23.4).
-3. Environment Variables (Production + Preview): `ENTREGA_WEBHOOK_URL` (ver arriba). Sin ella el form responde 501 por diseño.
+3. Environment Variables (Production + Preview): `ENTREGA_WEBHOOK_URL` (ver arriba) y, para el ingreso con Google, las de `docs/auth-ranking.md` (`DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_SECRET`, `BETTER_AUTH_URL`). Sin el webhook el form responde 501; sin las de auth el ingreso responde 503 y la landing igual se publica.
 4. Cada PR genera un preview automático (`*.vercel.app`); el merge a `main` despliega producción.
 5. CLI alternativa: `npx vercel link` y `npx vercel` (preview) / `npx vercel --prod`.
 6. Antes de abrir inscripción: poner el link real en `lumaUrl` y `registration: 'open'` en `src/config.ts` (no está cargado; no inventar el link).

@@ -154,22 +154,18 @@ const c = sections.finalCta;
     position: relative;
     justify-self: center;
     width: min(100%, 360px);
-    background:
-      repeating-linear-gradient(to bottom, transparent 0 11px, rgba(201, 205, 211, 0.5) 11px 12px),
-      var(--paper);
-    color: var(--ink-950);
+    background: linear-gradient(180deg, #11151f 0%, #0b0e16 100%);
+    color: var(--white);
     padding: 22px 24px 26px;
     display: grid;
-    gap: 8px;
-    border-radius: var(--r-md);
+    gap: 10px;
     clip-path: polygon(
-      0 0,
-      calc(100% - var(--chamfer)) 0,
-      100% var(--chamfer),
-      100% calc(100% - var(--chamfer)),
-      calc(100% - var(--chamfer)) 100%,
-      0 100%
+      14px 0, calc(100% - 14px) 0, 100% 14px,
+      100% calc(100% - 14px), calc(100% - 14px) 100%,
+      14px 100%, 0 calc(100% - 14px), 0 14px
     );
+    outline: 1px solid rgba(214, 222, 236, 0.28);
+    outline-offset: -1px;
     box-shadow: var(--shadow-ticket);
     transform: rotate(-4deg);
   }
@@ -186,7 +182,8 @@ const c = sections.finalCta;
     align-items: center;
     padding: 4px 7px;
     border-radius: 3px;
-    background: var(--navy-900);
+    background: rgba(255, 255, 255, 0.06);
+    outline: 1px solid rgba(214, 222, 236, 0.25);
     line-height: 0;
   }
   .stub-head img {
@@ -205,7 +202,7 @@ const c = sections.finalCta;
   }
   .of {
     font-size: 0.5em;
-    color: var(--ink-600);
+    color: rgba(255, 255, 255, 0.55);
   }
   .grid {
     margin: 0;
@@ -220,7 +217,7 @@ const c = sections.finalCta;
   }
   dt {
     font-size: 9px;
-    color: var(--ink-600);
+    color: rgba(255, 255, 255, 0.55);
     letter-spacing: 0.08em;
   }
   dd {
@@ -231,7 +228,7 @@ const c = sections.finalCta;
   .legal {
     margin: 4px 0 0;
     font-size: 8px;
-    color: var(--ink-600);
+    color: rgba(255, 255, 255, 0.55);
     letter-spacing: 0.04em;
   }
   .stripe {

@@ -60,6 +60,10 @@ export const sections = {
         q: '¿Cuándo cierra?',
         a: 'Fecha por confirmar. Anotate en Luma y te avisamos.',
       },
+      {
+        q: '¿Puedo ver el ranking?',
+        a: 'No hay lista pública. Si entrás con Google y tu perfil está al 100%, ves solo tu estado: si estás en el top 35 o todavía no. La organización lo actualiza los fines de semana.',
+      },
     ] satisfies FaqItem[],
   },
   finalCta: {

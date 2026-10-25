@@ -14,6 +14,11 @@ const closed = config.submissions === 'closed';
       <p class="banner mono" role="status">Las entregas abren pronto. Mientras tanto, el mostrador está cerrado.</p>
     )}
 
+    <p class="banner mono" id="entrega-auth" hidden>
+      <span id="entrega-auth-text"></span>
+      <a href="#perfil" id="entrega-auth-link" hidden>Completar perfil</a>
+    </p>
+
     <div class="card">
       <form id="entrega-form" novalidate>
         <fieldset disabled={closed}>
@@ -35,7 +40,7 @@ const closed = config.submissions === 'closed';
           <div class="field" data-f="email">
             <label for="f-email" class="mono">Email de contacto</label>
             <input id="f-email" name="email" type="email" required maxlength="120" autocomplete="email" aria-describedby="h-email e-email" />
-            <p class="help" id="h-email">El mismo que usaste en Luma.</p>
+            <p class="help" id="h-email">Si entrás con Google, queda el email de esa cuenta.</p>
             <p class="err" id="e-email" role="alert"></p>
           </div>
 
@@ -112,8 +117,8 @@ const closed = config.submissions === 'closed';
           </div>
 
           <p class="privacy">
-            <strong>Privacidad:</strong> te pedimos solo estos datos. Los usamos para evaluar tu entrega y contactarte;
-            los ven la organización de jujuy.dev y el jurado. Sin tracking de terceros.
+            <strong>Privacidad:</strong> te pedimos solo estos datos. Si entrás con Google, la entrega queda atada a ese email.
+            Los usamos para evaluar tu proyecto y contactarte; los ven la organización de jujuy.dev y el jurado. Sin tracking de terceros.
           </p>
 
           <button type="submit" class="btn mono" id="submit">
@@ -153,7 +158,10 @@ const closed = config.submissions === 'closed';
 </section>
 
 <script>
+  import { copy } from '../content/copy';
+  import { loadMe, onAuthChange } from '../lib/auth-client';
   import { FIELDS, validateField, validateEntrega, type EntregaField, type EntregaInput } from '../lib/entrega';
+  import type { MeResponse } from '../lib/me';
 
   const root = document.getElementById('entrega')!;
   const form = document.getElementById('entrega-form') as HTMLFormElement;
@@ -205,12 +213,86 @@ const closed = config.submissions === 'closed';
 
   const submit = $('submit') as HTMLButtonElement;
   const toast = $('toast');
+  const fieldset = form.querySelector('fieldset')!;
+  const authBanner = $('entrega-auth');
+  const authText = $('entrega-auth-text');
+  const authLink = $('entrega-auth-link') as HTMLAnchorElement;
+  const defaultToast = toast.textContent ?? '';
   let sending = false;
   let last: { id: string; name: string; at: string } | null = null;
+  let gate: 'unknown' | 'open' | 'blocked' = 'unknown';
+  let gateMessage = '';
+  let entregaPrefilled = false;
+
+  function applyGate(me: MeResponse) {
+    if (closed) return;
+    const email = ctl('email');
+    if (me.error) {
+      gate = 'blocked';
+      gateMessage = me.error;
+      fieldset.disabled = true;
+      authBanner.hidden = false;
+      authText.textContent = me.error;
+      authLink.hidden = true;
+      return;
+    }
+    if (!me.configured) {
+      gate = 'open';
+      fieldset.disabled = false;
+      authBanner.hidden = true;
+      email.readOnly = false;
+      return;
+    }
+    email.value = me.user?.email ?? email.value;
+    email.readOnly = Boolean(me.user);
+    if (!me.user) {
+      gate = 'blocked';
+      gateMessage = copy.auth.entregaNeedLogin;
+      fieldset.disabled = true;
+      authBanner.hidden = false;
+      authText.textContent = gateMessage;
+      authLink.hidden = true;
+      entregaPrefilled = false;
+      return;
+    }
+    if (!entregaPrefilled && me.profile) {
+      if (ctl('responsable').value.trim() === '') ctl('responsable').value = me.profile.fullName;
+      if (me.profile.livesInJujuy) ctl('jujuy').checked = true;
+      if (ctl('localidad').value.trim() === '') ctl('localidad').value = me.profile.localidad;
+      entregaPrefilled = true;
+      livePreview();
+    }
+    if (me.profile?.completeness === 100) {
+      gate = 'open';
+      fieldset.disabled = false;
+      authBanner.hidden = true;
+      return;
+    }
+    gate = 'blocked';
+    gateMessage = `${copy.auth.entregaNeedProfile} Ahora está al ${me.profile?.completeness ?? 0}%.`;
+    fieldset.disabled = true;
+    authBanner.hidden = false;
+    authText.textContent = gateMessage + ' ';
+    authLink.hidden = false;
+  }
+
+  onAuthChange(() => {
+    void loadMe().then(applyGate);
+  });
+  void loadMe().then(applyGate);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (closed || sending) return;
+    if (gate === 'unknown') {
+      applyGate(await loadMe());
+    }
+    if (gate === 'blocked') {
+      toast.textContent = gateMessage;
+      toast.hidden = false;
+      return;
+    }
+    toast.textContent = defaultToast;
     toast.hidden = true;
     const d = read();
     const errors = validateEntrega(d);
@@ -243,6 +325,7 @@ const closed = config.submissions === 'closed';
         form.hidden = true;
         return;
       } else {
+        if (typeof body.error === 'string' && body.error) toast.textContent = body.error;
         toast.hidden = false; // datos intactos en el form
       }
     } catch {
@@ -289,6 +372,9 @@ const closed = config.submissions === 'closed';
   textarea { padding-block: var(--sp-3); resize: vertical; }
   input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
   input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.35); }
+  input[readonly] { opacity: 0.8; }
+  #entrega-auth a { color: var(--orange-300); margin-left: var(--sp-2); }
+  #entrega-auth[hidden] { display: none; }
   .field.bad input:not([type='checkbox']), .field.bad select, .field.bad textarea { border-color: var(--error); }
   .field.ok input:not([type='checkbox']), .field.ok select, .field.ok textarea { border-color: var(--success); }
   .field.ok:not(.check)::after { content: '✓'; position: absolute; right: 14px; bottom: 12px; color: var(--success); pointer-events: none; }

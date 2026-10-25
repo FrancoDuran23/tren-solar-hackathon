@@ -95,6 +95,23 @@ Convención: `H1`, `I1`… = letra de grupo + número. Cada historia tiene crite
 - **E9.** Como participante, quiero poder reenviar una corrección (misma persona/email), para arreglar un link roto.
   *CA:* la última entrega por email gana; queda historial de las anteriores en el destino.
 - **E10.** Como organización, quiero un honeypot y un límite básico de envíos por IP en el endpoint, para frenar spam sin captcha pesado.
+- **E11.** Como participante con cuenta, quiero que la entrega quede atada a mi email de Google y que no se pueda despachar sin perfil al 100%.
+  *CA:* si el auth está configurado, `POST /api/entrega` exige sesión y `profileCompleteness === 100`, y pisa el email con el de Google. Si faltan los secretos, el endpoint sigue el comportamiento de §4.6.
+
+### A — Cuenta (Google)
+
+- **A1.** Como visitante, quiero un botón "Entrar con Google" en la nav, para identificarme sin crear una contraseña.
+  *CA:* no hay alta por email/contraseña. Con sesión, la nav muestra avatar (o inicial) y "Salir".
+- **A2.** Como visitante, quiero recorrer la landing sin cuenta. El login no bloquea el contenido público.
+- **A3.** Como participante, después de entrar quiero completar mi perfil y ver el porcentaje (0–100) antes de poder ver mi estado o despachar.
+  *CA:* 100% exige nombre completo, confirmación "vivo o resido en Jujuy", localidad (si Jujuy), URL https de github.com y una línea de 3 a 120 caracteres. Email y avatar salen de Google; el email no se edita.
+
+### R — Estado propio del top 35
+
+- **R1.** Como participante con perfil al 100%, quiero ver solo si estoy en el top 35 o todavía no, para saber mi situación sin comparar con el resto.
+  *CA:* la UI (`#mi-estado`) no muestra otras personas, puntajes, puestos ni listas.
+- **R2.** Como organización, quiero publicar el top del fin de semana con un POST autenticado por secreto, sin un panel público.
+  *CA:* `POST /api/admin/ranking` con `ADMIN_SECRET`. El body es la lista completa: esos emails quedan `inTop=true` y el resto `inTop=false`.
 
 ### W — Workshops
 
@@ -190,6 +207,7 @@ Sin backend pesado en MVP. Decisión:
 - **Anti-abuso**: honeypot, límite por IP, payload máximo, sanitización. Sin captcha en MVP.
 - **Datos personales**: solo los del form; sin tracking de terceros. Nota de privacidad (F3).
 - **Cierre**: `submissions: 'closed'` desactiva el form en UI **y** el endpoint rechaza con `403`.
+- **Con auth configurado (T16–T18)**: además, la entrega exige sesión de Google y perfil al 100% (§4.9). El email del payload es el de la cuenta, y se agrega `userId`. Sin las variables de auth, este gate no se aplica y el endpoint se comporta como el stub de arriba.
 
 ### 4.7 Ticket y motion
 
@@ -205,6 +223,28 @@ Sin backend pesado en MVP. Decisión:
 - Analytics: opcional y sin cookies (p. ej. Vercel Web Analytics) — decidir al deploy; no bloquea el MVP.
 - Imagen del hero `loading="eager"` + `fetchpriority="high"`; resto lazy. Sin texto dentro de imágenes salvo el render OG.
 
+### 4.9 Auth, perfil y estado propio (T16–T18)
+
+Stack elegido: **Better Auth** (solo Google, sin email/contraseña) + **Neon Postgres** (`pg` contra el connection string pooled) + adapter `@astrojs/vercel`. No se usa Clerk.
+
+| Pieza | Dónde |
+|---|---|
+| Handler | `src/pages/api/auth/[...all].ts` |
+| Sesión para la UI | `GET /api/me` (la landing sigue estática; el estado se pide en el cliente) |
+| Perfil | `PUT /api/profile`, tabla `profile` por `user.id` |
+| Estado propio | `GET /api/me` incluye `ranking` solo si `profileCompleteness === 100` |
+| Publicación semanal | `POST /api/admin/ranking` |
+
+**Perfil al 100%.** Cinco checks de 20%: nombre completo (nombre y apellido), confirmación de que vive o reside en Jujuy, localidad (solo cuenta si esa confirmación es sí), URL `https://github.com/…` y una línea de 3–120 caracteres. Se puede guardar un borrador. El porcentaje que gatea es el guardado en la base, no el del formulario sin enviar.
+
+**Ranking privado.** Tabla `ranking` por email (el de Google, en minúsculas) con `in_top` y `updated_at`, más `ranking_meta` para la etiqueta de la semana. La UI muestra una de dos frases: "Estás en el top 35" o "Todavía no estás en el top", y la etiqueta si existe. Quien no tiene fila se lee como "todavía no".
+
+**Actualización de la organización (reemplazo total, no incremental).** Cada fin de semana se manda la lista completa de quienes están en el top. Esos emails quedan `inTop=true`; cualquier otra fila pasa a `inTop=false`. No hay UI de admin. Detalle, variables y el `curl` están en `docs/auth-ranking.md`.
+
+**Sin secretos.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_SECRET` y `BETTER_AUTH_URL` son opcionales en el schema de Astro. Si faltan, `astro check` / `astro build` pasan, el botón de ingreso avisa que todavía no está habilitado y `/api/auth/*` responde 503. La entrega anónima sigue el stub de §4.6.
+
+**Sponsor.** Nada de esto nombra al sponsor del hackathon.
+
 ---
 
 ## 5. Non-goals
@@ -212,12 +252,12 @@ Sin backend pesado en MVP. Decisión:
 Fuera del alcance de este spec y del MVP:
 
 1. **App de scoring interno**: el puntaje (organización + jurados) se calcula offline/en planilla. La landing solo explica los criterios.
-2. **Auth de participantes**: sin login, sin cuentas, sin magic links.
+2. **Login con email y contraseña, magic links y panel de scoring.** El ingreso es solo con Google (§4.9). El puntaje de organización y jurado se sigue calculando offline.
 3. **CRUD de proyectos**: sin panel para ver/editar/borrar entregas dentro de la web; la organización las ve en el destino exportable (§4.6).
 4. **App móvil** (nativa o PWA instalable).
 5. Pasarela de pago o venta de tickets (los tickets no se compran).
 6. Hosting de archivos/capturas de tracción (solo URL).
-7. Publicación de ranking o resultados en la landing en el MVP.
+7. **Ranking público.** La landing no publica listas, puntajes ni posiciones de otras personas. El estado propio (top 35 sí/no) está en §4.9.
 8. Gestión de los 35 invitados especiales en la web (se coordinan aparte).
 9. Landing del hackathon principal y cualquier mención del sponsor real.
 10. CMS o backoffice: el contenido se edita en archivos del repo.
@@ -239,6 +279,8 @@ La landing se considera lista para producción cuando cumple **todo**:
 - [ ] Con `lumaUrl = null` ⇒ CTA "Inscripción abre pronto" (sin link roto). Con `lumaUrl` ⇒ CTA vivo en hero, nav y cierre.
 - [ ] Sin fecha de cierre ⇒ tablero "apagado"; sin dígitos falsos.
 - [ ] Form: bloqueado hasta marcar "Vivo o resido en Jujuy"; validaciones de `design.md §3.10`; estados cerrado / validando / enviando / éxito / error funcionan.
+- [ ] Con auth configurado: sin sesión no se despacha; sin perfil al 100% no se ve el estado propio ni se despacha; el estado no lista a nadie más.
+- [ ] Sin las variables de auth el build pasa y la landing pública sigue usable.
 
 ### Responsive
 - [ ] Probado en **360, 768, 1024 y 1440 px** de ancho.
@@ -286,7 +328,8 @@ Numeración de secciones = `design.md §4`.
 | 6 | Criterios | `#criterios` | S1, S2, S3, S4 |
 | 7 | Cupos 35 + 35 | — | K1, K2, K3 |
 | 8 | Workshops | `#workshops` | W1, W2, W3, W4 |
-| 9 | Entregá tu proyecto | `#entrega` | E1–E10, F3 |
+| 9 | Tu perfil + tu estado | `#perfil`, `#mi-estado` | A1–A3, R1, R2 |
+| 9b | Entregá tu proyecto | `#entrega` | E1–E11, F3 |
 | 10 | Jurado | `#jurado` | J1, J2, J3, J4 |
 | 11 | Sponsor sorpresa | — | P1, P2, P3 |
 | 12 | FAQ | `#faq` | S5, K2 |
@@ -294,7 +337,7 @@ Numeración de secciones = `design.md §4`.
 | 14 | Footer | — | F1, F5 |
 | — | `<head>` / meta | — | F4, F5 |
 
-**Cobertura inversa (por grupo):** H → 0,1,2,3,4 · I → 0,1,4,13 · K → 7,12 · C → 5 · S → 6,12 · E → 9 · W → 8 · J → 10 · P → 11 · F → 9,13,14,head.
+**Cobertura inversa (por grupo):** H → 0,1,2,3,4 · I → 0,1,4,13 · K → 7,12 · C → 5 · S → 6,12 · A → 0,9 · R → 9,12 · E → 9b · W → 8 · J → 10 · P → 11 · F → 9b,13,14,head.
 
 ---
 

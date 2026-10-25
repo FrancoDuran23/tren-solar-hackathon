@@ -11,6 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test": "node --experimental-strip-types --test src/lib/profile.test.ts src/lib/ranking-input.test.ts src/lib/secret.test.ts",
     "astro": "astro"
   },
   "dependencies": {
@@ -19,13 +20,17 @@
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/unbounded": "^5.3.0",
+    "@vercel/functions": "^3.10.3",
     "@vgpu/wgsl": "^0.6.0",
     "astro": "^7.4.2",
+    "better-auth": "^1.7.12",
+    "pg": "^8.23.1",
     "three": "^0.186.1",
     "typescript": "^6.0.3",
     "vgpu": "^0.6.0"
   },
   "devDependencies": {
+    "@types/pg": "^8.23.1",
     "@types/three": "^0.186.0"
   }
 }

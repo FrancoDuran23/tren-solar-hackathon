@@ -1,0 +1,435 @@
+---
+import { copy } from '../content/copy';
+
+const { profile: p, ranking: r, auth } = copy;
+---
+
+<section class="cuenta" id="perfil" aria-labelledby="perfil-title">
+  <div class="wrap">
+    <h2 id="perfil-title">{p.h2}</h2>
+    <p class="lead">{p.lead}</p>
+
+    <div class="panel">
+      <div data-signed-out>
+        <p class="lead">{p.signedOut}</p>
+        <button type="button" class="btn" data-signin>{auth.signIn}</button>
+        <p class="note" data-auth-note hidden role="status"></p>
+      </div>
+
+      <form id="perfil-form" hidden novalidate>
+        <div class="meter-row">
+          <div
+            class="meter"
+            id="perfil-meter"
+            role="meter"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-label={p.meter}
+          >
+            <div class="meter__fill" id="perfil-meter-fill"></div>
+          </div>
+          <p class="meter__pct mono" id="perfil-meter-label">0%</p>
+        </div>
+        <p class="unsaved" id="perfil-unsaved" hidden>{p.unsaved}</p>
+
+        <div class="field">
+          <label class="mono" for="p-email">{p.email}</label>
+          <input id="p-email" name="email" type="email" readonly autocomplete="email" aria-describedby="p-email-help" />
+          <p class="help" id="p-email-help">{p.emailHelp}</p>
+        </div>
+
+        <div class="field" data-pf="fullName">
+          <label class="mono" for="p-nombre">{p.fullName}</label>
+          <input id="p-nombre" name="fullName" type="text" required maxlength="120" autocomplete="name" aria-describedby="p-nombre-help e-fullName" />
+          <p class="help" id="p-nombre-help">{p.fullNameHelp}</p>
+          <p class="err" id="e-fullName" role="alert"></p>
+        </div>
+
+        <div class="field check" data-pf="livesInJujuy">
+          <label class="chk">
+            <input id="p-jujuy" name="livesInJujuy" type="checkbox" aria-describedby="p-jujuy-help e-livesInJujuy" />
+            <span>{p.jujuy}</span>
+          </label>
+          <p class="help" id="p-jujuy-help">{p.jujuyHelp}</p>
+          <p class="err" id="e-livesInJujuy" role="alert"></p>
+        </div>
+
+        <div class="field" data-pf="localidad">
+          <label class="mono" for="p-localidad">{p.localidad}</label>
+          <input id="p-localidad" name="localidad" type="text" maxlength="80" autocomplete="address-level2" aria-describedby="p-localidad-help e-localidad" />
+          <p class="help" id="p-localidad-help">{p.localidadHelp}</p>
+          <p class="err" id="e-localidad" role="alert"></p>
+        </div>
+
+        <div class="field" data-pf="githubUrl">
+          <label class="mono" for="p-github">{p.github}</label>
+          <input id="p-github" name="githubUrl" type="url" maxlength="300" placeholder="https://github.com/…" autocomplete="url" aria-describedby="p-github-help e-githubUrl" />
+          <p class="help" id="p-github-help">{p.githubHelp}</p>
+          <p class="err" id="e-githubUrl" role="alert"></p>
+        </div>
+
+        <div class="field" data-pf="oneLiner">
+          <label class="mono" for="p-line">{p.oneLiner}</label>
+          <input id="p-line" name="oneLiner" type="text" maxlength="120" aria-describedby="p-line-help e-oneLiner" />
+          <p class="help" id="p-line-help">{p.oneLinerHelp} <span id="p-count" class="mono">0/120</span></p>
+          <p class="err" id="e-oneLiner" role="alert"></p>
+        </div>
+
+        <ul class="steps" id="perfil-steps" aria-label={p.steps}></ul>
+
+        <button type="submit" class="btn" id="perfil-save">{p.save}</button>
+        <p class="note" id="perfil-status" role="status"></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="estado" id="mi-estado" aria-labelledby="estado-title">
+  <div class="wrap">
+    <h2 id="estado-title">{r.h2}</h2>
+    <p class="lead">{r.lead}</p>
+    <p class="msg" id="estado-msg" role="status">{r.signedOut}</p>
+    <p data-estado-actions>
+      <button type="button" class="btn" data-signin>{auth.signIn}</button>
+      <a class="btn btn--ghost" id="estado-perfil" href="#perfil" hidden>{r.goProfile}</a>
+    </p>
+    <p class="note" data-auth-note hidden role="status"></p>
+    <article class="card" id="estado-card" hidden>
+      <p class="kicker mono">TOP 35 · JUJUY</p>
+      <p class="result" id="estado-result"></p>
+      <p class="meta mono" id="estado-meta"></p>
+      <p class="private">{r.privateNote}</p>
+    </article>
+  </div>
+</section>
+
+<script>
+  import { copy } from '../content/copy';
+  import { loadMe, notifyAuth, onAuthChange, signInWithGoogle, invalidateMe } from '../lib/auth-client';
+  import type { MeResponse } from '../lib/me';
+  import {
+    PROFILE_CHECKS,
+    profileChecks,
+    profileCompleteness,
+    validateProfileInput,
+    type ProfileCheckKey,
+    type ProfileErrors,
+    type ProfileInput,
+  } from '../lib/profile';
+
+  const labels: Record<ProfileCheckKey, string> = {
+    fullName: copy.profile.fullName,
+    livesInJujuy: copy.profile.jujuy,
+    localidad: copy.profile.localidad,
+    githubUrl: copy.profile.github,
+    oneLiner: copy.profile.oneLiner,
+  };
+
+  const form = document.getElementById('perfil-form') as HTMLFormElement | null;
+  const signedOut = document.querySelector<HTMLElement>('#perfil [data-signed-out]');
+  const steps = document.getElementById('perfil-steps');
+  const meter = document.getElementById('perfil-meter');
+  const fill = document.getElementById('perfil-meter-fill');
+  const meterLabel = document.getElementById('perfil-meter-label');
+  const unsaved = document.getElementById('perfil-unsaved');
+  const status = document.getElementById('perfil-status');
+  const saveBtn = document.getElementById('perfil-save') as HTMLButtonElement | null;
+  const estadoMsg = document.getElementById('estado-msg');
+  const estadoCard = document.getElementById('estado-card');
+  const estadoResult = document.getElementById('estado-result');
+  const estadoMeta = document.getElementById('estado-meta');
+  const estadoPerfil = document.getElementById('estado-perfil');
+  const estadoActions = document.querySelector<HTMLElement>('[data-estado-actions]');
+
+  let savedCompleteness = 0;
+  let prefilled = false;
+  let seenUser: string | null = null;
+
+  if (steps) {
+    for (const key of PROFILE_CHECKS) {
+      const li = document.createElement('li');
+      li.dataset.step = key;
+      li.textContent = labels[key];
+      steps.append(li);
+    }
+  }
+
+  function field(name: string): HTMLInputElement | null {
+    return form?.elements.namedItem(name) as HTMLInputElement | null;
+  }
+
+  function read(): ProfileInput {
+    return {
+      fullName: field('fullName')?.value.trim() ?? '',
+      livesInJujuy: field('livesInJujuy')?.checked ?? false,
+      localidad: field('localidad')?.value.trim() ?? '',
+      githubUrl: field('githubUrl')?.value.trim() ?? '',
+      oneLiner: field('oneLiner')?.value.trim() ?? '',
+    };
+  }
+
+  function showErrors(errors: ProfileErrors) {
+    for (const key of PROFILE_CHECKS) {
+      const el = document.getElementById(`e-${key}`);
+      if (el) el.textContent = errors[key] ?? '';
+      form?.querySelector<HTMLElement>(`[data-pf="${key}"]`)?.classList.toggle('bad', Boolean(errors[key]));
+    }
+  }
+
+  function paintMeter(input: ProfileInput) {
+    const pct = profileCompleteness(input);
+    const checks = profileChecks(input);
+    meter?.setAttribute('aria-valuenow', String(pct));
+    meter?.setAttribute('aria-valuetext', `${copy.profile.meter} al ${pct}%`);
+    if (fill) fill.style.width = `${pct}%`;
+    if (meterLabel) meterLabel.textContent = `${pct}%`;
+    if (unsaved) unsaved.hidden = !(pct === 100 && savedCompleteness < 100);
+    steps?.querySelectorAll<HTMLLIElement>('li').forEach((li) => {
+      const key = li.dataset.step as ProfileCheckKey | undefined;
+      if (!key) return;
+      li.classList.toggle('ok', checks[key]);
+    });
+    const count = document.getElementById('p-count');
+    if (count) count.textContent = `${field('oneLiner')?.value.length ?? 0}/120`;
+    const loc = field('localidad');
+    if (loc) loc.required = field('livesInJujuy')?.checked ?? false;
+  }
+
+  function paint(me: MeResponse) {
+    const signedIn = Boolean(me.user);
+    if (signedOut) signedOut.hidden = signedIn;
+    if (form) form.hidden = !signedIn;
+    document.querySelectorAll<HTMLButtonElement>('#perfil [data-signin], #mi-estado [data-signin]').forEach((btn) => {
+      btn.hidden = signedIn;
+    });
+
+    if (!me.user || !me.profile) {
+      savedCompleteness = 0;
+      prefilled = false;
+      seenUser = null;
+      form?.reset();
+      if (estadoMsg) {
+        estadoMsg.hidden = false;
+        estadoMsg.textContent = me.error ?? copy.ranking.signedOut;
+      }
+      if (estadoCard) estadoCard.hidden = true;
+      if (estadoPerfil) estadoPerfil.hidden = true;
+      if (estadoActions) estadoActions.hidden = false;
+      return;
+    }
+
+    if (seenUser !== me.user.id) {
+      seenUser = me.user.id;
+      prefilled = false;
+      form?.reset();
+    }
+    const email = field('email');
+    if (email) email.value = me.user.email;
+    if (!prefilled) {
+      const name = field('fullName');
+      if (name && name.value.trim() === '') name.value = me.profile.fullName || me.user.name;
+      const loc = field('localidad');
+      if (loc && loc.value.trim() === '') loc.value = me.profile.localidad;
+      const gh = field('githubUrl');
+      if (gh && gh.value.trim() === '') gh.value = me.profile.githubUrl;
+      const line = field('oneLiner');
+      if (line && line.value.trim() === '') line.value = me.profile.oneLiner;
+      const jujuy = field('livesInJujuy');
+      if (jujuy) jujuy.checked = me.profile.livesInJujuy;
+      prefilled = true;
+    }
+    savedCompleteness = me.profile.completeness;
+    paintMeter(read());
+
+    const complete = me.profile.completeness === 100;
+    if (estadoActions) estadoActions.hidden = complete && !me.error;
+    if (estadoPerfil) estadoPerfil.hidden = complete || Boolean(me.error);
+    if (me.error) {
+      if (estadoMsg) {
+        estadoMsg.hidden = false;
+        estadoMsg.textContent = me.error;
+      }
+      if (estadoCard) estadoCard.hidden = true;
+      return;
+    }
+    if (!complete || !me.ranking) {
+      if (estadoMsg) {
+        estadoMsg.hidden = false;
+        estadoMsg.textContent = `${copy.ranking.needProfile} Ahora está al ${me.profile.completeness}%.`;
+      }
+      if (estadoCard) estadoCard.hidden = true;
+      return;
+    }
+    if (estadoMsg) estadoMsg.hidden = true;
+    if (estadoCard) {
+      estadoCard.hidden = false;
+      estadoCard.dataset.in = me.ranking.inTop ? 'true' : 'false';
+    }
+    if (estadoResult) estadoResult.textContent = me.ranking.inTop ? copy.ranking.inTop : copy.ranking.out;
+    if (estadoMeta) {
+      const bits: string[] = [];
+      if (me.ranking.weekLabel) bits.push(me.ranking.weekLabel);
+      if (me.ranking.updatedAt) {
+        const d = new Date(me.ranking.updatedAt);
+        if (!Number.isNaN(d.getTime())) bits.push(d.toLocaleString('es-AR', { dateStyle: 'medium', timeStyle: 'short' }));
+      }
+      estadoMeta.textContent = bits.length ? `${copy.ranking.updated} · ${bits.join(' · ')}` : '';
+    }
+  }
+
+  form?.addEventListener('input', () => paintMeter(read()));
+  form?.addEventListener('change', () => paintMeter(read()));
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!saveBtn || !status) return;
+    const input = read();
+    const errors = validateProfileInput(input);
+    showErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    saveBtn.disabled = true;
+    saveBtn.textContent = copy.profile.saving;
+    status.textContent = '';
+    void fetch('/api/profile', {
+      method: 'PUT',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify(input),
+    })
+      .then(async (res) => {
+        const body = (await res.json().catch(() => ({}))) as { error?: string; errors?: ProfileErrors };
+        if (res.status === 422 && body.errors) {
+          showErrors(body.errors);
+          status.textContent = '';
+          return;
+        }
+        if (!res.ok) {
+          status.textContent = body.error || copy.profile.saveError;
+          return;
+        }
+        status.textContent = copy.profile.saved;
+        prefilled = false;
+        invalidateMe();
+        notifyAuth();
+      })
+      .catch(() => {
+        status.textContent = copy.profile.saveError;
+      })
+      .finally(() => {
+        saveBtn.disabled = false;
+        saveBtn.textContent = copy.profile.save;
+      });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('#perfil [data-signin], #mi-estado [data-signin]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const note = btn.parentElement?.querySelector<HTMLElement>('[data-auth-note]') ?? btn.parentElement?.parentElement?.querySelector<HTMLElement>('[data-auth-note]');
+      btn.disabled = true;
+      void loadMe().then(async (me) => {
+        if (!me.configured) {
+          if (note) {
+            note.hidden = false;
+            note.textContent = copy.auth.unavailable;
+          }
+          btn.disabled = false;
+          return;
+        }
+        const err = await signInWithGoogle();
+        if (err && note) {
+          note.hidden = false;
+          note.textContent = err;
+          btn.disabled = false;
+        }
+      });
+    });
+  });
+
+  const refresh = () => {
+    void loadMe().then(paint);
+  };
+  onAuthChange(refresh);
+  refresh();
+</script>
+
+<style>
+  .cuenta, .estado { background: var(--navy-900); padding: var(--sp-16) 0; border-top: var(--border); }
+  .estado { background: var(--navy-950); }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
+  .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 62ch; margin: 0 0 var(--sp-6); }
+  .mono { font-family: var(--font-mono); }
+  .panel, .card {
+    background: var(--navy-800);
+    border: var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-6);
+    max-width: 720px;
+  }
+  form { display: grid; gap: var(--sp-4); }
+  .meter-row { display: flex; align-items: center; gap: var(--sp-4); }
+  .meter {
+    flex: 1;
+    height: 10px;
+    background: var(--navy-950);
+    border-radius: var(--r-pill);
+    overflow: hidden;
+  }
+  .meter__fill { height: 100%; width: 0; background: var(--orange-500); }
+  .meter__pct { margin: 0; font-weight: 700; min-width: 4ch; color: var(--orange-300); }
+  .unsaved { margin: 0; color: var(--orange-300); font-size: var(--fs-small); }
+  .field { display: grid; gap: 6px; }
+  label.mono { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-200); font-weight: 700; }
+  input[type='text'], input[type='email'], input[type='url'] {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 48px;
+    padding: 0 var(--sp-4);
+    background: var(--navy-950);
+    color: var(--white);
+    border: var(--border);
+    border-radius: var(--r-sm);
+    font: inherit;
+  }
+  input[readonly] { opacity: 0.8; }
+  input:focus-visible { outline: none; border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.35); }
+  .field.bad input { border-color: var(--error); }
+  .help, .err, .note, .msg, .private, .meta { margin: 0; color: var(--text-muted); font-size: var(--fs-small); }
+  .err:not(:empty) { color: var(--error); }
+  .err:not(:empty)::before { content: '⚠ '; }
+  .chk { display: flex; gap: var(--sp-3); align-items: center; font-weight: 600; cursor: pointer; min-height: 44px; }
+  .chk input { width: 22px; height: 22px; accent-color: var(--orange-500); }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+  .steps li { color: var(--text-muted); font-size: var(--fs-small); }
+  .steps li::before { content: '○ '; font-family: var(--font-mono); color: var(--ink-400); }
+  .steps li.ok { color: var(--text); }
+  .steps li.ok::before { content: '✓ '; color: var(--success); }
+  .btn {
+    justify-self: start;
+    min-height: 48px;
+    padding: 0 var(--sp-6);
+    border: 0;
+    border-radius: var(--r-sm);
+    background: var(--orange-500);
+    color: var(--navy-900);
+    font-weight: 700;
+    font-size: var(--fs-small);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn:hover:not(:disabled) { background: var(--orange-400); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  [data-estado-actions] { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+  .btn--ghost { background: transparent; color: var(--text); border: var(--border); }
+  .note:not(:empty) { color: var(--orange-300); }
+  .card[data-in='true'] { border-color: var(--orange-500); }
+  .kicker { margin: 0 0 var(--sp-2); letter-spacing: 0.12em; font-size: 12px; color: var(--orange-300); font-weight: 700; }
+  .result { margin: 0 0 var(--sp-3); font-family: var(--font-display); font-weight: 700; font-size: var(--fs-h3); }
+  .card[data-in='false'] .result { color: var(--text-muted); }
+  [hidden] { display: none !important; }
+  @media (max-width: 767px) {
+    .panel, .card { padding: var(--sp-4); }
+  }
+</style>

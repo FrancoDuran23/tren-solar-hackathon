@@ -6,8 +6,6 @@ interface Props {
   ghost?: boolean;
 }
 const { ghost = false } = Astro.props;
-/* ids únicos por instancia (el stack renderiza 3 tickets) */
-const uid = Math.random().toString(36).slice(2, 7);
 
 const isOpen = config.registration === 'open' && !!config.lumaUrl;
 const deadline = config.deadline
@@ -51,137 +49,104 @@ const cells: [number, number][] = [];
 }
 ---
 
+<!--
+  Ticket "Hackatón Tren Solar" según las refs de Franco (docs/refs/ref-ticket-franco-a/b.jpg):
+  cuerpo noche con el Tren Solar real en la Quebrada al atardecer, título display grande,
+  franja holográfica abajo con el sello circular jujuy.dev, y stub oscuro Admit One con
+  grilla, barcode y QR. Chanfles metálicos en las esquinas exteriores.
+-->
 <div class:list={['ticket', { ghost }]} aria-hidden={ghost ? 'true' : undefined} data-ticket>
-  <div class="body" data-body>
-    <!-- Material (fallback sin WebGPU): plata cepillada + velo holográfico + guilloché + sheen -->
-    <div class="metal" aria-hidden="true"></div>
-    <div class="holo" aria-hidden="true"></div>
-    <div class="spark" aria-hidden="true"></div>
-    <div class="etch" aria-hidden="true"></div>
-    <div class="foil" aria-hidden="true"></div>
-    {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
-    <div class="grain" aria-hidden="true"></div>
-    <div class="frame" aria-hidden="true"></div>
+  <div class="body">
+    <!-- Paisaje: Tren Solar en la Quebrada (asset real del repo), oscurecido hacia el título -->
+    <img class="scene" src="/brand/solar-train-quebrada.jpg" alt="" width="1024" height="775" loading="lazy" decoding="async" />
+    <i class="shade" aria-hidden="true"></i>
+    <i class="grain" aria-hidden="true"></i>
 
-    <p class="word" aria-hidden="true"><span>HACKATÓN</span><span>TREN SOLAR</span></p>
-    <!-- Motif: el Tren Solar (dúo) en line-art sobre la plata, estilo inset LABITCONF. Sin foto. -->
-    <svg class="motif" viewBox="0 0 420 100" aria-hidden="true" fill="none" stroke-linejoin="round" stroke-linecap="round">
-      <defs>
-        <clipPath id={`tsA-${uid}`}><path d="M46 12 H178 Q186 12 186 20 V78 H12 V54 Q12 26 46 12 Z" /></clipPath>
-        <clipPath id={`tsB-${uid}`}><path d="M374 12 H242 Q234 12 234 20 V78 H408 V54 Q408 26 374 12 Z" /></clipPath>
-      </defs>
-      <!-- vía -->
-      <path class="m-rail" d="M0 93 H420" />
-      <path class="m-ties" d="M8 96 V90 M26 96 V90 M44 96 V90 M62 96 V90 M80 96 V90 M98 96 V90 M116 96 V90 M134 96 V90 M152 96 V90 M170 96 V90 M188 96 V90 M206 96 V90 M224 96 V90 M242 96 V90 M260 96 V90 M278 96 V90 M296 96 V90 M314 96 V90 M332 96 V90 M350 96 V90 M368 96 V90 M386 96 V90 M404 96 V90" />
-      <!-- bogies -->
-      <g class="m-bogie">
-        <rect x="40" y="78" width="40" height="7" rx="2" /><rect x="138" y="78" width="40" height="7" rx="2" />
-        <rect x="242" y="78" width="40" height="7" rx="2" /><rect x="340" y="78" width="40" height="7" rx="2" />
-        <circle cx="50" cy="87" r="5" /><circle cx="70" cy="87" r="5" /><circle cx="148" cy="87" r="5" /><circle cx="168" cy="87" r="5" />
-        <circle cx="252" cy="87" r="5" /><circle cx="272" cy="87" r="5" /><circle cx="350" cy="87" r="5" /><circle cx="370" cy="87" r="5" />
-      </g>
-      <!-- coche A (cabina adelante, izquierda) -->
-      <g clip-path={`url(#tsA-${uid})`}>
-        <rect class="m-body" x="12" y="12" width="174" height="66" />
-        <rect class="m-skirt" x="12" y="68" width="174" height="10" />
-        <path class="m-skirt" d="M12 78 V48 L44 62 L70 68 V78 Z" />
-        <!-- banda de ventanales alta: del faldón casi al techo -->
-        <rect class="m-glass" x="58" y="24" width="124" height="40" rx="2" />
-        <path class="m-pillar" d="M98 24 V64 M138 24 V64" />
-        <!-- cabina: ventana lateral + parabrisas + máscara navy -->
-        <rect class="m-glass" x="42" y="24" width="12" height="40" rx="1.5" />
-        <path class="m-glass" d="M18 40 Q22 22 46 14 V34 Q30 36 18 46 Z" />
-        <path class="m-mask" d="M12 54 Q12 44 18 40 L30 38 V66 H12 Z" />
-        <circle class="m-lamp" cx="16" cy="58" r="2" /><circle class="m-lamp" cx="24" cy="58" r="2" />
-        <path class="m-m" d="M14 65 l3.5 -5 l2.5 3 l2.5 -3 l3.5 5" />
-        <rect class="m-roof" x="84" y="8" width="36" height="5" rx="1" />
-        <rect class="m-roof" x="130" y="9" width="30" height="4" rx="1" />
-      </g>
-      <path class="m-line" d="M46 12 H178 Q186 12 186 20 V78 H12 V54 Q12 26 46 12 Z" />
-      <!-- fuelle -->
-      <rect class="m-bellows" x="186" y="18" width="48" height="56" />
-      <!-- coche B (cabina atrás, derecha), espejo -->
-      <g clip-path={`url(#tsB-${uid})`}>
-        <rect class="m-body" x="234" y="12" width="174" height="66" />
-        <rect class="m-skirt" x="234" y="68" width="174" height="10" />
-        <path class="m-skirt" d="M408 78 V48 L376 62 L350 68 V78 Z" />
-        <rect class="m-glass" x="238" y="24" width="124" height="40" rx="2" />
-        <path class="m-pillar" d="M282 24 V64 M322 24 V64" />
-        <rect class="m-glass" x="366" y="24" width="12" height="40" rx="1.5" />
-        <path class="m-glass" d="M402 40 Q398 22 374 14 V34 Q390 36 402 46 Z" />
-        <path class="m-mask" d="M408 54 Q408 44 402 40 L390 38 V66 H408 Z" />
-        <circle class="m-lamp" cx="404" cy="58" r="2" /><circle class="m-lamp" cx="396" cy="58" r="2" />
-        <rect class="m-roof" x="300" y="8" width="36" height="5" rx="1" />
-        <rect class="m-roof" x="260" y="9" width="30" height="4" rx="1" />
-      </g>
-      <path class="m-line" d="M374 12 H242 Q234 12 234 20 V78 H408 V54 Q408 26 374 12 Z" />
-      <!-- sol de la Quebrada asomando detrás del dúo -->
-    </svg>
-    <i class="orbit" aria-hidden="true"></i>
+    <p class="corner corner-tl mono"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />JUJUY<i>/</i>ARGENTINA</p>
+    <p class="corner corner-tr mono"><span>ONLINE</span><span>JUJUY · ARG</span><span>{TICKETS_TOTAL} TICKETS</span></p>
+
+    <h3 class="title">
+      <span class="t1">Hackatón</span>
+      <span class="t2">Tren Solar</span>
+    </h3>
+    <p class="tagline mono">IDEAS QUE VIAJAN MÁS LEJOS</p>
+
+    <p class="credit mono"><i aria-hidden="true"></i><span>JUJUY.DEV<br /><b>COMUNIDAD DE DESARROLLADORES</b></span></p>
+
+    <!-- Franja holográfica (foil vgpu con fallback CSS) -->
+    <div class="strip" data-body>
+      <i class="holo" aria-hidden="true"></i>
+      <i class="sheen" aria-hidden="true"></i>
+      {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
+      <p class="strip-text mono">
+        <span>RUMBO A LA HACKATÓN TREN SOLAR</span>
+        <span>CIERRE · {deadline}</span>
+        <span>ONLINE · JUJUY · ARG</span>
+      </p>
+    </div>
+
+    <!-- Sello circular jujuy.dev, montado sobre el borde de la franja -->
     <span class="seal" aria-hidden="true">
       <img class="mark" src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />
     </span>
-    <div class="info">
-      <p class="mono">RUMBO A LA HACKATÓN TREN SOLAR</p>
-      <p class="mono">CIERRE · {deadline}</p>
-      <p class="mono">ONLINE · JUJUY · ARG</p>
-    </div>
-    <div class="trajectory" aria-hidden="true"></div>
-    <p class="slogan mono">IDEAS QUE VIAJAN <b>MÁS LEJOS</b></p>
-    <i class="shard" aria-hidden="true"></i>
   </div>
 
   <div class="perf" aria-hidden="true"></div>
 
   <div class="stub">
     <div class="stub-head">
-      <span class="admit"><i aria-hidden="true"></i>ADMIT ONE</span>
-      <span class="stub-brand"><img class="stub-logo" src="/brand/jujuydev-logo-white.webp" alt="jujuy.dev" width="443" height="120" loading="lazy" decoding="async" /></span>
+      <span class="admit">ADMIT ONE<i aria-hidden="true">/</i></span>
+      <svg class="orbit-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" /><path d="M3.5 15.5c3-1.2 9.8-4.6 16-10.4M4.5 8.5c-.6 3.4 7.8 7.9 15 7" />
+      </svg>
     </div>
-    <p class="no"><span class="no-label mono">N°</span> <span class="dots"><i>·</i><i>·</i></span><span class="of">/{TICKETS_TOTAL}</span></p>
     <dl class="grid mono">
-      <div class="full dest"><dt>DESTINO</dt><dd>HACKATÓN TREN SOLAR</dd></div>
+      <div class="full dest"><dt>DESTINO</dt><dd>HACKATÓN TREN SOLAR</dd><i aria-hidden="true"></i></div>
       <div><dt>VAGÓN</dt><dd>01</dd></div>
-      <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
-      <div><dt>ASIENTO</dt><dd>··</dd></div>
+      <div><dt>ASIENTO</dt><dd><span class="dots"><i>·</i><i>·</i></span><small>/{TICKETS_TOTAL}</small></dd></div>
       <div><dt>GATE</dt><dd>HTS</dd></div>
-      <div class="full"><dt>HACKER ID</dt><dd>JDV-2026-····</dd></div>
+      <div><dt>HACKER ID</dt><dd>JDV-2026-····</dd></div>
     </dl>
     <div class="codes">
       <svg class="barcode" viewBox="0 0 120 28" aria-hidden="true">
-        {bars.map((b) => <rect x={b.x} y="0" width={b.w} height="28" fill="#0e0f12" />)}
+        {bars.map((b) => <rect x={b.x} y="0" width={b.w} height="28" fill="#f2f4f7" />)}
       </svg>
       <span class={`qr ${isOpen ? 'qr-live' : ''}`} aria-hidden="true">
         <svg viewBox={`0 0 ${N} ${N}`} shape-rendering="crispEdges">
-          {cells.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#0e0f12" />)}
-          <rect x="7.5" y="7.5" width="6" height="6" fill="#f2f0ea" />
-          <rect x="8.5" y="8.5" width="4" height="4" fill="#0b1d3a" />
+          {cells.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#f2f4f7" />)}
+          <rect x="7.5" y="7.5" width="6" height="6" fill="#0b0e16" />
+          <rect x="8.5" y="8.5" width="4" height="4" fill="#f2f4f7" />
           <rect x="9.5" y="9.5" width="2" height="2" fill="#ff5a1f" />
         </svg>
       </span>
     </div>
-    <p class="legal mono">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</p>
-    <i class="stripe" aria-hidden="true"></i>
+    <p class="foot mono">JUJUY<i>/</i>ARGENTINA<span class="legal">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</span></p>
   </div>
 </div>
 
 <style>
   .ticket {
-    --body-h: 320px;
-    --stub-h: 300px;
-    /* Tinta sobre plata: navy, con un filo blanco de grabado */
-    --ink-on-metal: var(--navy-950);
-    --emboss: 0 1px 0 rgba(255, 255, 255, 0.55);
+    --body-h: 364px;
+    --stub-h: 256px;
+    --edge: 14px;
+    --night: #0b0e16;
+    --night-2: #121726;
     position: relative;
     width: 340px;
     max-width: 100%;
     height: calc(var(--body-h) + var(--stub-h));
     display: flex;
     flex-direction: column;
-    border-radius: var(--r-lg);
     overflow: hidden;
     isolation: isolate;
-    background: var(--navy-900);
+    color: var(--white);
+    background: var(--night);
+    /* Chanfles metálicos en las 4 esquinas + notches en la perforación */
+    clip-path: polygon(
+      var(--edge) 0, calc(100% - var(--edge)) 0, 100% var(--edge),
+      100% calc(100% - var(--edge)), calc(100% - var(--edge)) 100%,
+      var(--edge) 100%, 0 calc(100% - var(--edge)), 0 var(--edge)
+    );
     --hole: radial-gradient(circle var(--notch) at 0 var(--body-h), transparent 98%, #000 100%),
       radial-gradient(circle var(--notch) at 100% var(--body-h), transparent 98%, #000 100%);
     -webkit-mask: var(--hole);
@@ -189,347 +154,291 @@ const cells: [number, number][] = [];
     mask: var(--hole);
     mask-composite: intersect;
   }
+  /* Filo metálico interior (bisel plateado fino) */
+  .ticket::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9;
+    box-shadow:
+      inset 0 0 0 1px rgba(214, 222, 236, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.14em;
+    line-height: 1.4;
+    margin: 0;
+    text-transform: uppercase;
+  }
 
-  /* ───────── Cuerpo: lámina de plata cepillada con holograma ───────── */
+  /* ───────── Cuerpo: noche en la Quebrada ───────── */
   .body {
     position: relative;
     height: var(--body-h);
     flex: none;
-    background: #aeb5bf;
-    color: var(--ink-on-metal);
     overflow: hidden;
     isolation: isolate;
+    background: var(--night);
   }
-  .metal,
-  .holo,
-  .spark,
-  .etch,
-  .foil,
-  .foil-gl,
-  .grain,
-  .frame {
+  .scene {
     position: absolute;
     inset: 0;
-    pointer-events: none;
-  }
-  /* Cromo: bandas claras/oscuras de un entorno reflejado + veta horizontal (turbulencia anisótropa) */
-  .metal {
-    z-index: 0;
-    background:
-      radial-gradient(120% 90% at 12% 0%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 55%),
-      linear-gradient(
-        112deg,
-        #747d89 0%,
-        #c6ccd4 13%,
-        #eef1f5 22%,
-        #a7afb9 34%,
-        #717a86 46%,
-        #cfd4db 58%,
-        #f2f4f7 66%,
-        #aab1bb 78%,
-        #767f8b 90%,
-        #9aa2ad 100%
-      );
-  }
-  .metal::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.42;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.9' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.6 -0.3'/></filter><rect width='320' height='320' filter='url(%23b)'/></svg>");
-    background-size: 320px 320px;
-  }
-  .metal::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 18%),
-      linear-gradient(0deg, rgba(6, 15, 34, 0.22), rgba(6, 15, 34, 0) 26%);
-  }
-  /* Velo holográfico: arcoíris pastel que tiñe el metal conservando su luminancia; deriva lento */
-  .holo {
-    z-index: 1;
-    width: 280%;
-    opacity: 0.54;
-    mix-blend-mode: color;
-    /* Los stops grises (#c9ced6) son neutros bajo blend "color": dejan ver la plata entre zonas iridiscentes */
-    background: linear-gradient(
-      108deg,
-      #ff9fb4 0%,
-      #c9ced6 9%,
-      #ffd59c 17%,
-      #e3ffa3 25%,
-      #c9ced6 35%,
-      #9ffbe1 43%,
-      #9ccbff 51%,
-      #c9ced6 61%,
-      #c7a8ff 69%,
-      #ff9fdc 77%,
-      #c9ced6 88%,
-      #ff9fb4 100%
-    );
-    animation: holo-drift 18s ease-in-out infinite alternate;
-  }
-  .ghost .holo {
-    animation: none;
-    transform: translateX(-22%);
-  }
-  /* Punto caliente iridiscente (holograma de seguridad) fijo en la esquina del guilloché */
-  .spark {
-    z-index: 1;
-    opacity: 0.6;
-    mix-blend-mode: color;
-    background: conic-gradient(
-      from 210deg at 78% 92%,
-      rgba(255, 170, 190, 0.9),
-      rgba(255, 225, 160, 0.9),
-      rgba(190, 255, 170, 0.9),
-      rgba(160, 240, 255, 0.9),
-      rgba(170, 180, 255, 0.9),
-      rgba(240, 170, 255, 0.9),
-      rgba(255, 170, 190, 0.9)
-    );
-    mask-image: radial-gradient(60% 80% at 78% 92%, #000 10%, rgba(0, 0, 0, 0.3) 55%, transparent 80%);
-  }
-  @keyframes holo-drift {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-64%);
-    }
-  }
-  /* Guilloché grabado: anillos concéntricos que salen de la esquina inferior derecha */
-  .etch {
-    z-index: 1;
-    opacity: 0.55;
-    mix-blend-mode: overlay;
-    background: repeating-radial-gradient(
-      ellipse 560px 480px at 84% 118%,
-      rgba(255, 255, 255, 0) 0 8px,
-      rgba(255, 255, 255, 0.85) 8px 9px,
-      rgba(6, 15, 34, 0.35) 9px 10px,
-      rgba(255, 255, 255, 0) 10px 14px
-    );
-    mask-image: radial-gradient(70% 90% at 84% 118%, #000 25%, rgba(0, 0, 0, 0.35) 65%, transparent 92%);
-  }
-  /* Sheen especular que sigue al puntero (--sheen) con un borde de difracción */
-  .foil {
-    z-index: 1;
-    background: linear-gradient(
-      115deg,
-      rgba(255, 255, 255, 0) 30%,
-      rgba(255, 150, 190, 0.22) 40%,
-      rgba(255, 255, 255, 0.62) 47%,
-      rgba(255, 255, 255, 0.9) 50%,
-      rgba(255, 255, 255, 0.5) 53%,
-      rgba(150, 205, 255, 0.28) 59%,
-      rgba(255, 255, 255, 0) 70%
-    );
-    background-size: 240% 100%;
-    background-position: calc(var(--sheen, 18) * 1%) 0;
-    transition: background-position var(--dur-slow) var(--ease-out);
-  }
-  .foil-gl {
     width: 100%;
     height: 100%;
-    display: none;
-    z-index: 1;
+    object-fit: cover;
+    object-position: 62% 46%;
+    filter: saturate(0.92) contrast(1.06);
   }
-  .body.gl-on .foil-gl {
-    display: block;
-  }
-  .body.gl-on .metal,
-  .body.gl-on .holo,
-  .body.gl-on .spark,
-  .body.gl-on .etch,
-  .body.gl-on .foil {
-    display: none;
+  .shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(11, 14, 22, 0.96) 0%, rgba(11, 14, 22, 0.78) 34%, rgba(11, 14, 22, 0.18) 62%, rgba(11, 14, 22, 0.08) 100%),
+      linear-gradient(180deg, rgba(11, 14, 22, 0.7) 0%, rgba(11, 14, 22, 0) 32%, rgba(11, 14, 22, 0) 62%, rgba(11, 14, 22, 0.78) 100%);
   }
   .grain {
-    z-index: 2;
-    opacity: 0.14;
+    position: absolute;
+    inset: 0;
+    opacity: 0.12;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
   }
-  .body.gl-on .grain {
-    opacity: 0.07;
-  }
-  /* Marco interior fino (Soul): línea navy con filo claro, como un bisel */
-  .frame {
-    inset: 10px;
-    border: 1px solid rgba(11, 29, 58, 0.45);
-    border-radius: var(--r-md);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.45),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.35);
-    z-index: 3;
-  }
-  .word,
-  .motif,
-  .orbit,
-  .seal,
-  .info,
-  .trajectory,
-  .slogan,
-  .shard {
-    z-index: 4;
-  }
-  /* Motif del Tren Solar: tinta navy grabada sobre la plata, faldón naranja, banda de ventanales alta */
-  .motif {
-    position: absolute;
-    left: 24px;
-    top: 118px;
-    width: 186px;
-    height: auto;
-    overflow: visible;
-    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.55));
-  }
-  .motif .m-body { fill: rgba(255, 255, 255, 0.82); }
-  .motif .m-line { stroke: var(--navy-950); stroke-width: 1.6; }
-  .motif .m-glass { fill: var(--navy-950); }
-  .motif .m-pillar { stroke: rgba(255, 255, 255, 0.95); stroke-width: 2.2; }
-  .motif .m-skirt { fill: var(--orange-500); }
-  .motif .m-mask { fill: var(--navy-950); }
-  .motif .m-lamp { fill: #fff6e0; }
-  .motif .m-m { stroke: var(--orange-500); stroke-width: 1.6; }
-  .motif .m-roof { fill: rgba(11, 29, 58, 0.55); }
-  .motif .m-bellows { fill: var(--navy-900); }
-  .motif .m-bogie { fill: var(--navy-950); }
-  .motif .m-rail { stroke: var(--navy-950); stroke-width: 1.6; }
-  .motif .m-ties { stroke: rgba(11, 29, 58, 0.55); stroke-width: 1.2; }
-  .word {
-    position: absolute;
-    top: 24px;
-    left: 24px;
-    margin: 0;
-    font: 900 31px/0.98 var(--font-display);
-    letter-spacing: -0.02em;
-    display: flex;
-    flex-direction: column;
-    color: var(--ink-on-metal);
-    text-shadow: var(--emboss);
-  }
-  /* Sello: disco navy con el logo en negativo + órbita naranja detrás (poster) */
+  .corner,
+  .title,
+  .tagline,
+  .credit,
+  .strip,
   .seal {
     position: absolute;
-    right: 24px;
-    top: 112px;
-    width: 96px;
-    height: 96px;
+    z-index: 2;
+  }
+  .corner {
+    top: 18px;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 9px;
+  }
+  .corner i {
+    font-style: normal;
+    color: var(--orange-500);
+    margin: 0 8px;
+  }
+  .corner-tl {
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  }
+  .corner-tl img {
+    height: 14px;
+    width: auto;
+    display: block;
+  }
+  .corner-tr {
+    right: 20px;
+    display: grid;
+    justify-items: end;
+    gap: 3px;
+    padding-right: 10px;
+    border-right: 2px solid var(--orange-500);
+    text-align: right;
+  }
+  .title {
+    left: 20px;
+    top: 84px;
+    margin: 0;
+    display: grid;
+    gap: 2px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  }
+  .t1 {
+    font-weight: 500;
+    font-size: 20px;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .t2 {
+    font-weight: 900;
+    font-size: 34px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--white);
+  }
+  .tagline {
+    left: 20px;
+    top: 152px;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: rgba(255, 255, 255, 0.78);
+    padding-bottom: 10px;
+  }
+  .tagline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 36px;
+    height: 2px;
+    background: var(--orange-500);
+  }
+  .credit {
+    left: 20px;
+    bottom: 86px;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .credit b {
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.12em;
+  }
+  .credit i {
+    margin-top: 3px;
+    width: 14px;
+    height: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.7);
+    position: relative;
+  }
+  .credit i::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.7);
+    border-right: 1px solid rgba(255, 255, 255, 0.7);
+    transform: rotate(45deg);
+  }
+
+  /* Franja holográfica */
+  .strip {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 72px;
+    overflow: hidden;
+    background: #d9dde6;
+    isolation: isolate;
+  }
+  .holo {
+    position: absolute;
+    inset: 0;
+    width: 220%;
+    background: linear-gradient(
+      100deg,
+      #f3c9da 0%, #fff0c8 9%, #d6f6e0 18%, #c4e6ff 27%, #d9ccff 36%, #ffcde8 45%,
+      #f6f7f9 52%, #ffe5c2 60%, #cdf2e4 68%, #c7dcff 77%, #e1cdff 86%, #f3c9da 100%
+    );
+    animation: holo-drift 16s ease-in-out infinite alternate;
+  }
+  .ghost .holo {
+    animation: none;
+    transform: translateX(-30%);
+  }
+  @keyframes holo-drift {
+    from { transform: translateX(0); }
+    to { transform: translateX(-52%); }
+  }
+  .sheen {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(115deg, rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0.85) 48%, rgba(255, 255, 255, 0) 64%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 30%, rgba(11, 14, 22, 0.1) 100%);
+    background-size: 240% 100%, 100% 100%;
+    background-position: calc(var(--sheen, 18) * 1%) 0, 0 0;
+    transition: background-position var(--dur-slow) var(--ease-out);
+  }
+  .foil-gl {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+  }
+  .strip.gl-on .foil-gl {
+    display: block;
+  }
+  .strip.gl-on .holo,
+  .strip.gl-on .sheen {
+    display: none;
+  }
+  .strip-text {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    gap: 2px;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--navy-950);
+    font-weight: 700;
+    padding-left: 12px;
+    border-left: 1px solid rgba(11, 29, 58, 0.55);
+    z-index: 2;
+  }
+  .seal {
+    right: 18px;
+    bottom: 34px;
+    width: 82px;
+    height: 82px;
     border-radius: 50%;
     display: grid;
     place-items: center;
-    background: radial-gradient(circle at 34% 28%, var(--navy-700), var(--navy-900) 55%, var(--navy-950) 100%);
+    z-index: 3;
+    background: radial-gradient(circle at 36% 30%, #1d2740, var(--night-2) 55%, #06080e 100%);
     box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
-      inset 0 -10px 18px rgba(6, 15, 34, 0.6),
-      0 10px 24px rgba(6, 15, 34, 0.35);
+      0 0 0 2px rgba(226, 232, 240, 0.75),
+      0 0 0 3px rgba(11, 14, 22, 0.8),
+      0 10px 26px rgba(0, 0, 0, 0.55);
   }
   .seal::after {
     content: '';
     position: absolute;
     inset: 7px;
     border-radius: 50%;
-    border: 1px dashed rgba(255, 255, 255, 0.28);
+    border: 1px dashed rgba(255, 255, 255, 0.32);
   }
   .mark {
     position: relative;
-    height: 20px;
+    height: 16px;
     width: auto;
     display: block;
-  }
-  .orbit {
-    position: absolute;
-    right: 2px;
-    top: 128px;
-    width: 160px;
-    height: 64px;
-    border: 1.5px solid var(--orange-500);
-    border-radius: 50%;
-    transform: rotate(-22deg);
-    z-index: 3;
-  }
-  .orbit::after {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 6px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--orange-500);
-    box-shadow: 0 0 8px rgba(255, 90, 31, 0.6);
-  }
-  .info {
-    position: absolute;
-    left: 24px;
-    bottom: 70px;
-  }
-  .mono {
-    font-family: var(--font-mono);
-    font-size: var(--fs-micro);
-    letter-spacing: 0.08em;
-    line-height: 1.5;
-    margin: 0;
-  }
-  .info .mono {
-    color: var(--ink-on-metal);
-    font-weight: 700;
-    text-shadow: var(--emboss);
-  }
-  .trajectory {
-    position: absolute;
-    left: 24px;
-    right: 24px;
-    bottom: 54px;
-    border-top: 2px dotted var(--orange-500);
-  }
-  .slogan {
-    position: absolute;
-    left: 24px;
-    bottom: 26px;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--ink-on-metal);
-    text-shadow: var(--emboss);
-  }
-  .slogan b {
-    color: var(--orange-600);
-  }
-  .shard {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 48px;
-    height: 48px;
-    background: var(--orange-500);
-    clip-path: polygon(100% 0, 100% 100%, 0 100%);
   }
 
   /* ───────── Perforación ───────── */
   .perf {
     position: absolute;
-    left: 20px;
-    right: 20px;
+    left: 22px;
+    right: 22px;
     top: var(--body-h);
-    border-top: 2px dashed var(--ink-400);
+    border-top: 2px dashed rgba(214, 222, 236, 0.45);
     z-index: 5;
     pointer-events: none;
   }
 
-  /* ───────── Stub: boarding pass en papel térmico ───────── */
+  /* ───────── Stub Admit One: noche, grilla con hairlines ───────── */
   .stub {
     position: relative;
     flex: 1;
-    background: linear-gradient(180deg, #f8f6f1 0%, var(--paper) 100%);
-    color: var(--ink-950);
-    padding: 18px 24px 16px;
+    background: linear-gradient(180deg, #11151f 0%, var(--night) 100%);
+    padding: 18px 20px 16px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 10px;
     overflow: hidden;
   }
   .stub-head {
@@ -538,55 +447,87 @@ const cells: [number, number][] = [];
     align-items: center;
   }
   .admit {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font: 700 12px/1 var(--font-display);
-    letter-spacing: 0.16em;
-    color: var(--ink-950);
+    font: 500 13px/1 var(--font-display);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--white);
   }
   .admit i {
-    width: 10px;
-    height: 10px;
-    background: var(--orange-500);
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    font-style: normal;
+    color: var(--orange-500);
+    margin-left: 10px;
   }
-  .stub-brand {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 7px;
-    border-radius: 3px;
-    background: var(--navy-900);
-    line-height: 0;
+  .orbit-ic {
+    width: 22px;
+    height: 22px;
+    color: rgba(255, 255, 255, 0.85);
   }
-  .stub-logo {
-    height: 11px;
-    width: auto;
-    display: block;
-  }
-  .no {
+  .grid {
     margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid rgba(214, 222, 236, 0.22);
+  }
+  .grid > div {
+    position: relative;
     display: flex;
-    align-items: baseline;
-    gap: 6px;
-    font: 700 var(--fs-ticket-no) / var(--lh-ticket-no) var(--font-display);
-    color: var(--ink-950);
-    letter-spacing: -0.02em;
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 10px 9px;
+    border-top: 1px solid rgba(214, 222, 236, 0.22);
+    min-width: 0;
+  }
+  .grid > div:first-child {
+    border-top: 0;
+  }
+  .grid > div:nth-child(2),
+  .grid > div:nth-child(4) {
+    border-right: 1px solid rgba(214, 222, 236, 0.22);
+  }
+  .grid .full {
+    grid-column: 1 / -1;
+  }
+  .dest i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    width: 16px;
+    height: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+  }
+  .dest i::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -4px;
+    width: 7px;
+    height: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
+    transform: rotate(45deg);
+  }
+  dt {
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  dd {
+    margin: 0;
+    font: 500 15px/1.1 var(--font-display);
+    letter-spacing: 0.04em;
+    color: var(--white);
     white-space: nowrap;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--ink-200);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .no-label {
-    font-size: 0.42em;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--ink-800);
-    align-self: flex-start;
-    padding-top: 0.2em;
+  .dest dd {
+    font-size: 14px;
+    padding-right: 28px;
   }
-  .no .of {
-    font-size: 0.5em;
-    color: var(--ink-600);
+  dd small {
+    font-size: 0.6em;
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: 2px;
   }
   .dots i {
     font-style: normal;
@@ -597,74 +538,23 @@ const cells: [number, number][] = [];
     animation-delay: 0.3s;
   }
   @keyframes pulse {
-    50% {
-      opacity: 0.25;
-    }
-  }
-  /* Grilla de abordaje: tabla con hairlines, label arriba / valor abajo (Tokyo) */
-  .grid {
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border: 1px solid var(--ink-200);
-    border-radius: var(--r-xs);
-    background: rgba(255, 255, 255, 0.45);
-  }
-  .grid > div {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    padding: 4px 8px 5px;
-    border-top: 1px solid var(--ink-200);
-    min-width: 0;
-  }
-  .grid > div:first-child {
-    border-top: 0;
-  }
-  .grid .full {
-    grid-column: 1 / -1;
-  }
-  .grid > div:not(.full):not(:nth-child(5)) {
-    border-right: 1px solid var(--ink-200);
-  }
-  dt {
-    font-size: 9px;
-    line-height: 1.2;
-    color: var(--ink-800);
-    letter-spacing: 0.1em;
-  }
-  dd {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.2;
-    font-weight: 700;
-    color: var(--ink-950);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .dest dd {
-    font-size: 13px;
-  }
-  .dest dd::before {
-    content: '→ ';
-    color: var(--orange-500);
+    50% { opacity: 0.25; }
   }
   .codes {
     margin-top: auto;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    gap: 12px;
   }
   .barcode {
-    width: 120px;
-    height: 28px;
+    width: 150px;
+    height: 34px;
   }
   .qr {
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
     display: block;
   }
   .qr svg {
@@ -672,24 +562,31 @@ const cells: [number, number][] = [];
     height: 100%;
     display: block;
   }
-  .legal {
+  .foot {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
     font-size: 8px;
-    color: var(--ink-800);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.22em;
+    color: rgba(255, 255, 255, 0.78);
   }
-  .stripe {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 6px;
-    background: var(--orange-500);
+  .foot i {
+    font-style: normal;
+    color: var(--orange-500);
+  }
+  .legal {
+    margin-left: auto;
+    font-size: 6.5px;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: right;
+    max-width: 55%;
   }
 
   /* ───────── Desktop: horizontal 880×320 ───────── */
   @media (min-width: 1024px) {
     .ticket {
-      --body-w: 600px;
+      --body-w: 566px;
       width: 880px;
       height: 320px;
       flex-direction: row;
@@ -700,138 +597,112 @@ const cells: [number, number][] = [];
       width: var(--body-w);
       height: 100%;
     }
-    .etch {
-      background: repeating-radial-gradient(
-        ellipse 760px 520px at 86% 118%,
-        rgba(255, 255, 255, 0) 0 8px,
-        rgba(255, 255, 255, 0.85) 8px 9px,
-        rgba(6, 15, 34, 0.35) 9px 10px,
-        rgba(255, 255, 255, 0) 10px 14px
-      );
-      mask-image: radial-gradient(60% 95% at 86% 118%, #000 25%, rgba(0, 0, 0, 0.35) 65%, transparent 92%);
+    .scene {
+      object-position: 70% 40%;
+    }
+    .shade {
+      background:
+        linear-gradient(90deg, rgba(11, 14, 22, 0.97) 0%, rgba(11, 14, 22, 0.84) 30%, rgba(11, 14, 22, 0.22) 58%, rgba(11, 14, 22, 0.06) 100%),
+        linear-gradient(180deg, rgba(11, 14, 22, 0.66) 0%, rgba(11, 14, 22, 0) 30%, rgba(11, 14, 22, 0) 64%, rgba(11, 14, 22, 0.7) 100%);
+    }
+    .corner {
+      top: 20px;
+    }
+    .corner-tl {
+      left: 26px;
+    }
+    .corner-tr {
+      right: 26px;
+    }
+    .title {
+      left: 26px;
+      top: 86px;
+    }
+    .t1 {
+      font-size: 24px;
+      letter-spacing: 0.24em;
+    }
+    .t2 {
+      font-size: 44px;
+    }
+    .tagline {
+      top: 166px;
+      font-size: 10px;
+    }
+    .credit {
+      bottom: 96px;
+      left: 26px;
+    }
+    .strip {
+      height: 84px;
+    }
+    .strip-text {
+      left: 26px;
+      font-size: 9px;
+    }
+    .seal {
+      right: 30px;
+      bottom: 38px;
+      width: 96px;
+      height: 96px;
+    }
+    .mark {
+      height: 19px;
     }
     .perf {
       left: var(--body-w);
       right: auto;
-      top: 20px;
-      bottom: 20px;
-      height: auto;
+      top: 22px;
+      bottom: 22px;
       border-top: 0;
-      border-left: 2px dashed var(--ink-400);
-    }
-    .word {
-      flex-direction: column;
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-      top: 24px;
-      height: 272px;
-      left: 26px;
-      font-size: 30px;
-      justify-content: flex-start;
-      gap: 8px;
-    }
-    .word span {
-      display: block;
-    }
-    .motif {
-      left: 128px;
-      top: 54px;
-      width: 300px;
-    }
-    .seal {
-      right: 44px;
-      top: 50%;
-      width: 116px;
-      height: 116px;
-      transform: translateY(-50%);
-    }
-    .mark {
-      height: 24px;
-    }
-    .orbit {
-      right: 10px;
-      top: 50%;
-      width: 196px;
-      height: 76px;
-      transform: translateY(-46%) rotate(-20deg);
-    }
-    .info {
-      left: 130px;
-      bottom: 92px;
-    }
-    .trajectory {
-      left: 130px;
-      right: 0;
-      bottom: 68px;
-    }
-    .slogan {
-      left: 130px;
-      bottom: 36px;
+      border-left: 2px dashed rgba(214, 222, 236, 0.45);
     }
     .stub {
-      padding: 16px 22px 14px;
-      gap: 5px;
-      clip-path: polygon(
-        0 0,
-        calc(100% - var(--chamfer)) 0,
-        100% var(--chamfer),
-        100% calc(100% - var(--chamfer)),
-        calc(100% - var(--chamfer)) 100%,
-        0 100%
-      );
+      padding: 18px 22px 16px;
+      gap: 10px;
     }
-    .no {
-      font-size: 36px;
-      padding-bottom: 5px;
-    }
-    .grid {
-      grid-template-columns: 1fr 1fr;
+    .admit {
+      font-size: 14px;
     }
     .grid > div {
-      padding: 3px 8px 4px;
-    }
-    .grid > div:not(.full):not(:nth-child(5)) {
-      border-right: 0;
-    }
-    .grid > div:nth-child(2),
-    .grid > div:nth-child(4) {
-      border-right: 1px solid var(--ink-200);
+      padding: 7px 10px 8px;
     }
     dd {
-      font-size: 13px;
+      font-size: 14px;
+      letter-spacing: 0.02em;
     }
     .dest dd {
       font-size: 12px;
+      padding-right: 26px;
     }
-    .qr {
-      width: 46px;
-      height: 46px;
+    .grid > div {
+      padding: 6px 9px 7px;
     }
     .barcode {
-      width: 108px;
-      height: 26px;
+      width: 150px;
+      height: 32px;
     }
-    .stripe {
-      left: auto;
-      top: 0;
-      bottom: 0;
-      width: 6px;
-      height: auto;
+    .legal {
+      font-size: 6px;
+      max-width: 52%;
+    }
+    .qr {
+      width: 50px;
+      height: 50px;
     }
   }
 
   /* Capas fantasma: solo forma y material, sin texto duplicado */
-  .ghost .word,
-  .ghost .motif,
+  .ghost .corner,
+  .ghost .title,
+  .ghost .tagline,
+  .ghost .credit,
+  .ghost .strip-text,
   .ghost .mark,
-  .ghost .orbit,
-  .ghost .info,
-  .ghost .slogan,
   .ghost .stub-head,
-  .ghost .no,
   .ghost .grid,
   .ghost .codes,
-  .ghost .legal {
+  .ghost .foot {
     visibility: hidden;
   }
 
@@ -840,7 +711,7 @@ const cells: [number, number][] = [];
     .holo {
       animation: none;
     }
-    .foil {
+    .sheen {
       transition: none;
     }
   }
