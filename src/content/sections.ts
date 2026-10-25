@@ -15,7 +15,7 @@ export const sections = {
     soonPill: 'PRÓXIMAMENTE',
     livePill: 'ONLINE',
     notify: 'Avisame cuando salga la agenda →',
-    placeholderRows: 4,
+    placeholderRows: 3,
   },
   jury: {
     title: 'Jurado.',
@@ -24,7 +24,7 @@ export const sections = {
     liveText: 'El jurado pone el 50% del puntaje.',
     apply: '¿Querés ser jurado? Escribinos →',
     placeholderCards: 4,
-    placeholderName: '———',
+    placeholderName: '',
     placeholderRole: 'Jurado · por confirmar',
   },
   sponsor: {

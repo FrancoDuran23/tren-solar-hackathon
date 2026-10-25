@@ -25,7 +25,7 @@
   --ink-950: #0e0f12;
   --ink-800: #1c1f26;
   --ink-600: #3a3f4a;
-  --ink-400: #8b919c;
+  --ink-400: #a6acb8;
   --ink-200: #c9cdd3;
   --ink-100: #e4e1da;
 
@@ -34,7 +34,7 @@
   --surface: var(--navy-900);
   --surface-2: var(--navy-800);
   --text: var(--white);
-  --text-muted: rgba(255, 255, 255, 0.64);
+  --text-muted: rgba(255, 255, 255, 0.74);
   --accent: var(--orange-500);
   --success: #3ddc97;
   --error: #ff4d4d;

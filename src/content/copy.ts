@@ -130,7 +130,7 @@ export const copy = {
   },
   slots: {
     h2: 'Vas a buildear con los mejores de Argentina.',
-    text: 'En la Solar Train Hackathon vas a compartir vagón con 35 equipos invitados de todo el país. Setenta personas buildeando en el mismo tren.',
+    text: 'En la Solar Train Hackathon compartís vagón con 35 equipos invitados de todo el país: vos y 34 jujeños más, codo a codo con ellos, construyendo mientras la Quebrada pasa por la ventana.',
     a: {
       n: '35',
       label: 'JUJEÑOS',
