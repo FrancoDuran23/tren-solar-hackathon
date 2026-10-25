@@ -152,6 +152,13 @@ export const copy = {
     entregaNeedLogin: 'Entrá con Google para despachar tu proyecto.',
     entregaNeedProfile: 'Completá tu perfil al 100% para poder entregar.',
   },
+  entrega: {
+    lead: 'Repo, demo y video. Una entrega por equipo.',
+    window: `Podés actualizar tu proyecto hasta el ${dates.buildEndLabel}. Después de esa hora la entrega queda cerrada y no se puede modificar.`,
+    locked: `La entrega cerró el ${dates.buildEndLabel}. Lo que enviaste es final y ya no se puede modificar.`,
+    submit: 'Enviar o actualizar →',
+    updated: `Listo. Podés volver a actualizarlo hasta el ${dates.buildEndLabel}. Después queda final.`,
+  },
   profile: {
     h2: 'Tu perfil.',
     lead: 'Para ver si estás en el top 35 y para despachar el proyecto, el perfil tiene que llegar al 100%.',

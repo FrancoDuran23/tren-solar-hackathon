@@ -1,23 +1,25 @@
 ---
 import { copy } from '../content/copy';
 import { dates } from '../content/dates';
-import { config } from '../config';
 import { TRACTION_TYPES } from '../lib/entrega';
+import { entregaEditsOpen } from '../lib/entrega-window';
 
-const closed = config.submissions === 'closed';
-const { auth } = copy;
+const editsOpen = entregaEditsOpen();
+const { auth, entrega } = copy;
 ---
 
-<section class="ent" id="entrega" aria-labelledby="ent-title" data-closed={closed ? 'true' : 'false'}>
+<section
+  class="ent"
+  id="entrega"
+  aria-labelledby="ent-title"
+  data-deadline={dates.buildEndIso}
+  data-locked={editsOpen ? 'false' : 'true'}
+>
   <div class="wrap">
     <h2 id="ent-title">Entregá tu proyecto.</h2>
-    <p class="lead">Repo, demo y video. Una entrega por equipo; si te equivocás, reenviá y gana la última.</p>
-
-    {closed && (
-      <p class="banner mono" role="status">
-        Mostrador cerrado. La entrega es del {dates.build}. Los ganadores se anuncian el {dates.winners}.
-      </p>
-    )}
+    <p class="lead">{entrega.lead}</p>
+    <p class="window" id="entrega-window">{entrega.window}</p>
+    <p class="banner mono" id="entrega-locked" role="status" hidden={editsOpen}>{entrega.locked}</p>
 
     <p class="banner mono" id="entrega-auth">
       <span id="entrega-auth-text">{auth.entregaNeedLogin}</span>
@@ -128,7 +130,7 @@ const { auth } = copy;
           </p>
 
           <button type="submit" class="btn mono" id="submit">
-            <span class="lbl">Despachar proyecto →</span>
+            <span class="lbl">{entrega.submit}</span>
             <span class="spin" aria-hidden="true">[ // ]</span>
           </button>
         </fieldset>
@@ -157,7 +159,7 @@ const { auth } = copy;
         <p id="r-at"></p>
         <svg class="bars" viewBox="0 0 120 24" aria-hidden="true"><path d="M2 0h2v24H2zM7 0h1v24H7zM11 0h3v24h-3zM17 0h1v24h-1zM21 0h2v24h-2zM26 0h4v24h-4zM33 0h1v24h-1zM37 0h2v24h-2zM42 0h1v24h-1zM46 0h3v24h-3zM52 0h1v24h-1zM56 0h2v24h-2zM61 0h4v24h-4zM68 0h1v24h-1zM72 0h2v24h-2zM77 0h1v24h-1zM81 0h3v24h-3zM87 0h2v24h-2zM92 0h1v24h-1zM96 0h4v24h-4zM103 0h2v24h-2zM108 0h1v24h-1zM112 0h3v24h-3z" fill="currentColor"/></svg>
       </div>
-      <p class="ok-msg">Listo, tu proyecto está a bordo. Guardá tu Hacker ID.</p>
+      <p class="ok-msg">{entrega.updated} Guardá tu Hacker ID.</p>
       <button type="button" class="btn mono" id="download">Descargar comprobante</button>
     </div>
   </div>
@@ -171,7 +173,8 @@ const { auth } = copy;
 
   const root = document.getElementById('entrega')!;
   const form = document.getElementById('entrega-form') as HTMLFormElement;
-  const closed = root.dataset.closed === 'true';
+  const deadlineMs = Date.parse(root.dataset.deadline ?? '');
+  const editsOpen = () => Number.isFinite(deadlineMs) && Date.now() <= deadlineMs;
   const $ = (id: string) => document.getElementById(id)!;
   const fieldEl = (f: EntregaField) => form.querySelector<HTMLElement>(`[data-f="${f}"]`)!;
   const ctl = (f: EntregaField) => form.elements.namedItem(f) as HTMLInputElement;
@@ -224,6 +227,7 @@ const { auth } = copy;
   const authText = $('entrega-auth-text');
   const authLink = $('entrega-auth-link') as HTMLAnchorElement;
   const signInBtn = $('entrega-signin') as HTMLButtonElement;
+  const lockedBanner = $('entrega-locked');
   const defaultToast = toast.textContent ?? '';
   let sending = false;
   let last: { id: string; name: string; at: string } | null = null;
@@ -233,6 +237,15 @@ const { auth } = copy;
 
   function applyGate(me: MeResponse) {
     const email = ctl('email');
+    if (!editsOpen()) {
+      gate = 'blocked';
+      gateMessage = copy.entrega.locked;
+      fieldset.disabled = true;
+      authBanner.hidden = true;
+      lockedBanner.hidden = false;
+      return;
+    }
+    lockedBanner.hidden = true;
     const block = (message: string, opts: { signIn?: boolean; profile?: boolean } = {}) => {
       gate = 'blocked';
       gateMessage = message;
@@ -261,13 +274,6 @@ const { auth } = copy;
       if (ctl('localidad').value.trim() === '') ctl('localidad').value = me.profile.localidad;
       entregaPrefilled = true;
       livePreview();
-    }
-    if (closed) {
-      gate = 'blocked';
-      gateMessage = 'Las entregas están cerradas.';
-      fieldset.disabled = true;
-      authBanner.hidden = true;
-      return;
     }
     if (me.profile?.completeness === 100) {
       gate = 'open';
@@ -300,7 +306,7 @@ const { auth } = copy;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (closed || sending) return;
+    if (!editsOpen() || sending) return;
     if (gate === 'unknown') {
       applyGate(await loadMe());
     }
@@ -350,7 +356,7 @@ const { auth } = copy;
       toast.hidden = false;
     } finally {
       sending = false;
-      submit.disabled = closed;
+      submit.disabled = !editsOpen();
       form.classList.remove('sending');
     }
   });
@@ -371,7 +377,9 @@ const { auth } = copy;
   .ent { background: var(--cosmos-950); padding: var(--sp-16) 0; border-top: 1px solid var(--edge); }
   .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
   h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
-  .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 60ch; margin: 0 0 var(--sp-8); }
+  .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 62ch; margin: 0; }
+  .window { color: var(--white); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 62ch; margin: var(--sp-4) 0 var(--sp-8); }
+  #entrega-locked[hidden] { display: none; }
   .mono { font-family: var(--font-mono); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .banner { display: inline-block; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-sm); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-small); margin: 0 0 var(--sp-6); }

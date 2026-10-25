@@ -66,7 +66,7 @@ export const sections = {
       },
       {
         q: '¿Cuándo cierra?',
-        a: `La entrega es del ${dates.build}. Los workshops corren ${dates.workshops}. Los ganadores se anuncian el ${dates.winners}.`,
+        a: `La entrega es del ${dates.build}. Podés actualizar lo que enviaste hasta el ${dates.buildEndLabel}. Después de esa hora queda cerrada y no se puede modificar. Los workshops corren ${dates.workshops}. Los ganadores se anuncian el ${dates.winners}.`,
       },
       {
         q: '¿Puedo ver el ranking?',
