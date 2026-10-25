@@ -4,13 +4,13 @@
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Form completo + privacidad breve (E1–E3, F3)
-- [ ] Validaciones design.md §3.10 (E4)
-- [ ] Éxito con comprobante / error sin perder datos (E5, E6)
-- [ ] Form disabled si submissions closed (E7)
-- [ ] `/api/entrega` stub 501 + honeypot (E8, E10)
-- [ ] Documentar env en README
-- [ ] Smoke Playwright form en `.scratch/mvp/playwright/06/`
-- [ ] Commit: `feat(entrega): form + api stub (T06)`
+- [x] Form completo + privacidad breve (E1–E3, F3)
+- [x] Validaciones design.md §3.10 (E4)
+- [x] Éxito con comprobante / error sin perder datos (E5, E6)
+- [x] Form disabled si submissions closed (E7)
+- [x] `/api/entrega` stub 501 + honeypot (E8, E10)
+- [x] Documentar env en README
+- [x] Smoke Playwright form en `.scratch/mvp/playwright/06/`
+- [x] Commit: `feat(entrega): form + api stub (T06)`

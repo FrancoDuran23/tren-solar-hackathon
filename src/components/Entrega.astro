@@ -1,0 +1,339 @@
+---
+import { config } from '../config';
+import { TRACTION_TYPES } from '../lib/entrega';
+
+const closed = config.submissions === 'closed';
+---
+
+<section class="ent" id="entrega" aria-labelledby="ent-title" data-closed={closed ? 'true' : 'false'}>
+  <div class="wrap">
+    <h2 id="ent-title">Entregá tu proyecto.</h2>
+    <p class="lead">Repo, demo y video. Una entrega por equipo; si te equivocás, reenviá y gana la última.</p>
+
+    {closed && (
+      <p class="banner mono" role="status">Las entregas abren pronto. Mientras tanto, el mostrador está cerrado.</p>
+    )}
+
+    <div class="card">
+      <form id="entrega-form" novalidate>
+        <fieldset disabled={closed}>
+          <legend class="sr">Datos de la entrega</legend>
+
+          <div class="field" data-f="proyecto">
+            <label for="f-proyecto" class="mono">Nombre del proyecto</label>
+            <input id="f-proyecto" name="proyecto" type="text" required maxlength="60" autocomplete="off" aria-describedby="e-proyecto" />
+            <p class="err" id="e-proyecto" role="alert"></p>
+          </div>
+
+          <div class="field" data-f="responsable">
+            <label for="f-responsable" class="mono">Equipo / responsable</label>
+            <input id="f-responsable" name="responsable" type="text" required maxlength="80" autocomplete="name" aria-describedby="h-responsable e-responsable" />
+            <p class="help" id="h-responsable">Nombre y apellido de quien entrega.</p>
+            <p class="err" id="e-responsable" role="alert"></p>
+          </div>
+
+          <div class="field" data-f="email">
+            <label for="f-email" class="mono">Email de contacto</label>
+            <input id="f-email" name="email" type="email" required maxlength="120" autocomplete="email" aria-describedby="h-email e-email" />
+            <p class="help" id="h-email">El mismo que usaste en Luma.</p>
+            <p class="err" id="e-email" role="alert"></p>
+          </div>
+
+          <div class="field check" data-f="jujuy">
+            <label class="chk">
+              <input id="f-jujuy" name="jujuy" type="checkbox" required aria-describedby="h-jujuy e-jujuy" />
+              <span>Vivo o resido en Jujuy</span>
+            </label>
+            <p class="help" id="h-jujuy">Es condición para competir por los 35 tickets.</p>
+            <p class="err" id="e-jujuy" role="alert"></p>
+          </div>
+
+          <div class="field" data-f="localidad">
+            <label for="f-localidad" class="mono">Localidad</label>
+            <input id="f-localidad" name="localidad" type="text" maxlength="80" autocomplete="address-level2" aria-describedby="e-localidad" />
+            <p class="err" id="e-localidad" role="alert"></p>
+          </div>
+
+          <div class="field" data-f="repo">
+            <label for="f-repo" class="mono">URL del repo</label>
+            <input id="f-repo" name="repo" type="url" required maxlength="300" placeholder="https://github.com/…" aria-describedby="h-repo e-repo" />
+            <p class="help" id="h-repo">Público, o con acceso para el jurado.</p>
+            <p class="err" id="e-repo" role="alert"></p>
+          </div>
+
+          <div class="field" data-f="demo">
+            <label for="f-demo" class="mono">URL de la demo</label>
+            <input id="f-demo" name="demo" type="url" required maxlength="300" placeholder="https://…" aria-describedby="h-demo e-demo" />
+            <p class="help" id="h-demo">Deploy navegable. Si es app móvil, link a TestFlight/APK.</p>
+            <p class="err" id="e-demo" role="alert"></p>
+          </div>
+
+          <div class="field" data-f="video">
+            <label for="f-video" class="mono">URL del video</label>
+            <input id="f-video" name="video" type="url" required maxlength="300" placeholder="https://youtu.be/…" aria-describedby="h-video e-video" />
+            <p class="help" id="h-video">Máx. 3 minutos. Mostrá el producto funcionando.</p>
+            <p class="err" id="e-video" role="alert"></p>
+          </div>
+
+          <div class="trac">
+            <p class="mono trac-t">Tracción <span class="opt">(opcional)</span></p>
+            <div class="trac-grid">
+              <div class="field" data-f="tractionTipo">
+                <label for="f-tractionTipo" class="mono">Tipo</label>
+                <select id="f-tractionTipo" name="tractionTipo" aria-describedby="e-tractionTipo">
+                  <option value="">— sin tracción —</option>
+                  {TRACTION_TYPES.map((t) => <option value={t.value}>{t.label}</option>)}
+                </select>
+                <p class="err" id="e-tractionTipo" role="alert"></p>
+              </div>
+              <div class="field" data-f="tractionNumero">
+                <label for="f-tractionNumero" class="mono">Número</label>
+                <input id="f-tractionNumero" name="tractionNumero" type="number" min="0" step="any" inputmode="decimal" aria-describedby="e-tractionNumero" />
+                <p class="err" id="e-tractionNumero" role="alert"></p>
+              </div>
+            </div>
+            <div class="field" data-f="tractionEvidencia">
+              <label for="f-tractionEvidencia" class="mono">Evidencia (URL)</label>
+              <input id="f-tractionEvidencia" name="tractionEvidencia" type="url" maxlength="300" placeholder="https://…" aria-describedby="h-tractionEvidencia e-tractionEvidencia" />
+              <p class="help" id="h-tractionEvidencia">Link que respalde el número. Requerido si elegiste un tipo.</p>
+              <p class="err" id="e-tractionEvidencia" role="alert"></p>
+            </div>
+          </div>
+
+          <div class="field" data-f="descripcion">
+            <label for="f-descripcion" class="mono">Descripción corta <span class="opt">(opcional)</span></label>
+            <textarea id="f-descripcion" name="descripcion" rows="3" maxlength="280" aria-describedby="h-descripcion e-descripcion"></textarea>
+            <p class="help" id="h-descripcion">Qué problema resuelve y para quién. <span id="count" class="mono">0/280</span></p>
+            <p class="err" id="e-descripcion" role="alert"></p>
+          </div>
+
+          <div class="hp" aria-hidden="true">
+            <label>No completar <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <p class="privacy">
+            <strong>Privacidad:</strong> te pedimos solo estos datos. Los usamos para evaluar tu entrega y contactarte;
+            los ven la organización de jujuy.dev y el jurado. Sin tracking de terceros.
+          </p>
+
+          <button type="submit" class="btn mono" id="submit">
+            <span class="lbl">Despachar proyecto →</span>
+            <span class="spin" aria-hidden="true">[ // ]</span>
+          </button>
+        </fieldset>
+      </form>
+
+      <aside class="stub mono" aria-live="polite" aria-label="Comprobante">
+        <p class="stub-h">COMPROBANTE</p>
+        <dl>
+          <dt>PROYECTO</dt><dd id="s-proyecto">———</dd>
+          <dt>RESPONSABLE</dt><dd id="s-responsable">———</dd>
+          <dt>LOCALIDAD</dt><dd id="s-localidad">———</dd>
+        </dl>
+        <p class="stub-id" id="s-id">JDV-2026-····</p>
+      </aside>
+    </div>
+
+    <div class="toast mono" id="toast" role="alert" hidden>
+      No pudimos despachar tu proyecto. Probá de nuevo en un minuto.
+    </div>
+
+    <div class="receipt" id="receipt" hidden>
+      <div class="paper mono">
+        <p class="paper-h">PROYECTO A BORDO</p>
+        <p class="paper-id" id="r-id"></p>
+        <p id="r-name"></p>
+        <p id="r-at"></p>
+        <svg class="bars" viewBox="0 0 120 24" aria-hidden="true"><path d="M2 0h2v24H2zM7 0h1v24H7zM11 0h3v24h-3zM17 0h1v24h-1zM21 0h2v24h-2zM26 0h4v24h-4zM33 0h1v24h-1zM37 0h2v24h-2zM42 0h1v24h-1zM46 0h3v24h-3zM52 0h1v24h-1zM56 0h2v24h-2zM61 0h4v24h-4zM68 0h1v24h-1zM72 0h2v24h-2zM77 0h1v24h-1zM81 0h3v24h-3zM87 0h2v24h-2zM92 0h1v24h-1zM96 0h4v24h-4zM103 0h2v24h-2zM108 0h1v24h-1zM112 0h3v24h-3z" fill="currentColor"/></svg>
+      </div>
+      <p class="ok-msg">Listo, tu proyecto está a bordo. Guardá tu Hacker ID.</p>
+      <button type="button" class="btn mono" id="download">Descargar comprobante</button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { FIELDS, validateField, validateEntrega, type EntregaField, type EntregaInput } from '../lib/entrega';
+
+  const root = document.getElementById('entrega')!;
+  const form = document.getElementById('entrega-form') as HTMLFormElement;
+  const closed = root.dataset.closed === 'true';
+  const $ = (id: string) => document.getElementById(id)!;
+  const fieldEl = (f: EntregaField) => form.querySelector<HTMLElement>(`[data-f="${f}"]`)!;
+  const ctl = (f: EntregaField) => form.elements.namedItem(f) as HTMLInputElement;
+
+  function read(): EntregaInput {
+    const o: Record<string, string | boolean> = {};
+    for (const f of FIELDS) o[f] = f === 'jujuy' ? ctl(f).checked : ctl(f).value.trim();
+    return o as unknown as EntregaInput;
+  }
+
+  function show(f: EntregaField, err: string | null, touched = true) {
+    const el = fieldEl(f);
+    const c = ctl(f);
+    $(`e-${f}`).textContent = err ?? '';
+    el.classList.toggle('bad', !!err);
+    const filled = f === 'jujuy' ? c.checked : c.value.trim() !== '';
+    el.classList.toggle('ok', !err && touched && filled);
+    c.setAttribute('aria-invalid', err ? 'true' : 'false');
+  }
+
+  function checkField(f: EntregaField) {
+    show(f, validateField(f, read()));
+    // dependientes
+    if (f === 'jujuy') show('localidad', touchedSet.has('localidad') ? validateField('localidad', read()) : null, touchedSet.has('localidad'));
+    if (f === 'tractionTipo' && touchedSet.has('tractionEvidencia')) show('tractionEvidencia', validateField('tractionEvidencia', read()));
+  }
+
+  const touchedSet = new Set<EntregaField>();
+  for (const f of FIELDS) {
+    const c = ctl(f);
+    const ev = f === 'jujuy' || f === 'tractionTipo' ? 'change' : 'blur';
+    c.addEventListener(ev, () => { touchedSet.add(f); checkField(f); });
+    if (ev === 'blur') c.addEventListener('input', () => { if (touchedSet.has(f)) checkField(f); });
+    c.addEventListener('input', livePreview);
+    c.addEventListener('change', livePreview);
+  }
+
+  function livePreview() {
+    const d = read();
+    $('s-proyecto').textContent = d.proyecto || '———';
+    $('s-responsable').textContent = d.responsable || '———';
+    $('s-localidad').textContent = d.localidad || '———';
+    $('count').textContent = `${ctl('descripcion').value.length}/280`;
+  }
+
+  const submit = $('submit') as HTMLButtonElement;
+  const toast = $('toast');
+  let sending = false;
+  let last: { id: string; name: string; at: string } | null = null;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (closed || sending) return;
+    toast.hidden = true;
+    const d = read();
+    const errors = validateEntrega(d);
+    for (const f of FIELDS) { touchedSet.add(f); show(f, errors[f] ?? null); }
+    const first = FIELDS.find((f) => errors[f]);
+    if (first) { ctl(first).focus(); return; }
+
+    sending = true;
+    submit.disabled = true;
+    form.classList.add('sending');
+    try {
+      const res = await fetch('/api/entrega', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ ...d, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 422 && body.errors) {
+        for (const f of FIELDS) show(f, body.errors[f] ?? null);
+      } else if (res.ok && body.ok) {
+        last = { id: body.hackerId, name: d.proyecto, at: body.at };
+        $('s-id').textContent = body.hackerId;
+        $('r-id').textContent = body.hackerId;
+        $('r-name').textContent = d.proyecto;
+        $('r-at').textContent = new Date(body.at).toLocaleString('es-AR');
+        root.classList.add('done');
+        $('receipt').hidden = false;
+        $('receipt').focus?.();
+        $('receipt').scrollIntoView({ block: 'center' });
+        form.hidden = true;
+        return;
+      } else {
+        toast.hidden = false; // datos intactos en el form
+      }
+    } catch {
+      toast.hidden = false;
+    } finally {
+      sending = false;
+      submit.disabled = closed;
+      form.classList.remove('sending');
+    }
+  });
+
+  $('download').addEventListener('click', () => {
+    if (!last) return;
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const html = `<!doctype html><meta charset="utf-8"><title>Comprobante ${esc(last.id)}</title><body style="font-family:monospace;background:#f2f0ea;color:#0e0f12;max-width:420px;margin:40px auto;padding:24px;border:2px dashed #0e0f12"><h1>PROYECTO A BORDO</h1><h2>${esc(last.id)}</h2><p>${esc(last.name)}</p><p>${esc(new Date(last.at).toLocaleString('es-AR'))}</p><p>jujuy.dev · Pre-Hackatón</p></body>`;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = `comprobante-${last.id}.html`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+</script>
+
+<style>
+  .ent { background: var(--navy-950); padding: var(--sp-16) 0; border-top: var(--border); }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
+  .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 60ch; margin: 0 0 var(--sp-8); }
+  .mono { font-family: var(--font-mono); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .banner { display: inline-block; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-sm); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-small); margin: 0 0 var(--sp-6); }
+  .card { display: grid; grid-template-columns: 1fr 260px; gap: var(--sp-6); background: var(--navy-800); border: var(--border); border-radius: var(--r-md); padding: var(--sp-8); }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: var(--sp-4); min-width: 0; }
+  fieldset:disabled { opacity: 0.5; }
+  .field { position: relative; display: grid; gap: 6px; }
+  label.mono { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .opt { text-transform: none; opacity: 0.7; }
+  input[type='text'], input[type='email'], input[type='url'], input[type='number'], select, textarea {
+    width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 var(--sp-4);
+    background: var(--navy-950); color: var(--white); border: var(--border); border-radius: var(--r-sm);
+    font: inherit;
+  }
+  textarea { padding-block: var(--sp-3); resize: vertical; }
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.35); }
+  .field.bad input:not([type='checkbox']), .field.bad select, .field.bad textarea { border-color: var(--error); }
+  .field.ok input:not([type='checkbox']), .field.ok select, .field.ok textarea { border-color: var(--success); }
+  .field.ok:not(.check)::after { content: '✓'; position: absolute; right: 14px; bottom: 12px; color: var(--success); pointer-events: none; }
+  .field.ok:has(.help):not(.check)::after { bottom: calc(1.5em + 18px); }
+  .field.ok:has(textarea)::after, .field.ok:has(select)::after { display: none; }
+  .help { margin: 0; color: var(--text-muted); font-size: var(--fs-small); }
+  .err { margin: 0; color: var(--error); font-size: var(--fs-small); }
+  .err:not(:empty)::before { content: '⚠ '; }
+  .chk { display: flex; gap: var(--sp-3); align-items: center; font-weight: 600; cursor: pointer; }
+  .chk input { width: 22px; height: 22px; accent-color: var(--orange-500); }
+  .trac { display: grid; gap: var(--sp-3); padding: var(--sp-4); border: 1px dashed rgba(255,255,255,0.28); border-radius: var(--r-sm); }
+  .trac-t { margin: 0; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .trac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .privacy { margin: 0; color: var(--text-muted); font-size: var(--fs-small); line-height: var(--lh-small); }
+  .btn {
+    justify-self: start; min-height: 48px; padding: 0 var(--sp-6); border: 0; border-radius: var(--r-sm);
+    background: var(--orange-500); color: var(--navy-950); font-weight: 700; font-size: var(--fs-small); cursor: pointer;
+  }
+  .btn:hover:not(:disabled) { background: var(--orange-400); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+  .spin { display: none; }
+  .sending .lbl { display: none; }
+  .sending .spin { display: inline; animation: blink 0.9s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0.3; } }
+  .stub { background: var(--paper); color: var(--ink-950); border-radius: var(--r-sm); padding: var(--sp-4); align-self: start; font-size: 12px; }
+  .stub-h { margin: 0 0 var(--sp-3); font-weight: 700; letter-spacing: 0.12em; border-bottom: 1px dashed var(--ink-400); padding-bottom: var(--sp-2); }
+  .stub dl { margin: 0; display: grid; gap: 2px; }
+  .stub dt { color: var(--ink-400); font-size: 10px; letter-spacing: 0.08em; margin-top: var(--sp-2); }
+  .stub dd { margin: 0; overflow-wrap: anywhere; }
+  .stub-id { margin: var(--sp-4) 0 0; font-weight: 700; }
+  .toast { margin-top: var(--sp-4); border: 1px solid var(--orange-500); color: var(--orange-300); background: transparent; border-radius: var(--r-sm); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-small); }
+  .receipt { margin-top: var(--sp-6); display: grid; gap: var(--sp-4); justify-items: start; }
+  .receipt[hidden], .toast[hidden], form[hidden] { display: none; }
+  .paper { background: var(--paper); color: var(--ink-950); border-radius: var(--r-sm); padding: var(--sp-6); display: grid; gap: var(--sp-2); min-width: min(100%, 320px); }
+  .paper p { margin: 0; }
+  .paper-h { font-weight: 700; letter-spacing: 0.12em; }
+  .paper-id { font-size: 24px; font-weight: 700; }
+  .bars { width: 120px; height: 24px; margin-top: var(--sp-2); }
+  .ok-msg { margin: 0; color: var(--success); }
+  .done .card { display: none; }
+
+  @media (max-width: 767px) {
+    .card { grid-template-columns: 1fr; padding: var(--sp-4); }
+    .trac-grid { grid-template-columns: 1fr; }
+    .stub { order: -1; }
+  }
+</style>

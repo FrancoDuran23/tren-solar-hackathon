@@ -38,10 +38,12 @@ Ver `.env.example`.
 
 | Variable | Descripción |
 |---|---|
-| `ENTREGA_WEBHOOK_URL` | Destino exportable de `/api/entrega` (endpoint Formspree o webhook de Google Apps Script). Si falta, el endpoint responde `501`. |
+| `ENTREGA_WEBHOOK_URL` | Destino exportable de `/api/entrega` (endpoint Formspree o webhook de Google Apps Script). Si falta, el endpoint responde `501` y la UI muestra el error de servidor. Con valor, la route valida de nuevo, aplica honeypot (`website`) + rate-limit (5 envíos / 10 min por IP, en memoria) y hace `POST` JSON con los campos + `hackerId` + `submittedAt`. |
+
+`config.submissions = 'closed'` deshabilita el form y hace que la API responda `403`. Smoke: `.scratch/mvp/playwright/06/smoke.mjs`.
 
 En Vercel: Project → Settings → Environment Variables. Local: copiar `.env.example` a `.env`.
 
 ## Deploy (Vercel)
 
-Rama `main` ⇒ producción, PRs ⇒ preview. Framework preset: Astro; build `npm run build`; output `dist`. Configurar Node 22.x en Project Settings. El adapter `@astrojs/vercel` se agrega en T06 cuando exista la API route.
+Rama `main` ⇒ producción, PRs ⇒ preview. Framework preset: Astro; build `npm run build`; output `dist`. Configurar Node 22.x en Project Settings. El adapter `@astrojs/vercel` ya está configurado (T06) para la route `/api/entrega`.
