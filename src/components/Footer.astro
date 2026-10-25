@@ -3,7 +3,7 @@ import { copy } from '../content/copy';
 import { links } from '../content/links';
 import { resolveCta } from '../lib/cta';
 
-const { footer, nav } = copy;
+const { footer, nav, board } = copy;
 const { state, href: lumaHref } = resolveCta();
 const all: { label: string; href: string | null }[] = [
   { label: footer.links.luma, href: state === 'open' ? lumaHref : null },
@@ -11,28 +11,62 @@ const all: { label: string; href: string | null }[] = [
   { label: footer.links.social, href: links.social },
 ];
 const items = all.filter((i) => i.href);
+const anchors = nav.links;
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <div class="footer__shard" aria-hidden="true"></div>
-  <div class="footer__inner">
-    <img class="footer__logo" src="/brand/logo-jujuy-dev.svg" alt={nav.logoAlt} height="28" width="160" />
-    {
-      items.length > 0 && (
-        <nav aria-label={footer.linksLabel}>
-          <ul class="footer__links">
-            {items.map((i) => (
-              <li><a href={i.href!} rel="noopener">{i.label}</a></li>
-            ))}
-          </ul>
-        </nav>
-      )
-    }
-    <p class="footer__made">
-      {footer.madeIn} · <a href={links.site}>{footer.site}</a>
-    </p>
-    <p class="footer__mono">{footer.mono}</p>
+  <!-- Franja naranja del tren (poster) -->
+  <div class="band" aria-hidden="true">
+    <div class="band__track">
+      {[0, 1].map(() => (
+        <span class="band__row">
+          {footer.mono.split(' · ').map((t) => (
+            <span>{t}<i>◆</i></span>
+          ))}
+        </span>
+      ))}
+    </div>
   </div>
+
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <img src="/brand/jujuydev-logo-white.webp" alt={nav.logoAlt} width="443" height="120" loading="lazy" decoding="async" />
+      <p class="footer__made">{footer.madeIn}</p>
+      <a class="footer__site" href={links.site} rel="noopener">{footer.site} ↗</a>
+    </div>
+
+    <nav class="footer__nav" aria-label={nav.lockup}>
+      <p class="footer__label mono">RECORRIDO</p>
+      <ul>
+        {anchors.map((l, i) => (
+          <li><a href={l.href}><span class="mono">0{i + 1}</span>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="footer__board">
+      <p class="footer__label mono">{board.label.toUpperCase()}</p>
+      <dl class="board mono">
+        <div><dt>SALIDA</dt><dd>PRE-HACKATÓN</dd></div>
+        <div><dt>DESTINO</dt><dd>SOLAR TRAIN HACKATHON</dd></div>
+        <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
+        <div><dt>HORARIO</dt><dd><span class="blink">●</span> POR CONFIRMAR</dd></div>
+      </dl>
+      {items.length > 0 && (
+        <ul class="footer__links" aria-label={footer.linksLabel}>
+          {items.map((i) => (
+            <li><a href={i.href!} rel="noopener">{i.label} ↗</a></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+
+  <div class="footer__bottom">
+    <p class="mono">© {year} JUJUY.DEV · {footer.mono}</p>
+  </div>
+  <i class="footer__shard" aria-hidden="true"></i>
 </footer>
 
 <style>
@@ -40,42 +74,147 @@ const items = all.filter((i) => i.href);
     position: relative;
     overflow: hidden;
     background: var(--navy-950);
-    border-top: var(--border);
-    padding: var(--sp-12) 0;
+    color: var(--text);
+    isolation: isolate;
   }
-  .footer__shard {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 220px;
-    height: 220px;
+  .mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Franja naranja */
+  .band {
     background: var(--orange-500);
-    clip-path: polygon(0 40%, 0 100%, 60% 100%);
-    opacity: 0.9;
+    color: var(--navy-950);
+    overflow: hidden;
+    font: 700 12px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transform: skewY(-1.2deg);
+    transform-origin: left;
+    margin-top: 12px;
   }
+  .band__track {
+    display: flex;
+    width: max-content;
+    padding: 14px 0;
+    animation: run 48s linear infinite;
+  }
+  .band__row {
+    display: flex;
+    flex: none;
+  }
+  .band__row span {
+    white-space: nowrap;
+  }
+  .band__row i {
+    font-style: normal;
+    margin: 0 20px;
+    opacity: 0.7;
+  }
+  @keyframes run {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
   .footer__inner {
     position: relative;
+    z-index: 1;
     max-width: var(--container-max);
     margin: 0 auto;
-    padding: 0 var(--gutter) 0 calc(var(--gutter) + 40px);
-    display: flex;
-    flex-direction: column;
-    gap: var(--sp-4);
+    padding: var(--sp-16) var(--gutter) var(--sp-12);
+    display: grid;
+    gap: var(--sp-12);
   }
-  .footer__logo {
-    height: 28px;
+  .footer__brand img {
+    height: 30px;
     width: auto;
-    align-self: flex-start;
+    display: block;
   }
-  .footer__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--sp-6);
+  .footer__made {
+    margin: var(--sp-4) 0 var(--sp-1);
+    color: var(--text);
+  }
+  .footer__site {
+    color: var(--orange-400);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .footer__site:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .footer__label {
+    margin: 0 0 var(--sp-3);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--ink-400);
+  }
+  .footer__nav ul {
+    list-style: none;
     margin: 0;
     padding: 0;
-    list-style: none;
+    display: grid;
+    gap: var(--sp-2);
   }
-  .footer a {
+  .footer__nav a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .footer__nav a .mono {
+    font-size: 10px;
+    color: var(--orange-400);
+    letter-spacing: 0.08em;
+  }
+  .footer__nav a:hover {
+    color: var(--orange-300);
+  }
+  .board {
+    margin: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    background: var(--ink-950);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--r-xs);
+    padding: var(--sp-3) var(--sp-4);
+  }
+  .board div {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: var(--sp-3);
+  }
+  .board dt {
+    color: var(--ink-400);
+  }
+  .board dd {
+    margin: 0;
+    color: var(--white);
+    font-weight: 700;
+  }
+  .blink {
+    color: var(--orange-500);
+    animation: blink 1.6s ease-in-out infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.25;
+    }
+  }
+  .footer__links {
+    list-style: none;
+    margin: var(--sp-4) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-4);
+  }
+  .footer__links a {
     color: var(--orange-500);
     font-family: var(--font-mono);
     font-size: var(--fs-small);
@@ -84,41 +223,50 @@ const items = all.filter((i) => i.href);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
-  .footer a:hover {
-    text-decoration-thickness: 2px;
+  .footer__bottom {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: var(--sp-4) var(--gutter) var(--sp-6);
+    text-align: center;
   }
-  .footer__made {
-    margin: 0;
-    color: var(--text);
-  }
-  .footer__made a {
-    font-family: var(--font-text);
-    text-transform: none;
-    letter-spacing: 0;
-  }
-  .footer__mono {
-    margin: 0;
-    font-family: var(--font-mono);
+  .footer__bottom p {
+    margin: 0 auto;
+    max-width: var(--container-max);
     font-size: var(--fs-micro);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: var(--ink-400);
   }
+  .footer__shard {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    height: 200px;
+    background: var(--orange-500);
+    clip-path: polygon(0 45%, 0 100%, 55% 100%);
+    opacity: 0.95;
+    z-index: 0;
+  }
+
   @media (min-width: 768px) {
     .footer__inner {
-      padding-right: 32px;
+      grid-template-columns: 1.2fr 1fr 1.4fr;
+      padding-top: var(--sp-24);
     }
     .footer__shard {
-      width: 320px;
-      height: 320px;
+      width: 420px;
+      height: 300px;
     }
-    .footer__inner {
-      padding-left: calc(32px + 120px);
+    .footer__bottom p {
+      text-align: left;
+      padding-left: 0;
     }
   }
-  @media (min-width: 1024px) {
-    .footer__inner {
-      padding-right: 48px;
-      padding-left: calc(48px + 120px);
+  @media (prefers-reduced-motion: reduce) {
+    .band__track,
+    .blink {
+      animation: none;
     }
   }
 </style>

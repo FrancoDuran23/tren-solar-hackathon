@@ -30,7 +30,7 @@ Self-hosted vía paquetes `@fontsource` (subset latino, `font-display: swap`): U
 
 ## Logo (placeholder)
 
-`public/brand/logo-jujuy-dev.svg` es un **placeholder** (cuadrado naranja + texto). Reemplazar por el logo oficial de la comunidad manteniendo el nombre de archivo.
+Logos reales de la comunidad en `public/brand/`: `jujuydev-logo-white.webp` (sobre navy: nav, footer, cuerpo del ticket), `jujuydev-logo.webp` (sobre papel: stub del ticket, CTA final), `jujuydev-isotipo.png` (favicon, eyebrow, centro del QR). `solar-train-quebrada.jpg` y `solar-train-sky.jpg` son recortes del poster `guideline-solar-train-poster.jpg` (hero, textura del ticket, CTA final).
 
 ## Variables de entorno (form de entrega, T06)
 
@@ -61,9 +61,11 @@ Repo destino: `FrancoDuran23/tren-solar-hackathon`. Rama `main` ⇒ producción,
 - Sponsor: `grep -rniE "spacex" src public` debe dar vacío (solo cohete + "sponsor sorpresa").
 - Lighthouse (spec §6, mobile) **no se corrió** en T07; pendiente sobre el preview de Vercel.
 
-## Foil del ticket (vgpu, T08)
+## Foil del ticket (vgpu, T08/T09)
 
-El foil holográfico del ticket desktop usa WebGPU vía [`vgpu`](https://vgpu.sh) (`src/lib/vgpu/`, shader `foil.wgsl` cargado con `@vgpu/wgsl/loader-vite`). Sin WebGPU, en mobile/touch o con `prefers-reduced-motion: reduce` no se monta el canvas y queda el sheen CSS.
+El cuerpo del ticket hero se pinta con WebGPU vía [`vgpu`](https://vgpu.sh) (`src/lib/vgpu/foil.{ts,wgsl}`, shader cargado con `@vgpu/wgsl/loader-vite`): foto del poster en duotono navy→naranja + foil holográfico (perlado brand, difracción sobre contornos grabados, grano) que sigue al puntero y orbita solo en reposo. Se monta en cualquier dispositivo con WebGPU; con `prefers-reduced-motion: reduce` renderiza un único frame estático. Sin WebGPU, o si la GPU falla después de montar, queda el fallback CSS (duotono con `mix-blend-mode` + sheen).
+
+Verificación offscreen sin navegador: `vgpu/node` (Dawn) con `VK_ICD_FILENAMES` apuntando al ICD de SwiftShader de Chrome renderiza `foil.wgsl` a un target y permite leer los píxeles.
 
 ## OG image
 

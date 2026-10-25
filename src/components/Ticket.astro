@@ -2,12 +2,16 @@
 import { config, TICKETS_TOTAL } from '../config';
 
 interface Props {
-  /** Capa fantasma del stack: mismo markup, aria-hidden, sin número propio */
+  /** Capa fantasma del stack: mismo markup, aria-hidden, sin canvas WebGPU */
   ghost?: boolean;
 }
 const { ghost = false } = Astro.props;
 
 const isOpen = config.registration === 'open' && !!config.lumaUrl;
+const art = '/brand/solar-train-quebrada.jpg';
+const deadline = config.deadline
+  ? new Date(config.deadline.iso).toLocaleDateString('es-AR')
+  : 'POR CONFIRMAR';
 
 /* Barcode estilizado determinista (decorativo) */
 const bars: { x: number; w: number }[] = [];
@@ -46,48 +50,60 @@ const cells: [number, number][] = [];
 }
 ---
 
-<div class="ticket" aria-hidden={ghost ? 'true' : undefined}>
-  <div class="body">
-    <div class="frame"></div>
-    <div class="foil"></div>
-    {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
-    <p class="word" aria-hidden="true"><span>PRE-</span><span>HACKATÓN</span></p>
-    <div class="info">
-      <p class="mono">JUJUY.DEV · ROAD TO SOLAR TRAIN HACKATHON</p>
-      <p class="mono">CIERRE · {config.deadline ? new Date(config.deadline.iso).toLocaleDateString('es-AR') : 'POR CONFIRMAR'}</p>
-      <p class="mono">ONLINE · ARG</p>
+<div class:list={['ticket', { ghost }]} aria-hidden={ghost ? 'true' : undefined} data-ticket>
+  <div class="body" data-body>
+    <!-- Fallback sin WebGPU: foto del poster en duotono navy→naranja -->
+    <div class="art" aria-hidden="true">
+      <img src={art} alt="" width="1024" height="775" loading={ghost ? 'lazy' : 'eager'} decoding="async" />
+      <i class="tint hi"></i>
+      <i class="tint lo"></i>
     </div>
-    <div class="sun"></div>
-    <div class="trajectory"></div>
+    <div class="foil" aria-hidden="true"></div>
+    {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
+    <div class="grain" aria-hidden="true"></div>
+    <div class="frame" aria-hidden="true"></div>
+
+    <p class="word" aria-hidden="true"><span>PRE-</span><span>HACKATÓN</span></p>
+    <img class="mark" src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />
+    <div class="info">
+      <p class="mono">ROAD TO SOLAR TRAIN HACKATHON</p>
+      <p class="mono">CIERRE · {deadline}</p>
+      <p class="mono">ONLINE · JUJUY · ARG</p>
+    </div>
+    <div class="trajectory" aria-hidden="true"></div>
     <p class="slogan mono">IDEAS QUE VIAJAN <b>MÁS LEJOS</b></p>
-    <div class="shard"></div>
+    <i class="shard" aria-hidden="true"></i>
   </div>
-  <div class="perf"></div>
+
+  <div class="perf" aria-hidden="true"></div>
+
   <div class="stub">
     <div class="stub-head">
       <span class="admit mono">ADMIT ONE</span>
-      <svg class="stub-logo" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" fill="#0e0f12"/><text x="14" y="19" font-size="14" font-weight="700" text-anchor="middle" fill="#f2f0ea" font-family="JetBrains Mono, monospace">jd</text></svg>
+      <img class="stub-logo" src="/brand/jujuydev-logo.webp" alt="jujuy.dev" width="588" height="120" loading="lazy" decoding="async" />
     </div>
-    <p class="no">N° <span class="dots"><i>·</i><i>·</i></span>/{TICKETS_TOTAL}</p>
+    <p class="no">N° <span class="dots"><i>·</i><i>·</i></span><span class="of">/{TICKETS_TOTAL}</span></p>
     <dl class="grid mono">
       <div><dt>VAGÓN</dt><dd>01</dd></div>
       <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
       <div><dt>ASIENTO</dt><dd>··</dd></div>
       <div><dt>GATE</dt><dd>PRE</dd></div>
-      <div class="full"><dt>HACKER ID</dt><dd>——</dd></div>
+      <div class="full"><dt>HACKER ID</dt><dd>JDV-2026-····</dd></div>
     </dl>
     <div class="codes">
       <svg class="barcode" viewBox="0 0 120 28" aria-hidden="true">
         {bars.map((b) => <rect x={b.x} y="0" width={b.w} height="28" fill="#0e0f12" />)}
       </svg>
-      <svg class={`qr ${isOpen ? 'qr-live' : ''}`} viewBox={`0 0 ${N} ${N}`} aria-hidden="true" shape-rendering="crispEdges">
-        {cells.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#0e0f12" />)}
-        <rect x="8" y="8" width="5" height="5" fill="#f2f0ea" />
-        <rect x="9" y="9" width="3" height="3" fill="#ff5a1f" />
-      </svg>
+      <span class={`qr ${isOpen ? 'qr-live' : ''}`} aria-hidden="true">
+        <svg viewBox={`0 0 ${N} ${N}`} shape-rendering="crispEdges">
+          {cells.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#0e0f12" />)}
+          <rect x="7.5" y="7.5" width="6" height="6" fill="#f2f0ea" />
+        </svg>
+        <img src="/brand/jujuydev-isotipo.png" alt="" width="512" height="353" loading="lazy" decoding="async" />
+      </span>
     </div>
     <p class="legal mono">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</p>
-    <div class="stripe"></div>
+    <i class="stripe" aria-hidden="true"></i>
   </div>
 </div>
 
@@ -104,6 +120,7 @@ const cells: [number, number][] = [];
     border-radius: var(--r-lg);
     overflow: hidden;
     isolation: isolate;
+    background: var(--navy-900);
     --hole: radial-gradient(circle var(--notch) at 0 var(--body-h), transparent 98%, #000 100%),
       radial-gradient(circle var(--notch) at 100% var(--body-h), transparent 98%, #000 100%);
     -webkit-mask: var(--hole);
@@ -111,42 +128,62 @@ const cells: [number, number][] = [];
     mask: var(--hole);
     mask-composite: intersect;
   }
+
+  /* ───────── Cuerpo: foil solar sobre la Quebrada ───────── */
   .body {
     position: relative;
     height: var(--body-h);
     flex: none;
-    background:
-      radial-gradient(circle at 80% 15%, rgba(255, 138, 61, 0.35), transparent 50%),
-      var(--tex-quebrada);
+    background: var(--navy-900);
     color: var(--white);
     overflow: hidden;
+    isolation: isolate;
   }
-  .body::after {
-    content: '';
+  .art {
     position: absolute;
     inset: 0;
-    opacity: 0.18;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
-    pointer-events: none;
+    isolation: isolate;
+    z-index: 0;
   }
-  .frame {
+  .art img {
     position: absolute;
-    inset: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    border-radius: var(--r-md);
-    pointer-events: none;
-    z-index: 2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 42%;
+    filter: grayscale(1) contrast(1.15) brightness(0.95);
+  }
+  .tint {
+    position: absolute;
+    inset: 0;
+  }
+  .tint.hi {
+    background: var(--orange-500);
+    mix-blend-mode: multiply;
+  }
+  .tint.lo {
+    background: var(--navy-800);
+    mix-blend-mode: screen;
   }
   .foil {
     position: absolute;
     inset: 0;
-    background: var(--grad-foil);
-    background-size: 220% 100%;
-    background-position: calc(var(--sheen, 0) * 1%) 0;
-    mix-blend-mode: screen;
-    z-index: 3;
+    z-index: 1;
     pointer-events: none;
+    background:
+      linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0) 25%,
+        rgba(255, 138, 61, 0.32) 40%,
+        rgba(255, 255, 255, 0.6) 47%,
+        rgba(120, 90, 255, 0.35) 53%,
+        rgba(27, 58, 107, 0.4) 58%,
+        rgba(255, 255, 255, 0) 72%
+      );
+    background-size: 240% 100%;
+    background-position: calc(var(--sheen, 18) * 1%) 0;
+    mix-blend-mode: screen;
     transition: background-position var(--dur-slow) var(--ease-out);
   }
   .foil-gl {
@@ -155,32 +192,64 @@ const cells: [number, number][] = [];
     width: 100%;
     height: 100%;
     display: none;
-    mix-blend-mode: screen;
-    z-index: 3;
+    z-index: 1;
     pointer-events: none;
   }
   .body.gl-on .foil-gl {
     display: block;
   }
+  .body.gl-on .art,
   .body.gl-on .foil {
     display: none;
   }
+  .grain {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  }
+  .frame {
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--r-md);
+    pointer-events: none;
+    z-index: 3;
+  }
+  .word,
+  .mark,
+  .info,
+  .trajectory,
+  .slogan,
+  .shard {
+    z-index: 4;
+  }
   .word {
     position: absolute;
-    top: 28px;
+    top: 26px;
     left: 24px;
     margin: 0;
     font: 900 40px/0.95 var(--font-display);
     letter-spacing: -0.02em;
     display: flex;
     flex-direction: column;
-    z-index: 1;
+    text-shadow: 0 2px 18px rgba(6, 15, 34, 0.55);
+  }
+  .mark {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    height: 22px;
+    width: auto;
+    filter: drop-shadow(0 2px 8px rgba(6, 15, 34, 0.6));
   }
   .info {
     position: absolute;
     left: 24px;
     bottom: 70px;
-    z-index: 1;
   }
   .mono {
     font-family: var(--font-mono);
@@ -190,36 +259,25 @@ const cells: [number, number][] = [];
     margin: 0;
   }
   .info .mono {
-    color: rgba(255, 255, 255, 0.82);
-  }
-  .sun {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    right: 28px;
-    top: 120px;
-    background: var(--grad-sun);
-    box-shadow: 0 0 60px rgba(255, 138, 61, 0.55);
-    z-index: 1;
+    color: rgba(255, 255, 255, 0.88);
+    text-shadow: 0 1px 8px rgba(6, 15, 34, 0.7);
   }
   .trajectory {
     position: absolute;
     left: 24px;
     right: 24px;
     bottom: 54px;
-    border-top: 2px dotted var(--orange-500);
-    z-index: 1;
+    border-top: 2px dotted var(--orange-400);
   }
   .slogan {
     position: absolute;
     left: 24px;
     bottom: 26px;
     font-size: 10px;
-    z-index: 1;
+    text-shadow: 0 1px 8px rgba(6, 15, 34, 0.7);
   }
   .slogan b {
-    color: var(--orange-400);
+    color: var(--orange-300);
   }
   .shard {
     position: absolute;
@@ -229,25 +287,28 @@ const cells: [number, number][] = [];
     height: 48px;
     background: var(--orange-500);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
-    z-index: 4;
   }
+
+  /* ───────── Perforación ───────── */
   .perf {
     position: absolute;
-    left: 14px;
-    right: 14px;
+    left: 20px;
+    right: 20px;
     top: var(--body-h);
-    border-top: 2px dashed rgba(255, 255, 255, 0.45);
+    border-top: 2px dashed rgba(255, 255, 255, 0.55);
     z-index: 5;
     pointer-events: none;
   }
+
+  /* ───────── Stub: boarding pass en papel térmico ───────── */
   .stub {
     position: relative;
     flex: 1;
     background:
-      repeating-linear-gradient(to bottom, transparent 0 11px, rgba(201, 205, 211, 0.55) 11px 12px),
+      repeating-linear-gradient(to bottom, transparent 0 11px, rgba(201, 205, 211, 0.5) 11px 12px),
       var(--paper);
     color: var(--ink-950);
-    padding: 20px 24px 14px;
+    padding: 20px 24px 16px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -264,13 +325,19 @@ const cells: [number, number][] = [];
     font-size: 11px;
   }
   .stub-logo {
-    width: 24px;
-    height: 24px;
+    height: 18px;
+    width: auto;
   }
   .no {
     margin: 0;
-    font: 700 var(--fs-ticket-no)/var(--lh-ticket-no) var(--font-display);
+    font: 700 var(--fs-ticket-no) / var(--lh-ticket-no) var(--font-display);
     color: var(--ink-950);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .no .of {
+    font-size: 0.55em;
+    color: var(--ink-600);
   }
   .dots i {
     font-style: normal;
@@ -320,8 +387,23 @@ const cells: [number, number][] = [];
     height: 28px;
   }
   .qr {
+    position: relative;
     width: 56px;
     height: 56px;
+    display: block;
+  }
+  .qr svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .qr img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: auto;
+    transform: translate(-50%, -50%);
   }
   .legal {
     font-size: 8px;
@@ -337,13 +419,13 @@ const cells: [number, number][] = [];
     background: var(--orange-500);
   }
 
+  /* ───────── Desktop: horizontal 880×320 ───────── */
   @media (min-width: 1024px) {
     .ticket {
       --body-w: 600px;
       width: 880px;
       height: 320px;
       flex-direction: row;
-      border-radius: var(--r-lg);
       --hole: radial-gradient(circle var(--notch) at var(--body-w) 0, transparent 98%, #000 100%),
         radial-gradient(circle var(--notch) at var(--body-w) 100%, transparent 98%, #000 100%);
     }
@@ -351,11 +433,14 @@ const cells: [number, number][] = [];
       width: var(--body-w);
       height: 100%;
     }
+    .art img {
+      object-position: 50% 40%;
+    }
     .perf {
       left: var(--body-w);
       right: auto;
-      top: 14px;
-      bottom: 14px;
+      top: 20px;
+      bottom: 20px;
       height: auto;
       border-top: 0;
       border-left: 2px dashed var(--ink-400);
@@ -374,32 +459,67 @@ const cells: [number, number][] = [];
     .word span {
       display: block;
     }
-    .no {
-      font-size: 40px;
-      white-space: nowrap;
-    }
-    .stub {
-      padding-top: 16px;
-      gap: 4px;
+    .mark {
+      right: 28px;
+      top: 26px;
+      height: 24px;
     }
     .info {
       left: 130px;
-      bottom: 90px;
-    }
-    .sun {
-      width: 140px;
-      height: 140px;
-      right: 24px;
-      top: 60px;
+      bottom: 92px;
     }
     .trajectory {
       left: 130px;
       right: 0;
-      bottom: 66px;
+      bottom: 68px;
     }
     .slogan {
       left: 130px;
-      bottom: 34px;
+      bottom: 36px;
+    }
+    .stub {
+      padding: 18px 24px 16px;
+      gap: 4px;
+      clip-path: polygon(
+        0 0,
+        calc(100% - var(--chamfer)) 0,
+        100% var(--chamfer),
+        100% calc(100% - var(--chamfer)),
+        calc(100% - var(--chamfer)) 100%,
+        0 100%
+      );
+    }
+    .no {
+      font-size: 40px;
+    }
+    .stripe {
+      left: auto;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      height: auto;
+    }
+  }
+
+  /* Capas fantasma: solo forma y material, sin texto duplicado */
+  .ghost .word,
+  .ghost .mark,
+  .ghost .info,
+  .ghost .slogan,
+  .ghost .stub-head,
+  .ghost .no,
+  .ghost .grid,
+  .ghost .codes,
+  .ghost .legal {
+    visibility: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dots i {
+      animation: none;
+    }
+    .foil {
+      transition: none;
     }
   }
 </style>

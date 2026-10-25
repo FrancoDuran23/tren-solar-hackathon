@@ -3,7 +3,7 @@ import { copy } from '../content/copy';
 import { resolveCta } from '../lib/cta';
 
 interface Props {
-  size?: 'sm' | 'md';
+  size?: 'sm' | 'md' | 'lg';
 }
 const { size = 'md' } = Astro.props;
 const { state, href } = resolveCta();
@@ -18,7 +18,11 @@ const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
     </a>
   ) : (
     <span class:list={['cta', `cta--${state}`, `cta--${size}`]} aria-disabled="true" role="link">
-      <span aria-hidden="true">{state === 'closed' ? '🔒' : '◷'}</span>
+      {state === 'closed' ? (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 1.5"/></svg>
+      )}
       {label}
     </span>
   )
@@ -43,11 +47,16 @@ const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
     font-size: var(--fs-small);
     padding: 10px 16px;
   }
+  .cta--lg {
+    font-size: 18px;
+    padding: 20px 36px;
+  }
   .cta--primary {
     cursor: pointer;
     background: var(--orange-500);
     color: var(--navy-900);
-    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
     box-shadow: var(--shadow-cta);
     transition:
       background var(--dur-base) var(--ease-out),
@@ -55,6 +64,7 @@ const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
   }
   .cta--primary:hover {
     background: var(--orange-400);
+    box-shadow: var(--shadow-cta-hover);
   }
   .cta--primary:active {
     background: var(--orange-600);
@@ -66,12 +76,12 @@ const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
     transform: translateX(4px);
   }
   .cta--soon {
-    background: var(--navy-800);
+    background: rgba(18, 43, 85, 0.8);
     border: 1px dashed var(--orange-500);
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.8);
   }
   .cta--closed {
-    background: var(--navy-800);
-    color: rgba(255, 255, 255, 0.48);
+    background: rgba(18, 43, 85, 0.8);
+    color: rgba(255, 255, 255, 0.5);
   }
 </style>

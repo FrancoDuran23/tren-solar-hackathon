@@ -39,20 +39,38 @@ const items = [
 </script>
 
 <style>
+  /* Franja naranja del tren del poster: navy sobre naranja, mono bold */
   .marquee {
     position: relative;
-    background: var(--navy-950);
-    border-top: var(--border);
-    border-bottom: var(--border);
+    background: var(--orange-500);
+    color: var(--navy-950);
     overflow: hidden;
-    font: 14px/1 var(--font-mono);
+    font: 700 13px/1 var(--font-mono);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 -1px 0 rgba(6, 15, 34, 0.4) inset;
+  }
+  .marquee::before,
+  .marquee::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(6, 15, 34, 0.35);
+    pointer-events: none;
+  }
+  .marquee::before {
+    top: 6px;
+  }
+  .marquee::after {
+    bottom: 6px;
   }
   .track {
     display: flex;
     width: max-content;
-    padding: 16px 0;
+    padding: 18px 0;
     animation: run 40s linear infinite;
   }
   .row {
@@ -64,11 +82,13 @@ const items = [
   }
   li {
     white-space: nowrap;
-    color: var(--white);
   }
   .sep {
-    color: var(--orange-500);
-    margin: 0 24px;
+    color: var(--navy-950);
+    opacity: 0.55;
+    margin: 0 26px;
+    font-size: 9px;
+    vertical-align: 2px;
   }
   @keyframes run {
     to {
@@ -85,9 +105,9 @@ const items = [
     right: var(--gutter);
     top: 50%;
     transform: translateY(-50%);
-    background: var(--navy-800);
+    background: var(--navy-950);
     color: var(--white);
-    border: var(--border-strong);
+    border: 1px solid rgba(6, 15, 34, 0.6);
     border-radius: var(--r-xs);
     padding: 6px 8px;
     font: 10px/1 var(--font-mono);
