@@ -8,7 +8,6 @@ interface Props {
 const { ghost = false } = Astro.props;
 
 const isOpen = config.registration === 'open' && !!config.lumaUrl;
-const art = '/brand/solar-train-quebrada.jpg';
 const deadline = config.deadline
   ? new Date(config.deadline.iso).toLocaleDateString('es-AR')
   : 'POR CONFIRMAR';
@@ -52,19 +51,21 @@ const cells: [number, number][] = [];
 
 <div class:list={['ticket', { ghost }]} aria-hidden={ghost ? 'true' : undefined} data-ticket>
   <div class="body" data-body>
-    <!-- Fallback sin WebGPU: foto del poster en duotono navy→naranja -->
-    <div class="art" aria-hidden="true">
-      <img src={art} alt="" width="1024" height="775" loading={ghost ? 'lazy' : 'eager'} decoding="async" />
-      <i class="tint hi"></i>
-      <i class="tint lo"></i>
-    </div>
+    <!-- Material (fallback sin WebGPU): plata cepillada + velo holográfico + guilloché + sheen -->
+    <div class="metal" aria-hidden="true"></div>
+    <div class="holo" aria-hidden="true"></div>
+    <div class="spark" aria-hidden="true"></div>
+    <div class="etch" aria-hidden="true"></div>
     <div class="foil" aria-hidden="true"></div>
     {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
     <div class="grain" aria-hidden="true"></div>
     <div class="frame" aria-hidden="true"></div>
 
     <p class="word" aria-hidden="true"><span>PRE-</span><span>HACKATÓN</span></p>
-    <img class="mark" src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />
+    <i class="orbit" aria-hidden="true"></i>
+    <span class="seal" aria-hidden="true">
+      <img class="mark" src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />
+    </span>
     <div class="info">
       <p class="mono">ROAD TO SOLAR TRAIN HACKATHON</p>
       <p class="mono">CIERRE · {deadline}</p>
@@ -79,11 +80,12 @@ const cells: [number, number][] = [];
 
   <div class="stub">
     <div class="stub-head">
-      <span class="admit mono">ADMIT ONE</span>
+      <span class="admit"><i aria-hidden="true"></i>ADMIT ONE</span>
       <span class="stub-brand"><img class="stub-logo" src="/brand/jujuydev-logo-white.webp" alt="jujuy.dev" width="443" height="120" loading="lazy" decoding="async" /></span>
     </div>
-    <p class="no">N° <span class="dots"><i>·</i><i>·</i></span><span class="of">/{TICKETS_TOTAL}</span></p>
+    <p class="no"><span class="no-label mono">N°</span> <span class="dots"><i>·</i><i>·</i></span><span class="of">/{TICKETS_TOTAL}</span></p>
     <dl class="grid mono">
+      <div class="full dest"><dt>DESTINO</dt><dd>SOLAR TRAIN HACKATHON</dd></div>
       <div><dt>VAGÓN</dt><dd>01</dd></div>
       <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
       <div><dt>ASIENTO</dt><dd>··</dd></div>
@@ -110,8 +112,11 @@ const cells: [number, number][] = [];
 
 <style>
   .ticket {
-    --body-h: 360px;
-    --stub-h: 260px;
+    --body-h: 320px;
+    --stub-h: 300px;
+    /* Tinta sobre plata: navy, con un filo blanco de grabado */
+    --ink-on-metal: var(--navy-950);
+    --emboss: 0 1px 0 rgba(255, 255, 255, 0.55);
     position: relative;
     width: 340px;
     max-width: 100%;
@@ -130,98 +135,186 @@ const cells: [number, number][] = [];
     mask-composite: intersect;
   }
 
-  /* ───────── Cuerpo: foil solar sobre la Quebrada ───────── */
+  /* ───────── Cuerpo: lámina de plata cepillada con holograma ───────── */
   .body {
     position: relative;
     height: var(--body-h);
     flex: none;
-    background: var(--navy-900);
-    color: var(--white);
+    background: #aeb5bf;
+    color: var(--ink-on-metal);
     overflow: hidden;
     isolation: isolate;
   }
-  .art {
+  .metal,
+  .holo,
+  .spark,
+  .etch,
+  .foil,
+  .foil-gl,
+  .grain,
+  .frame {
     position: absolute;
     inset: 0;
-    isolation: isolate;
-    z-index: 0;
-  }
-  .art img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 42%;
-    filter: grayscale(1) contrast(1.15) brightness(0.95);
-  }
-  .tint {
-    position: absolute;
-    inset: 0;
-  }
-  .tint.hi {
-    background: var(--orange-500);
-    mix-blend-mode: multiply;
-  }
-  .tint.lo {
-    background: var(--navy-800);
-    mix-blend-mode: screen;
-  }
-  .foil {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
     pointer-events: none;
+  }
+  /* Cromo: bandas claras/oscuras de un entorno reflejado + veta horizontal (turbulencia anisótropa) */
+  .metal {
+    z-index: 0;
     background:
+      radial-gradient(120% 90% at 12% 0%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 55%),
       linear-gradient(
-        115deg,
-        rgba(255, 255, 255, 0) 25%,
-        rgba(255, 138, 61, 0.32) 40%,
-        rgba(255, 255, 255, 0.6) 47%,
-        rgba(120, 90, 255, 0.35) 53%,
-        rgba(27, 58, 107, 0.4) 58%,
-        rgba(255, 255, 255, 0) 72%
+        112deg,
+        #747d89 0%,
+        #c6ccd4 13%,
+        #eef1f5 22%,
+        #a7afb9 34%,
+        #717a86 46%,
+        #cfd4db 58%,
+        #f2f4f7 66%,
+        #aab1bb 78%,
+        #767f8b 90%,
+        #9aa2ad 100%
       );
+  }
+  .metal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.42;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.012 0.9' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.6 -0.3'/></filter><rect width='320' height='320' filter='url(%23b)'/></svg>");
+    background-size: 320px 320px;
+  }
+  .metal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 18%),
+      linear-gradient(0deg, rgba(6, 15, 34, 0.22), rgba(6, 15, 34, 0) 26%);
+  }
+  /* Velo holográfico: arcoíris pastel que tiñe el metal conservando su luminancia; deriva lento */
+  .holo {
+    z-index: 1;
+    width: 280%;
+    opacity: 0.54;
+    mix-blend-mode: color;
+    /* Los stops grises (#c9ced6) son neutros bajo blend "color": dejan ver la plata entre zonas iridiscentes */
+    background: linear-gradient(
+      108deg,
+      #ff9fb4 0%,
+      #c9ced6 9%,
+      #ffd59c 17%,
+      #e3ffa3 25%,
+      #c9ced6 35%,
+      #9ffbe1 43%,
+      #9ccbff 51%,
+      #c9ced6 61%,
+      #c7a8ff 69%,
+      #ff9fdc 77%,
+      #c9ced6 88%,
+      #ff9fb4 100%
+    );
+    animation: holo-drift 18s ease-in-out infinite alternate;
+  }
+  .ghost .holo {
+    animation: none;
+    transform: translateX(-22%);
+  }
+  /* Punto caliente iridiscente (holograma de seguridad) fijo en la esquina del guilloché */
+  .spark {
+    z-index: 1;
+    opacity: 0.6;
+    mix-blend-mode: color;
+    background: conic-gradient(
+      from 210deg at 78% 92%,
+      rgba(255, 170, 190, 0.9),
+      rgba(255, 225, 160, 0.9),
+      rgba(190, 255, 170, 0.9),
+      rgba(160, 240, 255, 0.9),
+      rgba(170, 180, 255, 0.9),
+      rgba(240, 170, 255, 0.9),
+      rgba(255, 170, 190, 0.9)
+    );
+    mask-image: radial-gradient(60% 80% at 78% 92%, #000 10%, rgba(0, 0, 0, 0.3) 55%, transparent 80%);
+  }
+  @keyframes holo-drift {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-64%);
+    }
+  }
+  /* Guilloché grabado: anillos concéntricos que salen de la esquina inferior derecha */
+  .etch {
+    z-index: 1;
+    opacity: 0.55;
+    mix-blend-mode: overlay;
+    background: repeating-radial-gradient(
+      ellipse 560px 480px at 84% 118%,
+      rgba(255, 255, 255, 0) 0 8px,
+      rgba(255, 255, 255, 0.85) 8px 9px,
+      rgba(6, 15, 34, 0.35) 9px 10px,
+      rgba(255, 255, 255, 0) 10px 14px
+    );
+    mask-image: radial-gradient(70% 90% at 84% 118%, #000 25%, rgba(0, 0, 0, 0.35) 65%, transparent 92%);
+  }
+  /* Sheen especular que sigue al puntero (--sheen) con un borde de difracción */
+  .foil {
+    z-index: 1;
+    background: linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 150, 190, 0.22) 40%,
+      rgba(255, 255, 255, 0.62) 47%,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(255, 255, 255, 0.5) 53%,
+      rgba(150, 205, 255, 0.28) 59%,
+      rgba(255, 255, 255, 0) 70%
+    );
     background-size: 240% 100%;
     background-position: calc(var(--sheen, 18) * 1%) 0;
-    mix-blend-mode: screen;
     transition: background-position var(--dur-slow) var(--ease-out);
   }
   .foil-gl {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
     display: none;
     z-index: 1;
-    pointer-events: none;
   }
   .body.gl-on .foil-gl {
     display: block;
   }
-  .body.gl-on .art,
+  .body.gl-on .metal,
+  .body.gl-on .holo,
+  .body.gl-on .spark,
+  .body.gl-on .etch,
   .body.gl-on .foil {
     display: none;
   }
   .grain {
-    position: absolute;
-    inset: 0;
     z-index: 2;
-    opacity: 0.16;
+    opacity: 0.14;
     mix-blend-mode: overlay;
-    pointer-events: none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
   }
+  .body.gl-on .grain {
+    opacity: 0.07;
+  }
+  /* Marco interior fino (Soul): línea navy con filo claro, como un bisel */
   .frame {
-    position: absolute;
     inset: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(11, 29, 58, 0.45);
     border-radius: var(--r-md);
-    pointer-events: none;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.45),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.35);
     z-index: 3;
   }
   .word,
-  .mark,
+  .orbit,
+  .seal,
   .info,
   .trajectory,
   .slogan,
@@ -230,22 +323,66 @@ const cells: [number, number][] = [];
   }
   .word {
     position: absolute;
-    top: 26px;
+    top: 24px;
     left: 24px;
     margin: 0;
     font: 900 40px/0.95 var(--font-display);
     letter-spacing: -0.02em;
     display: flex;
     flex-direction: column;
-    text-shadow: 0 2px 18px rgba(6, 15, 34, 0.55);
+    color: var(--ink-on-metal);
+    text-shadow: var(--emboss);
   }
-  .mark {
+  /* Sello: disco navy con el logo en negativo + órbita naranja detrás (poster) */
+  .seal {
     position: absolute;
     right: 24px;
-    top: 24px;
-    height: 22px;
+    top: 112px;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 34% 28%, var(--navy-700), var(--navy-900) 55%, var(--navy-950) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+      inset 0 -10px 18px rgba(6, 15, 34, 0.6),
+      0 10px 24px rgba(6, 15, 34, 0.35);
+  }
+  .seal::after {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.28);
+  }
+  .mark {
+    position: relative;
+    height: 20px;
     width: auto;
-    filter: drop-shadow(0 2px 8px rgba(6, 15, 34, 0.6));
+    display: block;
+  }
+  .orbit {
+    position: absolute;
+    right: 2px;
+    top: 128px;
+    width: 160px;
+    height: 64px;
+    border: 1.5px solid var(--orange-500);
+    border-radius: 50%;
+    transform: rotate(-22deg);
+    z-index: 3;
+  }
+  .orbit::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange-500);
+    box-shadow: 0 0 8px rgba(255, 90, 31, 0.6);
   }
   .info {
     position: absolute;
@@ -260,25 +397,28 @@ const cells: [number, number][] = [];
     margin: 0;
   }
   .info .mono {
-    color: rgba(255, 255, 255, 0.88);
-    text-shadow: 0 1px 8px rgba(6, 15, 34, 0.7);
+    color: var(--ink-on-metal);
+    font-weight: 700;
+    text-shadow: var(--emboss);
   }
   .trajectory {
     position: absolute;
     left: 24px;
     right: 24px;
     bottom: 54px;
-    border-top: 2px dotted var(--orange-400);
+    border-top: 2px dotted var(--orange-500);
   }
   .slogan {
     position: absolute;
     left: 24px;
     bottom: 26px;
     font-size: 10px;
-    text-shadow: 0 1px 8px rgba(6, 15, 34, 0.7);
+    font-weight: 700;
+    color: var(--ink-on-metal);
+    text-shadow: var(--emboss);
   }
   .slogan b {
-    color: var(--orange-300);
+    color: var(--orange-600);
   }
   .shard {
     position: absolute;
@@ -296,7 +436,7 @@ const cells: [number, number][] = [];
     left: 20px;
     right: 20px;
     top: var(--body-h);
-    border-top: 2px dashed rgba(255, 255, 255, 0.55);
+    border-top: 2px dashed var(--ink-400);
     z-index: 5;
     pointer-events: none;
   }
@@ -305,14 +445,12 @@ const cells: [number, number][] = [];
   .stub {
     position: relative;
     flex: 1;
-    background:
-      repeating-linear-gradient(to bottom, transparent 0 11px, rgba(201, 205, 211, 0.5) 11px 12px),
-      var(--paper);
+    background: linear-gradient(180deg, #f8f6f1 0%, var(--paper) 100%);
     color: var(--ink-950);
-    padding: 20px 24px 16px;
+    padding: 18px 24px 16px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     overflow: hidden;
   }
   .stub-head {
@@ -321,9 +459,18 @@ const cells: [number, number][] = [];
     align-items: center;
   }
   .admit {
-    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font: 700 12px/1 var(--font-display);
     letter-spacing: 0.16em;
-    font-size: 11px;
+    color: var(--ink-950);
+  }
+  .admit i {
+    width: 10px;
+    height: 10px;
+    background: var(--orange-500);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
   }
   .stub-brand {
     display: inline-flex;
@@ -340,13 +487,26 @@ const cells: [number, number][] = [];
   }
   .no {
     margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
     font: 700 var(--fs-ticket-no) / var(--lh-ticket-no) var(--font-display);
     color: var(--ink-950);
     letter-spacing: -0.02em;
     white-space: nowrap;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ink-200);
+  }
+  .no-label {
+    font-size: 0.42em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--ink-800);
+    align-self: flex-start;
+    padding-top: 0.2em;
   }
   .no .of {
-    font-size: 0.55em;
+    font-size: 0.5em;
     color: var(--ink-600);
   }
   .dots i {
@@ -362,29 +522,55 @@ const cells: [number, number][] = [];
       opacity: 0.25;
     }
   }
+  /* Grilla de abordaje: tabla con hairlines, label arriba / valor abajo (Tokyo) */
   .grid {
     margin: 0;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 16px;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--ink-200);
+    border-radius: var(--r-xs);
+    background: rgba(255, 255, 255, 0.45);
   }
-  .grid div {
+  .grid > div {
     display: flex;
-    gap: 6px;
-    align-items: baseline;
+    flex-direction: column;
+    gap: 1px;
+    padding: 4px 8px 5px;
+    border-top: 1px solid var(--ink-200);
+    min-width: 0;
+  }
+  .grid > div:first-child {
+    border-top: 0;
   }
   .grid .full {
     grid-column: 1 / -1;
   }
+  .grid > div:not(.full):not(:nth-child(5)) {
+    border-right: 1px solid var(--ink-200);
+  }
   dt {
     font-size: 9px;
-    color: var(--ink-600);
-    letter-spacing: 0.08em;
+    line-height: 1.2;
+    color: var(--ink-800);
+    letter-spacing: 0.1em;
   }
   dd {
     margin: 0;
     font-size: 14px;
+    line-height: 1.2;
     font-weight: 700;
+    color: var(--ink-950);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dest dd {
+    font-size: 13px;
+  }
+  .dest dd::before {
+    content: '→ ';
+    color: var(--orange-500);
   }
   .codes {
     margin-top: auto;
@@ -398,8 +584,8 @@ const cells: [number, number][] = [];
   }
   .qr {
     position: relative;
-    width: 56px;
-    height: 56px;
+    width: 50px;
+    height: 50px;
     display: block;
   }
   .qr svg {
@@ -409,7 +595,7 @@ const cells: [number, number][] = [];
   }
   .legal {
     font-size: 8px;
-    color: var(--ink-600);
+    color: var(--ink-800);
     letter-spacing: 0.04em;
   }
   .stripe {
@@ -435,8 +621,15 @@ const cells: [number, number][] = [];
       width: var(--body-w);
       height: 100%;
     }
-    .art img {
-      object-position: 50% 40%;
+    .etch {
+      background: repeating-radial-gradient(
+        ellipse 760px 520px at 86% 118%,
+        rgba(255, 255, 255, 0) 0 8px,
+        rgba(255, 255, 255, 0.85) 8px 9px,
+        rgba(6, 15, 34, 0.35) 9px 10px,
+        rgba(255, 255, 255, 0) 10px 14px
+      );
+      mask-image: radial-gradient(60% 95% at 86% 118%, #000 25%, rgba(0, 0, 0, 0.35) 65%, transparent 92%);
     }
     .perf {
       left: var(--body-w);
@@ -461,10 +654,22 @@ const cells: [number, number][] = [];
     .word span {
       display: block;
     }
+    .seal {
+      right: 44px;
+      top: 50%;
+      width: 116px;
+      height: 116px;
+      transform: translateY(-50%);
+    }
     .mark {
-      right: 28px;
-      top: 26px;
       height: 24px;
+    }
+    .orbit {
+      right: 10px;
+      top: 50%;
+      width: 196px;
+      height: 76px;
+      transform: translateY(-46%) rotate(-20deg);
     }
     .info {
       left: 130px;
@@ -480,8 +685,8 @@ const cells: [number, number][] = [];
       bottom: 36px;
     }
     .stub {
-      padding: 18px 24px 16px;
-      gap: 4px;
+      padding: 16px 22px 14px;
+      gap: 5px;
       clip-path: polygon(
         0 0,
         calc(100% - var(--chamfer)) 0,
@@ -492,7 +697,35 @@ const cells: [number, number][] = [];
       );
     }
     .no {
-      font-size: 40px;
+      font-size: 36px;
+      padding-bottom: 5px;
+    }
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .grid > div {
+      padding: 3px 8px 4px;
+    }
+    .grid > div:not(.full):not(:nth-child(5)) {
+      border-right: 0;
+    }
+    .grid > div:nth-child(2),
+    .grid > div:nth-child(4) {
+      border-right: 1px solid var(--ink-200);
+    }
+    dd {
+      font-size: 13px;
+    }
+    .dest dd {
+      font-size: 12px;
+    }
+    .qr {
+      width: 46px;
+      height: 46px;
+    }
+    .barcode {
+      width: 108px;
+      height: 26px;
     }
     .stripe {
       left: auto;
@@ -506,6 +739,7 @@ const cells: [number, number][] = [];
   /* Capas fantasma: solo forma y material, sin texto duplicado */
   .ghost .word,
   .ghost .mark,
+  .ghost .orbit,
   .ghost .info,
   .ghost .slogan,
   .ghost .stub-head,
@@ -517,7 +751,8 @@ const cells: [number, number][] = [];
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .dots i {
+    .dots i,
+    .holo {
       animation: none;
     }
     .foil {

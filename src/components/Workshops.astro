@@ -32,14 +32,14 @@ const placeholders = Array.from({ length: c.placeholderRows });
               </div>
             ))
           : placeholders.map((_, i) => (
-              <div class="row" role="row">
-                <span role="cell" class="day mono"><span class="chip">———</span></span>
-                <span role="cell" class="time mono"><span class="chip">———</span></span>
+              <div class="row ghost" role="row" aria-hidden={i > 0 ? 'true' : undefined}>
+                <span role="cell" class="day mono"><i class="skel w-day"></i></span>
+                <span role="cell" class="time mono"><i class="skel w-time"></i></span>
                 <span role="cell" class="topic">
-                  {i === 0 ? <span class="note mono">{c.soonNote}</span> : <span class="chip">———</span>}
+                  {i === 0 ? <span class="note mono">{c.soonNote}</span> : <i class="skel w-topic"></i>}
                 </span>
-                <span role="cell" class="speaker"><span class="chip">———</span></span>
-                <span role="cell" class="state"><span class="pill mono">{c.soonPill}</span></span>
+                <span role="cell" class="speaker"><i class="skel w-speaker"></i></span>
+                <span role="cell" class="state">{i === 0 ? <span class="pill mono">{c.soonPill}</span> : <i class="skel w-pill"></i>}</span>
               </div>
             ))
       }
@@ -75,7 +75,11 @@ const placeholders = Array.from({ length: c.placeholderRows });
   .row:not(.head):hover { background: var(--navy-700); }
   .row.head { background: transparent; border-color: transparent; font-size: var(--fs-small); color: var(--text-muted); letter-spacing: 0.08em; padding-block: 0; }
   .mono { font-family: var(--font-mono); }
-  .chip { display: inline-block; min-width: 4ch; padding: 2px 10px; background: rgba(255,255,255,0.08); border-radius: var(--r-xs); color: var(--text-muted); }
+  /* Agenda vacía: andenes reservados (barras suaves), no texto roto */
+  .skel { display: inline-block; height: 10px; border-radius: 999px; vertical-align: middle; background: linear-gradient(90deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06)); }
+  .w-day { width: 5ch; } .w-time { width: 6ch; } .w-topic { width: min(60%, 22ch); } .w-speaker { width: 10ch; } .w-pill { width: 9ch; height: 22px; border-radius: var(--r-pill); border: 1px dashed rgba(255,255,255,0.18); background: transparent; }
+  .row.ghost:nth-child(n + 3) { opacity: 0.7; } .row.ghost:nth-child(n + 4) { opacity: 0.45; }
+  .row.ghost:hover { background: transparent; }
   .note { color: var(--text); font-size: var(--fs-small); }
   .pill { display: inline-block; font-size: var(--fs-small); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-pill); }
   .pill--live { border-color: var(--success); color: var(--success); }

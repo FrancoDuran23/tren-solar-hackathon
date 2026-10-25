@@ -1,9 +1,7 @@
-import { clock, effect, frame, frameLoop, init, sampler, surface, texture, type Gpu } from 'vgpu';
+import { clock, effect, frame, frameLoop, init, surface, type Gpu } from 'vgpu';
 import fragment from './foil.wgsl';
 
 export interface FoilOptions {
-  /** URL de la imagen del poster que se duotoniza bajo el foil. */
-  art: string;
   /** Elemento que recibe el puntero (el canvas tiene pointer-events: none). */
   host?: HTMLElement;
   /** prefers-reduced-motion: un solo frame estático, sin órbita ni seguimiento. */
@@ -12,18 +10,13 @@ export interface FoilOptions {
   onFail?: (reason: unknown) => void;
 }
 
-async function loadBitmap(url: string): Promise<ImageBitmap> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`No se pudo cargar ${url}`);
-  return createImageBitmap(await res.blob(), { colorSpaceConversion: 'none' });
-}
-
 /**
- * Foil holográfico WebGPU (vgpu.sh) para el cuerpo del ticket. Pinta la capa
- * completa (foto duotono + foil); el DOM va encima. Devuelve dispose.
- * Si no hay WebGPU lanza y el caller deja el fallback CSS (duotono + sheen).
+ * Foil plateado holográfico WebGPU (vgpu.sh) para el cuerpo del ticket. Pinta la
+ * capa completa (metal cepillado + holograma procedural, sin texturas); el DOM
+ * va encima. Devuelve dispose. Si no hay WebGPU lanza y el caller deja el
+ * fallback CSS (gradientes metálicos + sheen).
  */
-export async function mountFoil(canvas: HTMLCanvasElement, opts: FoilOptions): Promise<() => void> {
+export async function mountFoil(canvas: HTMLCanvasElement, opts: FoilOptions = {}): Promise<() => void> {
   if (!('gpu' in navigator)) throw new Error('WebGPU no disponible');
   let disposed = false;
   let gpu: Gpu | undefined;
@@ -35,39 +28,18 @@ export async function mountFoil(canvas: HTMLCanvasElement, opts: FoilOptions): P
     gpu?.dispose();
   };
 
-  const [context, bitmap] = await Promise.all([init(), loadBitmap(opts.art)]);
+  const context = await init();
   if (disposed) {
     context.dispose();
-    bitmap.close();
     return dispose;
   }
   gpu = context;
 
   const output = surface(context, canvas, { dpr: [1, 2], label: 'ticket-foil' });
-  const art = texture(context, {
-    kind: '2d',
-    size: [bitmap.width, bitmap.height],
-    format: 'rgba8unorm',
-    usage: ['texture_binding', 'copy_dst', 'render_attachment'],
-    label: 'ticket-art',
-  });
-  context.gpu.queue.copyExternalImageToTexture({ source: bitmap }, { texture: art.gpu }, [
-    bitmap.width,
-    bitmap.height,
-  ]);
-  bitmap.close();
-
   const shader = effect(context, fragment, {
     label: 'ticket-foil',
     set: {
       params: { resolution: output.size, pointer: [0.2, -0.15], tilt: [0, 0], hover: 0, time: 0 },
-      art,
-      artSampler: sampler(context, {
-        minFilter: 'linear',
-        magFilter: 'linear',
-        addressModeU: 'clamp-to-edge',
-        addressModeV: 'clamp-to-edge',
-      }),
     },
   });
   await shader.compile({ colors: [output.format] });

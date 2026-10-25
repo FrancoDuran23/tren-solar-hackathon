@@ -134,14 +134,12 @@ const deadline = config.deadline
   if (stack && tilt) {
     const fine = matchMedia('(hover: hover) and (pointer: fine)');
 
-    // Foil WebGPU (vgpu): reemplaza al duotono CSS cuando hay GPU. Con reduced-motion
+    // Foil WebGPU (vgpu): reemplaza al metal+holo CSS cuando hay GPU. Con reduced-motion
     // monta un frame estático. Si falla, queda el fallback CSS.
     const canvas = stack.querySelector<HTMLCanvasElement>('[data-foil-gl]');
-    const art = canvas?.closest<HTMLElement>('[data-body]')?.querySelector<HTMLImageElement>('.art img');
-    if (canvas && art) {
+    if (canvas) {
       const body = canvas.closest('[data-body]');
       mountFoil(canvas, {
-        art: art.currentSrc || art.src,
         host: stack,
         reducedMotion: reduced,
         onFail: () => body?.classList.remove('gl-on'),
@@ -435,6 +433,8 @@ const deadline = config.deadline
     flex-direction: column;
     align-items: center;
     gap: var(--sp-6);
+    /* Franja para que el Tren Solar 3D pase por detrás del borde superior del ticket */
+    padding-top: 104px;
   }
   .chip,
   .pill {
@@ -660,6 +660,7 @@ const deadline = config.deadline
     .stage {
       align-items: flex-end;
       gap: var(--sp-5, 20px);
+      padding-top: 0;
     }
     .stage-box {
       --s: 0.56;

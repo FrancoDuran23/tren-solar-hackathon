@@ -276,9 +276,10 @@ const closed = config.submissions === 'closed';
   .banner { display: inline-block; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-sm); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-small); margin: 0 0 var(--sp-6); }
   .card { display: grid; grid-template-columns: 1fr 260px; gap: var(--sp-6); background: var(--navy-800); border: var(--border); border-radius: var(--r-md); padding: var(--sp-8); }
   fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: var(--sp-4); min-width: 0; }
-  fieldset:disabled { opacity: 0.5; }
+  fieldset:disabled input, fieldset:disabled select, fieldset:disabled textarea, fieldset:disabled .btn { opacity: 0.55; cursor: not-allowed; }
+  fieldset:disabled .chk { cursor: not-allowed; }
   .field { position: relative; display: grid; gap: 6px; }
-  label.mono { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  label.mono { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-200); font-weight: 700; }
   .opt { text-transform: none; opacity: 0.7; }
   input[type='text'], input[type='email'], input[type='url'], input[type='number'], select, textarea {
     width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 var(--sp-4);
@@ -299,7 +300,7 @@ const closed = config.submissions === 'closed';
   .chk { display: flex; gap: var(--sp-3); align-items: center; font-weight: 600; cursor: pointer; }
   .chk input { width: 22px; height: 22px; accent-color: var(--orange-500); }
   .trac { display: grid; gap: var(--sp-3); padding: var(--sp-4); border: 1px dashed rgba(255,255,255,0.28); border-radius: var(--r-sm); }
-  .trac-t { margin: 0; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .trac-t { margin: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-200); font-weight: 700; }
   .trac-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
   .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   .privacy { margin: 0; color: var(--text-muted); font-size: var(--fs-small); line-height: var(--lh-small); }
