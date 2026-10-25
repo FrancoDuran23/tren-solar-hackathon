@@ -4,10 +4,10 @@
 
 **Blocked by:** 03, 04, 05, 06
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Playwright: home scroll + anclas + form estados; screenshots `.scratch/mvp/playwright/07/`
-- [ ] Lighthouse targets del spec §6 (o documentar gaps)
-- [ ] Sponsor grep limpio
-- [ ] Push/`main` + Vercel preview o prod documentado
-- [ ] Commit: `chore(release): smoke + deploy notes (T07)`
+- [x] Playwright: home scroll + anclas + form estados; screenshots `.scratch/mvp/playwright/07/`
+- [x] Lighthouse targets del spec §6 (o documentar gaps) — gap documentado en README: no corrido, pendiente sobre preview
+- [x] Sponsor grep limpio
+- [x] Push/`main` + Vercel preview o prod documentado (instrucciones en README; sin push, sin credenciales)
+- [x] Commit: `chore(release): smoke + deploy notes (T07)`

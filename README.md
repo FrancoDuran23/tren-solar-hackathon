@@ -46,4 +46,21 @@ En Vercel: Project → Settings → Environment Variables. Local: copiar `.env.e
 
 ## Deploy (Vercel)
 
-Rama `main` ⇒ producción, PRs ⇒ preview. Framework preset: Astro; build `npm run build`; output `dist`. Configurar Node 22.x en Project Settings. El adapter `@astrojs/vercel` ya está configurado (T06) para la route `/api/entrega`.
+Repo destino: `FrancoDuran23/tren-solar-hackathon`. Rama `main` ⇒ producción, PRs ⇒ preview. Framework preset: Astro; build `npm run build`; el adapter `@astrojs/vercel` (T06) genera `.vercel/output` (necesario para la route `/api/entrega`).
+
+1. Pushear el código al repo: `git remote add origin git@github.com:FrancoDuran23/tren-solar-hackathon.git && git push -u origin main` (y la rama de PR para el preview).
+2. Vercel → Add New Project → importar `FrancoDuran23/tren-solar-hackathon`. Production Branch = `main`; Node.js 22.x en Settings → General (Astro 7 exige ≥ 22.23.4).
+3. Environment Variables (Production + Preview): `ENTREGA_WEBHOOK_URL` (ver arriba). Sin ella el form responde 501 por diseño.
+4. Cada PR genera un preview automático (`*.vercel.app`); el merge a `main` despliega producción.
+5. CLI alternativa: `npx vercel link` y `npx vercel` (preview) / `npx vercel --prod`.
+6. Antes de abrir inscripción: poner el link real en `lumaUrl` y `registration: 'open'` en `src/config.ts` (no está cargado; no inventar el link).
+
+## Smoke / release (T07)
+
+- Smoke Playwright (desktop 1440 + mobile 360): `node .scratch/mvp/playwright/07/smoke.mjs http://localhost:4321 [closed|open]` (`open` requiere `submissions: 'open'` y reiniciar el dev server). Screenshots en `.scratch/mvp/playwright/07/`. Playwright no es dependencia del proyecto; usar una instalación externa.
+- Sponsor: `grep -rniE "spacex" src public` debe dar vacío (solo cohete + "sponsor sorpresa").
+- Lighthouse (spec §6, mobile) **no se corrió** en T07; pendiente sobre el preview de Vercel.
+
+## OG image
+
+`public/og.png` (1200×630) es un **stub** tipográfico. Reemplazar por el render del ticket manteniendo el nombre de archivo y verificar con el preview de WhatsApp/Twitter.

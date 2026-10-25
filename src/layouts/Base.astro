@@ -13,7 +13,7 @@ interface Props {
 const { meta, a11y } = copy;
 const { title = meta.title, description = meta.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
-// OG stub (F4): el render 1200×630 del ticket llega con T03/T07; hasta entonces /og.png no existe.
+// OG: /og.png (1200×630) es un stub tipográfico (T07); reemplazar por el render del ticket.
 const ogImage = new URL('/og.png', Astro.site ?? Astro.url);
 ---
 

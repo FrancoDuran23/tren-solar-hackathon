@@ -96,13 +96,17 @@ const { nav, a11y } = copy;
   .nav__links a:hover {
     color: var(--orange-300);
   }
+  .nav__cta {
+    display: none;
+  }
   .nav__toggle {
+    flex-shrink: 0;
     display: inline-flex;
     flex-direction: column;
     justify-content: center;
     gap: 5px;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     padding: 0 9px;
     background: none;
     border: var(--border);
@@ -149,6 +153,11 @@ const { nav, a11y } = copy;
     transform-origin: left;
   }
 
+  @media (min-width: 480px) {
+    .nav__cta {
+      display: block;
+    }
+  }
   @media (min-width: 768px) {
     .nav__bar {
       padding: 0 32px;

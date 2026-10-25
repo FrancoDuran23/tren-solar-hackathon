@@ -218,6 +218,17 @@ const flap = (s: string) => [...s];
     letter-spacing: 0;
     color: var(--text-muted);
   }
+  @media (max-width: 479px) {
+    .flap {
+      padding: 6px 2px;
+      min-width: 0.9em;
+      font-size: 12px;
+    }
+    .word {
+      gap: 1px;
+      flex-wrap: wrap;
+    }
+  }
   [hidden] {
     display: none !important;
   }
