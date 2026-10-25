@@ -72,7 +72,7 @@ fn spectrum(t: f32) -> vec3f {
   let wl = 0.405 + 0.295 * fract(t);
   let c = wavelengthColor(wl);
   let peak = max(max(c.r, c.g), max(c.b, 0.001));
-  return mix(vec3f(1.0), c / peak, 0.58);
+  return mix(vec3f(1.0), c / peak, 0.74);
 }
 
 @fragment
@@ -123,23 +123,23 @@ fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
   let spectral = diffraction(across, lightAndView, 1.65);
 
   // ── Iridiscencia ancha (holograma): tiñe el metal conservando su luminancia ──
-  let phase = dot(d, vec2f(0.62, -0.40)) * 1.35 + r * 0.30 + t * 0.025;
+  let phase = dot(d, vec2f(0.62, -0.40)) * 0.9 + r * 0.30 + t * 0.03;
   let holo = spectrum(phase);
   let holo2 = spectrum(phase * 0.5 + 0.37 + d.x * 0.3);
   let lum = dot(color, LUMA);
   let tinted = holo * (lum / max(dot(holo, LUMA), 0.25));
   let tinted2 = holo2 * (lum / max(dot(holo2, LUMA), 0.25));
-  let ambient = 0.6 + 0.4 * hover;
+  let ambient = 1.0;
   // Siempre hay un velo iridiscente suave, más saturado dentro del barrido de luz.
   let sheen = exp(-pow((d.x * 0.6 + d.y * 0.8) / 0.60, 2.0));
-  color = mix(color, tinted2, 0.09 * ambient);
-  color = mix(color, tinted, (0.12 * sheen + 0.40 * band) * ambient);
+  color = mix(color, tinted2, 0.24 * ambient);
+  color = mix(color, tinted, (0.28 * sheen + 0.50 * band) * ambient);
 
   // Difracción espectral sobre el grabado y un eco suave fuera de las líneas.
-  color += spectral * (0.40 + 0.40 * hover) * (0.18 + band) * (0.12 + 0.88 * lines);
-  color += holo * lines * (0.05 + 0.16 * spot * ambient);
+  color += spectral * (0.55 + 0.30 * hover) * (0.22 + band) * (0.12 + 0.88 * lines);
+  color += holo * lines * (0.10 + 0.18 * spot * ambient);
   // Destello blanco cálido en el centro del barrido.
-  color += WARM_WHITE * glint * (0.06 + 0.12 * spot) * (0.7 + 0.3 * hover);
+  color += WARM_WHITE * glint * (0.10 + 0.14 * spot);
   color += ORANGE_300 * spot * hover * 0.05;
   color += grain(p + vec2f(2.0)) * (0.035 + band * 0.04);
 
@@ -147,7 +147,7 @@ fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
   let rim = exp(-max(p.y + 0.5, 0.0) * 7.0) * 0.12 + exp(-max(p.x + 0.5 * aspect, 0.0) * 7.0) * 0.08;
   color += SILVER_LT * rim;
   let v = length(vec2f(p.x / aspect, p.y)) * 1.6;
-  color *= 1.0 - 0.16 * smoothstep(0.40, 0.85, v);
+  color *= 1.0 - 0.08 * smoothstep(0.40, 0.85, v);
 
   return vec4f(clamp(color, vec3f(0.0), vec3f(1.0)), 1.0);
 }

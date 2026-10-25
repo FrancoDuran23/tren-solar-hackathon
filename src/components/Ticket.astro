@@ -84,12 +84,12 @@ const cells: [number, number][] = [];
       {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
       <div class="tab">
         <p class="tab-brand mono"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" /><i>/</i></p>
-        <p class="tab-lines mono">
-          <span>RUMBO A LA HACKATÓN TREN SOLAR</span>
-          <span>CIERRE · {deadline}</span>
-          <span>ONLINE · JUJUY · ARG</span>
-        </p>
       </div>
+      <p class="tab-lines mono">
+        <span>RUMBO A LA HACKATÓN TREN SOLAR</span>
+        <span>CIERRE · {deadline}</span>
+        <span>ONLINE · JUJUY · ARG</span>
+      </p>
     </div>
 
     <!-- Sello circular jujuy.dev, montado sobre el borde de la franja -->
@@ -340,7 +340,7 @@ const cells: [number, number][] = [];
   }
   .coords {
     left: 20px;
-    bottom: 84px;
+    bottom: 96px;
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -367,29 +367,44 @@ const cells: [number, number][] = [];
     left: 0;
     right: 0;
     bottom: 0;
-    height: 76px;
+    height: 86px;
     overflow: hidden;
-    background: #cfd6e4;
+    background: #c9d1df;
     isolation: isolate;
   }
   /* Iridiscencia saturada tipo lámina metálica (ref-b): rosa, celeste, violeta, menta y oro */
+  /* Lámina holográfica de seguridad (ref-b): espectro saturado rosa/oro/menta/cyan/violeta,
+     sobre metal cepillado con reflejos especulares. Brilla sola; el hover sólo la mueve. */
   .holo {
     position: absolute;
     inset: 0;
     width: 220%;
-    background: linear-gradient(
-      100deg,
-      #f0a7c6 0%, #ffd9a8 8%, #bdf3d8 16%, #9fd6ff 25%, #c3b5ff 34%, #ffb6e0 43%,
-      #eef2f7 50%, #ffcf9a 58%, #a8ecd9 66%, #a5c8ff 75%, #d2b8ff 84%, #f0a7c6 100%
-    );
+    background:
+      radial-gradient(18% 120% at 16% 40%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 70%),
+      radial-gradient(14% 140% at 47% 60%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 70%),
+      radial-gradient(16% 120% at 78% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 70%),
+      linear-gradient(
+        100deg,
+        #e9eef5 0%, #ff7fb6 6%, #ff9a5e 11%, #ffd86a 16%, #5fe0b8 22%, #33b9ff 29%, #6f6cff 36%, #d660ff 42%, #ff7fd0 48%,
+        #f4f6fa 53%, #ffb86b 59%, #5ee8c8 65%, #3aa9ff 72%, #8f7cff 79%, #ff7fb6 86%, #ffd86a 92%, #e9eef5 100%
+      );
     animation: holo-drift 16s ease-in-out infinite alternate;
+  }
+  /* Metal cepillado: hilos horizontales finos que ondulan la luz */
+  .holo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0 1px, rgba(255, 255, 255, 0) 1px 3px, rgba(20, 24, 40, 0.18) 3px 4px, rgba(255, 255, 255, 0) 4px 6px);
+    mix-blend-mode: overlay;
   }
   /* Vetas topográficas grabadas sobre la lámina */
   .holo-veins {
     position: absolute;
     inset: 0;
-    opacity: 0.5;
-    mix-blend-mode: overlay;
+    opacity: 0.45;
+    mix-blend-mode: soft-light;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='120'><filter id='t'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.06' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 9 -3.6'/></filter><rect width='320' height='120' filter='url(%23t)'/></svg>");
     background-size: 320px 120px;
   }
@@ -405,8 +420,8 @@ const cells: [number, number][] = [];
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(115deg, rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0.85) 48%, rgba(255, 255, 255, 0) 64%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 30%, rgba(11, 14, 22, 0.1) 100%);
+      linear-gradient(115deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.9) 48%, rgba(255, 255, 255, 0) 56%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0) 74%, rgba(11, 14, 22, 0.3) 100%);
     background-size: 240% 100%, 100% 100%;
     background-position: calc(var(--sheen, 18) * 1%) 0, 0 0;
     transition: background-position var(--dur-slow) var(--ease-out);
@@ -432,13 +447,12 @@ const cells: [number, number][] = [];
     left: 0;
     top: 0;
     bottom: 0;
-    width: 64%;
-    padding: 10px 34px 10px 20px;
+    width: 104px;
+    padding: 10px 30px 10px 20px;
     display: flex;
     align-items: center;
-    gap: 14px;
     background: linear-gradient(180deg, #121622, #0b0e16);
-    clip-path: polygon(0 0, 100% 0, calc(100% - 26px) 100%, 0 100%);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 0 100%);
     z-index: 2;
   }
   .tab-brand {
@@ -458,17 +472,23 @@ const cells: [number, number][] = [];
     font-size: 12px;
   }
   .tab-lines {
+    position: absolute;
+    left: 112px;
+    top: 50%;
+    transform: translateY(-50%);
     display: grid;
     gap: 2px;
     font-size: 7px;
     letter-spacing: 0.16em;
-    color: rgba(255, 255, 255, 0.86);
-    padding-left: 12px;
-    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    font-weight: 700;
+    color: #0b1d3a;
+    padding-left: 10px;
+    border-left: 1px solid rgba(11, 29, 58, 0.6);
+    z-index: 2;
   }
   .seal {
     right: 18px;
-    bottom: 34px;
+    bottom: 40px;
     width: 82px;
     height: 82px;
     border-radius: 50%;
@@ -730,30 +750,31 @@ const cells: [number, number][] = [];
       font-size: 48px;
     }
     .tagline {
-      top: 176px;
+      top: 168px;
       font-size: 10px;
     }
     .coords {
-      bottom: 96px;
+      bottom: 104px;
       left: 26px;
     }
     .strip {
-      height: 86px;
+      height: 98px;
     }
     .tab {
-      width: auto;
-      max-width: 72%;
-      padding: 10px 40px 10px 26px;
+      width: 120px;
+      padding: 10px 34px 10px 26px;
     }
     .tab-lines {
+      left: 130px;
       white-space: nowrap;
+      font-size: 8px;
     }
     .tab-lines {
       font-size: 8px;
     }
     .seal {
       right: 30px;
-      bottom: 38px;
+      bottom: 46px;
       width: 96px;
       height: 96px;
     }
