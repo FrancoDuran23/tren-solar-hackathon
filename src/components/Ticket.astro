@@ -6,6 +6,8 @@ interface Props {
   ghost?: boolean;
 }
 const { ghost = false } = Astro.props;
+/* ids únicos por instancia (el stack renderiza 3 tickets) */
+const uid = Math.random().toString(36).slice(2, 7);
 
 const isOpen = config.registration === 'open' && !!config.lumaUrl;
 const deadline = config.deadline
@@ -61,13 +63,66 @@ const cells: [number, number][] = [];
     <div class="grain" aria-hidden="true"></div>
     <div class="frame" aria-hidden="true"></div>
 
-    <p class="word" aria-hidden="true"><span>PRE-</span><span>HACKATÓN</span></p>
+    <p class="word" aria-hidden="true"><span>HACKATÓN</span><span>TREN SOLAR</span></p>
+    <!-- Motif: el Tren Solar (dúo) en line-art sobre la plata, estilo inset LABITCONF. Sin foto. -->
+    <svg class="motif" viewBox="0 0 420 100" aria-hidden="true" fill="none" stroke-linejoin="round" stroke-linecap="round">
+      <defs>
+        <clipPath id={`tsA-${uid}`}><path d="M46 12 H178 Q186 12 186 20 V78 H12 V54 Q12 26 46 12 Z" /></clipPath>
+        <clipPath id={`tsB-${uid}`}><path d="M374 12 H242 Q234 12 234 20 V78 H408 V54 Q408 26 374 12 Z" /></clipPath>
+      </defs>
+      <!-- vía -->
+      <path class="m-rail" d="M0 93 H420" />
+      <path class="m-ties" d="M8 96 V90 M26 96 V90 M44 96 V90 M62 96 V90 M80 96 V90 M98 96 V90 M116 96 V90 M134 96 V90 M152 96 V90 M170 96 V90 M188 96 V90 M206 96 V90 M224 96 V90 M242 96 V90 M260 96 V90 M278 96 V90 M296 96 V90 M314 96 V90 M332 96 V90 M350 96 V90 M368 96 V90 M386 96 V90 M404 96 V90" />
+      <!-- bogies -->
+      <g class="m-bogie">
+        <rect x="40" y="78" width="40" height="7" rx="2" /><rect x="138" y="78" width="40" height="7" rx="2" />
+        <rect x="242" y="78" width="40" height="7" rx="2" /><rect x="340" y="78" width="40" height="7" rx="2" />
+        <circle cx="50" cy="87" r="5" /><circle cx="70" cy="87" r="5" /><circle cx="148" cy="87" r="5" /><circle cx="168" cy="87" r="5" />
+        <circle cx="252" cy="87" r="5" /><circle cx="272" cy="87" r="5" /><circle cx="350" cy="87" r="5" /><circle cx="370" cy="87" r="5" />
+      </g>
+      <!-- coche A (cabina adelante, izquierda) -->
+      <g clip-path={`url(#tsA-${uid})`}>
+        <rect class="m-body" x="12" y="12" width="174" height="66" />
+        <rect class="m-skirt" x="12" y="68" width="174" height="10" />
+        <path class="m-skirt" d="M12 78 V48 L44 62 L70 68 V78 Z" />
+        <!-- banda de ventanales alta: del faldón casi al techo -->
+        <rect class="m-glass" x="58" y="24" width="124" height="40" rx="2" />
+        <path class="m-pillar" d="M98 24 V64 M138 24 V64" />
+        <!-- cabina: ventana lateral + parabrisas + máscara navy -->
+        <rect class="m-glass" x="42" y="24" width="12" height="40" rx="1.5" />
+        <path class="m-glass" d="M18 40 Q22 22 46 14 V34 Q30 36 18 46 Z" />
+        <path class="m-mask" d="M12 54 Q12 44 18 40 L30 38 V66 H12 Z" />
+        <circle class="m-lamp" cx="16" cy="58" r="2" /><circle class="m-lamp" cx="24" cy="58" r="2" />
+        <path class="m-m" d="M14 65 l3.5 -5 l2.5 3 l2.5 -3 l3.5 5" />
+        <rect class="m-roof" x="84" y="8" width="36" height="5" rx="1" />
+        <rect class="m-roof" x="130" y="9" width="30" height="4" rx="1" />
+      </g>
+      <path class="m-line" d="M46 12 H178 Q186 12 186 20 V78 H12 V54 Q12 26 46 12 Z" />
+      <!-- fuelle -->
+      <rect class="m-bellows" x="186" y="18" width="48" height="56" />
+      <!-- coche B (cabina atrás, derecha), espejo -->
+      <g clip-path={`url(#tsB-${uid})`}>
+        <rect class="m-body" x="234" y="12" width="174" height="66" />
+        <rect class="m-skirt" x="234" y="68" width="174" height="10" />
+        <path class="m-skirt" d="M408 78 V48 L376 62 L350 68 V78 Z" />
+        <rect class="m-glass" x="238" y="24" width="124" height="40" rx="2" />
+        <path class="m-pillar" d="M282 24 V64 M322 24 V64" />
+        <rect class="m-glass" x="366" y="24" width="12" height="40" rx="1.5" />
+        <path class="m-glass" d="M402 40 Q398 22 374 14 V34 Q390 36 402 46 Z" />
+        <path class="m-mask" d="M408 54 Q408 44 402 40 L390 38 V66 H408 Z" />
+        <circle class="m-lamp" cx="404" cy="58" r="2" /><circle class="m-lamp" cx="396" cy="58" r="2" />
+        <rect class="m-roof" x="300" y="8" width="36" height="5" rx="1" />
+        <rect class="m-roof" x="260" y="9" width="30" height="4" rx="1" />
+      </g>
+      <path class="m-line" d="M374 12 H242 Q234 12 234 20 V78 H408 V54 Q408 26 374 12 Z" />
+      <!-- sol de la Quebrada asomando detrás del dúo -->
+    </svg>
     <i class="orbit" aria-hidden="true"></i>
     <span class="seal" aria-hidden="true">
       <img class="mark" src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />
     </span>
     <div class="info">
-      <p class="mono">ROAD TO SOLAR TRAIN HACKATHON</p>
+      <p class="mono">RUMBO A LA HACKATÓN TREN SOLAR</p>
       <p class="mono">CIERRE · {deadline}</p>
       <p class="mono">ONLINE · JUJUY · ARG</p>
     </div>
@@ -85,11 +140,11 @@ const cells: [number, number][] = [];
     </div>
     <p class="no"><span class="no-label mono">N°</span> <span class="dots"><i>·</i><i>·</i></span><span class="of">/{TICKETS_TOTAL}</span></p>
     <dl class="grid mono">
-      <div class="full dest"><dt>DESTINO</dt><dd>SOLAR TRAIN HACKATHON</dd></div>
+      <div class="full dest"><dt>DESTINO</dt><dd>HACKATÓN TREN SOLAR</dd></div>
       <div><dt>VAGÓN</dt><dd>01</dd></div>
       <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
       <div><dt>ASIENTO</dt><dd>··</dd></div>
-      <div><dt>GATE</dt><dd>PRE</dd></div>
+      <div><dt>GATE</dt><dd>HTS</dd></div>
       <div class="full"><dt>HACKER ID</dt><dd>JDV-2026-····</dd></div>
     </dl>
     <div class="codes">
@@ -313,6 +368,7 @@ const cells: [number, number][] = [];
     z-index: 3;
   }
   .word,
+  .motif,
   .orbit,
   .seal,
   .info,
@@ -321,12 +377,35 @@ const cells: [number, number][] = [];
   .shard {
     z-index: 4;
   }
+  /* Motif del Tren Solar: tinta navy grabada sobre la plata, faldón naranja, banda de ventanales alta */
+  .motif {
+    position: absolute;
+    left: 24px;
+    top: 118px;
+    width: 186px;
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.55));
+  }
+  .motif .m-body { fill: rgba(255, 255, 255, 0.82); }
+  .motif .m-line { stroke: var(--navy-950); stroke-width: 1.6; }
+  .motif .m-glass { fill: var(--navy-950); }
+  .motif .m-pillar { stroke: rgba(255, 255, 255, 0.95); stroke-width: 2.2; }
+  .motif .m-skirt { fill: var(--orange-500); }
+  .motif .m-mask { fill: var(--navy-950); }
+  .motif .m-lamp { fill: #fff6e0; }
+  .motif .m-m { stroke: var(--orange-500); stroke-width: 1.6; }
+  .motif .m-roof { fill: rgba(11, 29, 58, 0.55); }
+  .motif .m-bellows { fill: var(--navy-900); }
+  .motif .m-bogie { fill: var(--navy-950); }
+  .motif .m-rail { stroke: var(--navy-950); stroke-width: 1.6; }
+  .motif .m-ties { stroke: rgba(11, 29, 58, 0.55); stroke-width: 1.2; }
   .word {
     position: absolute;
     top: 24px;
     left: 24px;
     margin: 0;
-    font: 900 40px/0.95 var(--font-display);
+    font: 900 31px/0.98 var(--font-display);
     letter-spacing: -0.02em;
     display: flex;
     flex-direction: column;
@@ -647,12 +726,17 @@ const cells: [number, number][] = [];
       top: 24px;
       height: 272px;
       left: 26px;
-      font-size: 33px;
+      font-size: 30px;
       justify-content: flex-start;
-      gap: 6px;
+      gap: 8px;
     }
     .word span {
       display: block;
+    }
+    .motif {
+      left: 128px;
+      top: 54px;
+      width: 300px;
     }
     .seal {
       right: 44px;
@@ -738,6 +822,7 @@ const cells: [number, number][] = [];
 
   /* Capas fantasma: solo forma y material, sin texto duplicado */
   .ghost .word,
+  .ghost .motif,
   .ghost .mark,
   .ghost .orbit,
   .ghost .info,

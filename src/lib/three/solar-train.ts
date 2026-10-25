@@ -321,15 +321,16 @@ export function buildSolarTrain(): SolarTrain {
     body.receiveShadow = true;
     car.add(body);
 
-    /* Ventanales panorámicos (banda oscura con parantes blancos) y puertas */
-    const winY0 = 0.62 * CAR_H;
-    const winY1 = 0.93 * CAR_H;
+    /* Ventanales panorámicos: banda ALTA (≈60% de la caja, como en el poster: del
+       faldón casi hasta el techo), pocos paños largos con parantes blancos finos */
+    const winY0 = 0.33 * CAR_H;
+    const winY1 = 0.92 * CAR_H;
     const doorW = 0.3;
     const inner0 = zs + doorW + 0.1;
     const inner1 = ze - doorW - 0.1;
     const span = inner1 - inner0;
-    const nWin = 4;
-    const gapW = 0.045;
+    const nWin = 3;
+    const gapW = 0.04;
     const winW = (span - gapW * (nWin - 1)) / nWin;
     for (const side of [-1, 1]) {
       const x = side * (CAR_W / 2 + 0.006);
@@ -337,10 +338,10 @@ export function buildSolarTrain(): SolarTrain {
         const zc = inner0 + winW / 2 + i * (winW + gapW);
         car.add(box(0.012, winY1 - winY0, winW, glassMat, x, (winY0 + winY1) / 2, zc));
       }
-      // Puertas: panel oscuro a cada extremo del coche
+      // Puertas: hoja oscura a cada extremo del coche, con vidrio a la altura de la banda
       for (const zd of [zs + 0.05 + doorW / 2, ze - 0.05 - doorW / 2]) {
-        car.add(box(0.012, 0.94 * CAR_H - 0.06, doorW, darkMat, x, (0.94 * CAR_H + 0.06) / 2, zd));
-        car.add(box(0.016, winY1 - winY0 - 0.08, doorW - 0.08, glassMat, x, (winY0 + winY1) / 2 + 0.02, zd));
+        car.add(box(0.012, 0.94 * CAR_H - 0.14, doorW, darkMat, x, (0.94 * CAR_H + 0.14) / 2, zd));
+        car.add(box(0.016, winY1 - winY0 - 0.1, doorW - 0.08, glassMat, x, (winY0 + winY1) / 2, zd));
       }
     }
 
@@ -386,6 +387,13 @@ export function buildSolarTrain(): SolarTrain {
       nose.castShadow = true;
       nose.receiveShadow = true;
       car.add(nose);
+      // Ventana lateral de cabina: la banda panorámica sigue hasta el parabrisas
+      for (const side of [-1, 1]) {
+        const cabW = 0.26;
+        car.add(
+          box(0.012, winY1 - winY0, cabW, glassMat, side * (CAR_W / 2 * 0.988), (winY0 + winY1) / 2, at + dir * (0.02 + cabW / 2)),
+        );
+      }
 
       const tipZ = at + dir * NOSE_LEN;
       const tipSX = noseSX(1);

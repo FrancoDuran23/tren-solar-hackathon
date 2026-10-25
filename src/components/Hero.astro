@@ -10,7 +10,7 @@ const chip = state === 'open' ? 'Inscripción abierta' : '35 tickets en juego';
 const assigned = Math.min(Math.max(config.ticketsAssigned, 0), TICKETS_TOTAL);
 const free = TICKETS_TOTAL - assigned;
 const seats = Array.from({ length: TICKETS_TOTAL }, (_, i) => i < assigned);
-const ticketLabel = 'Ticket Pre-Hackatón jujuy.dev, número por asignar de ' + TICKETS_TOTAL;
+const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asignar de ' + TICKETS_TOTAL;
 /* Ambiente muy sutil detrás del tren 3D (y fallback si WebGL falla) */
 const ambient = '/brand/solar-train-quebrada.jpg';
 const deadline = config.deadline
