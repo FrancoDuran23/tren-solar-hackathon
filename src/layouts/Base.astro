@@ -1,27 +1,75 @@
 ---
 import '../styles/tokens.css';
 import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { copy } from '../content/copy';
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const {
-  title = 'Pre-Hackatón · jujuy.dev',
-  description = 'Road to Solar Train Hackathon. 35 tickets, 35 jujeños.',
-} = Astro.props;
+const { meta, a11y } = copy;
+const { title = meta.title, description = meta.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+// OG stub (F4): el render 1200×630 del ticket llega con T03/T07; hasta entonces /og.png no existe.
+const ogImage = new URL('/og.png', Astro.site ?? Astro.url);
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang="es-AR">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description} />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#060F22" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={meta.locale} />
+    <meta property="og:site_name" content={meta.siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={meta.ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
-  <body>
-    <slot />
+  <body id="top">
+    <a class="skip" href="#main">{a11y.skipToContent}</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
   </body>
 </html>
+
+<style is:global>
+  .skip {
+    position: absolute;
+    left: var(--sp-4);
+    top: -100px;
+    z-index: 100;
+    background: var(--orange-500);
+    color: var(--navy-900);
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: var(--r-sm);
+    font-weight: 600;
+  }
+  .skip:focus {
+    top: var(--sp-2);
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 72px;
+  }
+</style>

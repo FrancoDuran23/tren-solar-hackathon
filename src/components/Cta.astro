@@ -1,0 +1,77 @@
+---
+import { copy } from '../content/copy';
+import { resolveCta } from '../lib/cta';
+
+interface Props {
+  size?: 'sm' | 'md';
+}
+const { size = 'md' } = Astro.props;
+const { state, href } = resolveCta();
+const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
+---
+
+{
+  state === 'open' && href ? (
+    <a class:list={['cta', 'cta--primary', `cta--${size}`]} href={href} rel="noopener">
+      {label}
+      <span class="cta__arrow" aria-hidden="true">→</span>
+    </a>
+  ) : (
+    <span class:list={['cta', `cta--${state}`, `cta--${size}`]} aria-disabled="true" role="link">
+      <span aria-hidden="true">{state === 'closed' ? '🔒' : '◷'}</span>
+      {label}
+    </span>
+  )
+}
+
+<style>
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: var(--fs-body);
+    line-height: 1;
+    padding: 16px 28px;
+    border-radius: var(--r-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: default;
+  }
+  .cta--sm {
+    font-size: var(--fs-small);
+    padding: 10px 16px;
+  }
+  .cta--primary {
+    cursor: pointer;
+    background: var(--orange-500);
+    color: var(--navy-900);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    box-shadow: var(--shadow-cta);
+    transition:
+      background var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out);
+  }
+  .cta--primary:hover {
+    background: var(--orange-400);
+  }
+  .cta--primary:active {
+    background: var(--orange-600);
+  }
+  .cta__arrow {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .cta--primary:hover .cta__arrow {
+    transform: translateX(4px);
+  }
+  .cta--soon {
+    background: var(--navy-800);
+    border: 1px dashed var(--orange-500);
+    color: var(--text-muted);
+  }
+  .cta--closed {
+    background: var(--navy-800);
+    color: rgba(255, 255, 255, 0.48);
+  }
+</style>

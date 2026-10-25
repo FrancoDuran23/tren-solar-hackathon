@@ -4,12 +4,12 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Layout + landmarks (`header`, `nav`, `main`, `footer`)
-- [ ] Nav anclas + menú mobile; barra progreso "vía"
-- [ ] CTA nav estados pronto/abierta/cerrada según config
-- [ ] Footer + meta/OG básicos (F1, F4, F5)
-- [ ] Copy en módulo de contenido (voseo); no hardcode en componentes
-- [ ] UI según design.md
-- [ ] Commit: `feat(shell): nav footer meta content (T02)`
+- [x] Layout + landmarks (`header`, `nav`, `main`, `footer`)
+- [x] Nav anclas + menú mobile; barra progreso "vía"
+- [x] CTA nav estados pronto/abierta/cerrada según config
+- [x] Footer + meta/OG básicos (F1, F4, F5)
+- [x] Copy en módulo de contenido (voseo); no hardcode en componentes
+- [x] UI según design.md
+- [x] Commit: `feat(shell): nav footer meta content (T02)`

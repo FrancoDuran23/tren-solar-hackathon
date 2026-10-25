@@ -1,0 +1,226 @@
+---
+import { copy } from '../content/copy';
+import Cta from './Cta.astro';
+
+const { nav, a11y } = copy;
+---
+
+<header class="nav" data-nav>
+  <div class="nav__bar">
+    <a class="nav__brand" href="#top" aria-label={nav.logoAlt}>
+      <img src="/brand/logo-jujuy-dev.svg" alt="" height="28" width="160" />
+      <span class="nav__lockup" aria-hidden="true">{nav.lockup}</span>
+    </a>
+
+    <nav class="nav__links" id="nav-links" aria-label={a11y.mainNav}>
+      {nav.links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="nav__cta"><Cta size="sm" /></div>
+
+    <button
+      class="nav__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-links"
+      aria-label={a11y.menuOpen}
+      data-open-label={a11y.menuOpen}
+      data-close-label={a11y.menuClose}
+    >
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div
+    class="nav__track"
+    role="progressbar"
+    aria-label={a11y.progress}
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+  >
+    <div class="nav__rail"></div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(6, 15, 34, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: var(--border);
+  }
+  .nav__bar {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    height: 64px;
+    padding: 0 var(--gutter);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-6);
+  }
+  .nav__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    color: var(--text);
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .nav__brand img {
+    height: 28px;
+    width: auto;
+    display: block;
+  }
+  .nav__lockup {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.08em;
+    padding-left: var(--sp-3);
+    border-left: 1px solid var(--orange-500);
+    color: var(--text-muted);
+  }
+  .nav__links {
+    display: none;
+    gap: var(--sp-6);
+  }
+  .nav__links a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+  .nav__links a:hover {
+    color: var(--orange-300);
+  }
+  .nav__toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 0 9px;
+    background: none;
+    border: var(--border);
+    border-radius: var(--r-sm);
+    cursor: pointer;
+  }
+  .nav__toggle span {
+    height: 2px;
+    background: var(--white);
+  }
+
+  /* Mobile: panel desplegable */
+  .nav[data-open] .nav__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--navy-950);
+    border-bottom: var(--border);
+    padding: var(--sp-2) var(--gutter) var(--sp-4);
+  }
+  .nav[data-open] .nav__links a {
+    padding: var(--sp-3) 0;
+    font-size: var(--fs-body);
+    border-bottom: var(--border);
+  }
+
+  .nav__track {
+    height: 2px;
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .nav[data-scrolled] .nav__track {
+    opacity: 1;
+  }
+  .nav__rail {
+    height: 100%;
+    width: 100%;
+    background: var(--orange-500);
+    transform: scaleX(var(--progress, 0));
+    transform-origin: left;
+  }
+
+  @media (min-width: 768px) {
+    .nav__bar {
+      padding: 0 32px;
+    }
+    .nav__lockup {
+      display: block;
+    }
+  }
+  @media (min-width: 1024px) {
+    .nav__bar {
+      padding: 0 48px;
+    }
+    .nav__links {
+      display: flex;
+    }
+    .nav__brand {
+      margin-right: 0;
+    }
+    .nav__links {
+      margin-left: auto;
+    }
+    .nav__toggle {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const toggle = nav?.querySelector<HTMLButtonElement>('.nav__toggle');
+  const track = nav?.querySelector<HTMLElement>('.nav__track');
+
+  if (nav && toggle) {
+    const setOpen = (open: boolean) => {
+      nav.toggleAttribute('data-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute(
+        'aria-label',
+        (open ? toggle.dataset.closeLabel : toggle.dataset.openLabel) ?? '',
+      );
+    };
+    toggle.addEventListener('click', () => setOpen(!nav.hasAttribute('data-open')));
+    nav.querySelectorAll('.nav__links a').forEach((a) =>
+      a.addEventListener('click', () => setOpen(false)),
+    );
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.hasAttribute('data-open')) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // Vía de progreso: aparece tras 80px de scroll (design §3.1)
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      nav.style.setProperty('--progress', String(p));
+      nav.toggleAttribute('data-scrolled', window.scrollY > 80);
+      track?.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    update();
+  }
+</script>
