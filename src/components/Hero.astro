@@ -66,6 +66,8 @@ const ticketLabel =
 </section>
 
 <script>
+  import { mountFoil } from '../lib/vgpu/foil';
+
   const stack = document.querySelector<HTMLElement>('[data-stack]');
   const tilt = document.querySelector<HTMLElement>('[data-tilt]');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -88,6 +90,13 @@ const ticketLabel =
       stack.classList.remove('is-hover');
       set(0, 0, 0);
     });
+    // Foil WebGPU (vgpu) solo en desktop con puntero fino; si falla, queda el sheen CSS.
+    const canvas = stack.querySelector<HTMLCanvasElement>('[data-foil-gl]');
+    if (canvas && desktop.matches) {
+      mountFoil(canvas)
+        .then(() => canvas.closest('.body')?.classList.add('gl-on'))
+        .catch(() => {});
+    }
     // Sheen al entrar en viewport (mobile/touch): una pasada
     new IntersectionObserver(
       (entries, obs) => {

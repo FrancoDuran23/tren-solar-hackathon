@@ -61,6 +61,10 @@ Repo destino: `FrancoDuran23/tren-solar-hackathon`. Rama `main` ⇒ producción,
 - Sponsor: `grep -rniE "spacex" src public` debe dar vacío (solo cohete + "sponsor sorpresa").
 - Lighthouse (spec §6, mobile) **no se corrió** en T07; pendiente sobre el preview de Vercel.
 
+## Foil del ticket (vgpu, T08)
+
+El foil holográfico del ticket desktop usa WebGPU vía [`vgpu`](https://vgpu.sh) (`src/lib/vgpu/`, shader `foil.wgsl` cargado con `@vgpu/wgsl/loader-vite`). Sin WebGPU, en mobile/touch o con `prefers-reduced-motion: reduce` no se monta el canvas y queda el sheen CSS.
+
 ## OG image
 
 `public/og.png` (1200×630) es un **stub** tipográfico. Reemplazar por el render del ticket manteniendo el nombre de archivo y verificar con el preview de WhatsApp/Twitter.
