@@ -2,7 +2,7 @@
 import { copy } from '../content/copy';
 import Cta from './Cta.astro';
 
-const { nav, a11y } = copy;
+const { nav, a11y, auth } = copy;
 ---
 
 <header class="nav" data-nav>
@@ -17,6 +17,25 @@ const { nav, a11y } = copy;
         <a href={l.href}>{l.label}</a>
       ))}
     </nav>
+
+    <div class="nav__session" id="nav-session">
+      <button type="button" class="nav-auth" data-signin aria-label={auth.signIn}>
+        <span class="nav-auth__long">{auth.signIn}</span>
+        <span class="nav-auth__short" aria-hidden="true">{auth.signInShort}</span>
+      </button>
+      <div class="nav-user" data-signed-in hidden>
+        <a class="nav-user__link" href="#perfil">
+          <span class="nav-user__avatar">
+            <img data-avatar alt="" width="32" height="32" hidden referrerpolicy="no-referrer" />
+            <span data-initials aria-hidden="true"></span>
+          </span>
+          <span class="nav-user__name" data-name></span>
+        </a>
+        <a class="nav-user__estado" href="#mi-estado">{auth.estado}</a>
+        <button type="button" class="nav-out" data-signout>{auth.signOut}</button>
+      </div>
+      <p class="nav-note" data-auth-note hidden role="status"></p>
+    </div>
 
     <div class="nav__cta"><Cta size="sm" /></div>
 
@@ -122,6 +141,82 @@ const { nav, a11y } = copy;
   .nav__links a:focus-visible::after {
     transform: scaleX(1);
   }
+  .nav__session {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .nav-auth,
+  .nav-out,
+  .nav-user__estado,
+  .nav-user__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-sm);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-auth {
+    padding: 0 14px;
+    border: 0;
+    background: var(--orange-500);
+    color: var(--navy-900);
+    cursor: pointer;
+  }
+  .nav-auth:hover:not(:disabled) { background: var(--orange-400); }
+  .nav-auth:disabled { opacity: 0.55; cursor: not-allowed; }
+  .nav-auth__short { display: none; }
+  .nav-user { display: flex; align-items: center; gap: var(--sp-2); }
+  .nav-user__link { color: var(--text); gap: var(--sp-2); padding: 0 4px; }
+  .nav-user__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--r-pill);
+    overflow: hidden;
+    background: var(--navy-700);
+    color: var(--orange-300);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .nav-user__avatar img { width: 32px; height: 32px; object-fit: cover; display: block; }
+  .nav-user__name {
+    max-width: 10ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-user__estado { color: var(--text); padding: 0 8px; }
+  .nav-out {
+    padding: 0 12px;
+    background: transparent;
+    color: var(--text);
+    border: var(--border);
+    cursor: pointer;
+  }
+  .nav-note {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: max-content;
+    max-width: 260px;
+    margin: 0;
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--navy-900);
+    border: 1px solid var(--orange-500);
+    color: var(--orange-300);
+    font-size: var(--fs-small);
+    z-index: 2;
+  }
+  .nav__session [hidden] { display: none !important; }
   .nav__cta {
     display: none;
   }
@@ -203,6 +298,12 @@ const { nav, a11y } = copy;
       display: block;
     }
   }
+  @media (max-width: 1099px) {
+    .nav-auth__long { display: none; }
+    .nav-auth__short { display: inline; }
+    .nav-user__name,
+    .nav-user__estado { display: none; }
+  }
   @media (min-width: 1024px) {
     .nav__links {
       display: flex;
@@ -263,5 +364,93 @@ const { nav, a11y } = copy;
       { passive: true },
     );
     update();
+  }
+</script>
+
+<script>
+  import { copy } from '../content/copy';
+  import { loadMe, onAuthChange, signInWithGoogle, signOut } from '../lib/auth-client';
+  import type { MeResponse } from '../lib/me';
+
+  const root = document.getElementById('nav-session');
+  if (root) {
+    const signInBtn = root.querySelector<HTMLButtonElement>('[data-signin]');
+    const signed = root.querySelector<HTMLElement>('[data-signed-in]');
+    const note = root.querySelector<HTMLElement>('[data-auth-note]');
+    const avatar = root.querySelector<HTMLImageElement>('[data-avatar]');
+    const initials = root.querySelector<HTMLElement>('[data-initials]');
+    const nameEl = root.querySelector<HTMLElement>('[data-name]');
+    const out = root.querySelector<HTMLButtonElement>('[data-signout]');
+
+    const showNote = (text: string) => {
+      if (!note) return;
+      note.hidden = text === '';
+      note.textContent = text;
+    };
+
+    const paint = (me: MeResponse) => {
+      if (!signInBtn || !signed) return;
+      if (me.error) {
+        signInBtn.hidden = false;
+        signed.hidden = true;
+        showNote(me.error);
+        return;
+      }
+      showNote('');
+      if (!me.user) {
+        signInBtn.hidden = false;
+        signInBtn.disabled = false;
+        signed.hidden = true;
+        return;
+      }
+      signInBtn.hidden = true;
+      signed.hidden = false;
+      if (nameEl) nameEl.textContent = me.user.name;
+      const letter = (me.user.name || me.user.email || '?').trim().charAt(0).toUpperCase();
+      if (initials) initials.textContent = letter;
+      if (avatar) {
+        if (me.user.image) {
+          avatar.src = me.user.image;
+          avatar.hidden = false;
+          if (initials) initials.hidden = true;
+        } else {
+          avatar.removeAttribute('src');
+          avatar.hidden = true;
+          if (initials) initials.hidden = false;
+        }
+      }
+    };
+
+    signInBtn?.addEventListener('click', () => {
+      if (!signInBtn) return;
+      signInBtn.disabled = true;
+      void loadMe().then(async (me) => {
+        if (!me.configured) {
+          showNote(copy.auth.unavailable);
+          signInBtn.disabled = false;
+          return;
+        }
+        const err = await signInWithGoogle();
+        if (err) {
+          showNote(err);
+          signInBtn.disabled = false;
+        }
+      });
+    });
+
+    out?.addEventListener('click', () => {
+      void signOut();
+    });
+
+    avatar?.addEventListener('error', () => {
+      avatar.hidden = true;
+      if (initials) initials.hidden = false;
+    });
+
+    const refresh = () => {
+      void loadMe().then(paint);
+    };
+    onAuthChange(refresh);
+    refresh();
   }
 </script>
