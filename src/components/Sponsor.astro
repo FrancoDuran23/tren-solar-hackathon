@@ -1,0 +1,48 @@
+---
+import { sections } from '../content/sections';
+
+const c = sections.sponsor;
+---
+
+<section class="sp" aria-labelledby="sp-title">
+  <div class="wrap">
+    <div class="card">
+      <div class="copy">
+        <p class="chip mono">{c.chip}</p>
+        <h2 id="sp-title">{c.title}</h2>
+        <p class="text">{c.text}</p>
+      </div>
+      <svg class="rocket-art" viewBox="0 0 240 160" fill="none" aria-hidden="true" focusable="false">
+        <circle cx="40" cy="30" r="10" fill="currentColor" opacity="0.2" />
+        <circle cx="205" cy="125" r="6" fill="currentColor" opacity="0.2" />
+        <path class="trail" d="M20 148 C60 130 90 110 118 84" stroke="var(--orange-500)" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 9" />
+        <g class="rocket" stroke="var(--white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(45 150 60)">
+          <path d="M150 14c14 14 18 34 14 58h-28c-4-24 0-44 14-58z" />
+          <circle cx="150" cy="44" r="7" />
+          <path d="M136 72l-12 14 12-4M164 72l12 14-12-4" />
+          <path d="M144 76l6 14 6-14" stroke="var(--orange-500)" />
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sp { background: var(--navy-950); padding: var(--sp-16) 0; }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+  .card {
+    display: grid; gap: var(--sp-8); align-items: center;
+    padding: var(--sp-8); border: var(--border-strong); border-radius: var(--r-lg);
+    background: var(--navy-950); color: var(--white);
+  }
+  @media (min-width: 768px) { .card { grid-template-columns: 1.4fr 1fr; padding: var(--sp-12); } }
+  .chip { display: inline-block; margin: 0 0 var(--sp-4); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-pill); font-size: var(--fs-small); }
+  .mono { font-family: var(--font-mono); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
+  .text { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 56ch; margin: 0; }
+  .rocket-art { width: 100%; max-width: 320px; justify-self: center; color: var(--white); }
+  .rocket, .trail { transition: transform var(--dur-slow) var(--ease-out), stroke-dasharray var(--dur-slow) var(--ease-out); }
+  .card:hover .rocket { transform: translateY(-6px) rotate(45deg); transform-origin: 150px 60px; }
+  .card:hover .trail { stroke-dasharray: 1 6; }
+  @media (prefers-reduced-motion: reduce) { .card:hover .rocket { transform: rotate(45deg); } }
+</style>

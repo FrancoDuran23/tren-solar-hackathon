@@ -1,0 +1,36 @@
+---
+import { sections } from '../content/sections';
+
+const c = sections.faq;
+---
+
+<section class="faq" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title">{c.title}</h2>
+    <div class="list">
+      {
+        c.items.map((it) => (
+          <details>
+            <summary>{it.q}</summary>
+            <p>{it.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq { background: var(--navy-900); padding: var(--sp-16) 0; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 var(--gutter); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-8); }
+  details { border-bottom: var(--border); }
+  summary {
+    cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: var(--sp-4);
+    padding: var(--sp-4) 0; font-weight: 600; font-size: var(--fs-lead);
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; font-family: var(--font-mono); color: var(--orange-500); transition: transform var(--dur-base) var(--ease-out); }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { margin: 0 0 var(--sp-4); color: var(--text-muted); max-width: 64ch; }
+</style>

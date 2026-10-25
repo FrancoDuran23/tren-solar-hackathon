@@ -1,0 +1,64 @@
+---
+import { config } from '../config';
+import { sections } from '../content/sections';
+import { links } from '../content/links';
+
+const c = sections.jury;
+const jury = config.jury;
+const published = jury.length > 0;
+const placeholders = Array.from({ length: c.placeholderCards });
+---
+
+<section class="jury" id="jurado" aria-labelledby="jury-title">
+  <div class="wrap">
+    <h2 id="jury-title">{c.title}</h2>
+    <p class="lead">{published ? c.liveText : c.soonText}</p>
+    <p class="apply">
+      {links.contact ? <a href={links.contact}>{c.apply}</a> : <span class="muted">{c.apply}</span>}
+    </p>
+
+    <ul class="grid">
+      {
+        published
+          ? jury.map((j) => (
+              <li class="card">
+                {j.photo ? (
+                  <img class="avatar" src={j.photo} alt={j.name} width="96" height="96" loading="lazy" />
+                ) : (
+                  <span class="avatar sil mono" aria-hidden="true">?</span>
+                )}
+                <p class="name">{j.name}</p>
+                <p class="role mono">{j.role}</p>
+                {j.social && <a class="social" href={j.social} target="_blank" rel="noopener noreferrer">Perfil →</a>}
+              </li>
+            ))
+          : placeholders.map(() => (
+              <li class="card">
+                <span class="avatar sil mono" aria-hidden="true">?</span>
+                <p class="name">{c.placeholderName}</p>
+                <p class="role mono">{c.placeholderRole}</p>
+              </li>
+            ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .jury { background: var(--navy-900); padding: var(--sp-16) 0; }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
+  .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 60ch; margin: 0 0 var(--sp-3); }
+  .apply { margin: 0 0 var(--sp-8); }
+  .apply a { color: var(--orange-300); font-weight: 600; text-underline-offset: 3px; }
+  .muted { color: var(--text-muted); }
+  .grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-4); }
+  @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+  .card { background: var(--surface-2); border: var(--border); border-radius: var(--r-md); padding: var(--sp-6); text-align: center; }
+  .avatar { display: grid; place-items: center; width: 96px; height: 96px; margin: 0 auto var(--sp-4); border-radius: 50%; object-fit: cover; }
+  .sil { background: linear-gradient(180deg, var(--navy-700), var(--navy-800)); color: var(--orange-500); font-size: 40px; font-weight: 700; }
+  .name { font-family: var(--font-display); font-weight: 700; font-size: var(--fs-h3); line-height: var(--lh-h3); margin: 0 0 var(--sp-2); }
+  .role { color: var(--text-muted); font-size: var(--fs-small); margin: 0; }
+  .social { display: inline-block; margin-top: var(--sp-3); color: var(--orange-300); font-size: var(--fs-small); }
+  .mono { font-family: var(--font-mono); }
+</style>

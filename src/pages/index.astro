@@ -2,10 +2,21 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Marquee from '../components/Marquee.astro';
+import Workshops from '../components/Workshops.astro';
+import Jury from '../components/Jury.astro';
+import Sponsor from '../components/Sponsor.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
 ---
 
 <Base>
   <Hero />
   <Marquee />
-  <!-- Secciones: T04–T06 -->
+  <!-- Orden spec §5: T04 mid (qué es, cómo, countdown, criterios, cupos) va ANTES de Workshops -->
+  <Workshops />
+  <!-- T06: #entrega (form) va aquí, entre Workshops y Jurado -->
+  <Jury />
+  <Sponsor />
+  <Faq />
+  <FinalCta />
 </Base>

@@ -4,11 +4,11 @@
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Workshops tablero / cards mobile; avisame (W1–W4)
-- [ ] Jurado siluetas + link escribinos (J1–J3); datos tipados (J4)
-- [ ] Sponsor cohete; grep release: sin nombre/logo/pista sponsor (P1–P3)
-- [ ] FAQ acordeón (S5)
-- [ ] CTA final (F2)
-- [ ] Commit: `feat(sections): workshops jury sponsor faq (T05)`
+- [x] Workshops tablero / cards mobile; avisame (W1–W4)
+- [x] Jurado siluetas + link escribinos (J1–J3); datos tipados (J4)
+- [x] Sponsor cohete; grep release: sin nombre/logo/pista sponsor (P1–P3)
+- [x] FAQ acordeón (S5)
+- [x] CTA final (F2)
+- [x] Commit: `feat(sections): workshops jury sponsor faq (T05)`

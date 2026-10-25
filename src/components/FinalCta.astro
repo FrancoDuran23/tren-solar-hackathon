@@ -1,0 +1,21 @@
+---
+import Cta from './Cta.astro';
+import { sections } from '../content/sections';
+
+const c = sections.finalCta;
+---
+
+<section class="final" aria-labelledby="final-title">
+  <div class="wrap">
+    <h2 id="final-title">{c.title}</h2>
+    <p class="text">{c.text}</p>
+    <Cta />
+  </div>
+</section>
+
+<style>
+  .final { background: var(--grad-sky); padding: var(--sp-24) 0; text-align: center; }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); display: grid; justify-items: center; gap: var(--sp-6); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h1); line-height: var(--lh-h1); margin: 0; }
+  .text { color: var(--text-muted); font-size: var(--fs-lead); margin: 0; }
+</style>
