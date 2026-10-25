@@ -209,7 +209,7 @@ const deadline = config.deadline
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background: var(--char-950);
+    background: #07090f;
     overflow: hidden;
     isolation: isolate;
     padding: var(--sp-8) 0 var(--sp-16);
@@ -224,10 +224,12 @@ const deadline = config.deadline
     /* Atmósfera charcoal/metal (T14, Franco: "mucho azul"): grafito casi negro, niebla
        blanca-gris en el horizonte, rim naranja detrás del tren, sol ámbar bajo, vías con
        grain en el piso. El navy queda para acentos (parabrisas, M, tinta), no de relleno. */
-    --char-950: #0b0c0f;
-    --char-900: #121418;
-    --char-800: #1c1f25;
-    --char-700: #262a31;
+    /* T15: noche cinematográfica de las refs del ticket: negro-azulado profundo (no navy
+       saturado, no grafito plano), atardecer ámbar/naranja quemado en el horizonte. */
+    --char-950: #07090f;
+    --char-900: #0d111a;
+    --char-800: #151a26;
+    --char-700: #1d2331;
     --sun-d: 220px;
     --sun-x: 70%;
   }
@@ -272,10 +274,10 @@ const deadline = config.deadline
     border-radius: 50%;
     /* Sol ámbar/dorado, bajo: medio hundido en la niebla, aporta luz y no un blob naranja */
     bottom: calc(var(--sun-d, 300px) * -0.42);
-    background: radial-gradient(circle at 50% 38%, #ffe3a6 0%, #ffc86a 34%, #f6a63a 58%, #e8902a 63%, rgba(232, 144, 42, 0) 64%);
+    background: radial-gradient(circle at 50% 38%, #ffe8b4 0%, #ffc466 32%, #f79b2e 56%, #e07a22 63%, rgba(224, 122, 34, 0) 64%);
     box-shadow:
-      0 0 90px 24px rgba(255, 190, 90, 0.22),
-      0 0 220px 80px rgba(255, 150, 60, 0.1);
+      0 0 100px 28px rgba(255, 170, 80, 0.26),
+      0 0 260px 100px rgba(255, 120, 50, 0.13);
   }
   /* Niebla blanca-gris apoyada en el horizonte (dos bancos desfasados) */
   .fog {
@@ -304,7 +306,7 @@ const deadline = config.deadline
     right: 0;
     bottom: -4px;
     height: 56px;
-    background: linear-gradient(180deg, rgba(255, 122, 42, 0) 0%, rgba(255, 138, 61, 0.42) 55%, rgba(255, 122, 42, 0) 100%);
+    background: linear-gradient(180deg, rgba(255, 122, 42, 0) 0%, rgba(255, 138, 61, 0.55) 55%, rgba(255, 122, 42, 0) 100%);
     filter: blur(10px);
     mask-image: linear-gradient(90deg, transparent 0, #000 25%, #000 90%, transparent 100%);
   }
@@ -355,19 +357,19 @@ const deadline = config.deadline
   .veil-x {
     background: linear-gradient(
       90deg,
-      rgba(11, 12, 15, 0.9) 0%,
-      rgba(11, 12, 15, 0.62) 38%,
-      rgba(11, 12, 15, 0.18) 68%,
-      rgba(11, 12, 15, 0.4) 100%
+      rgba(7, 9, 15, 0.9) 0%,
+      rgba(7, 9, 15, 0.62) 38%,
+      rgba(7, 9, 15, 0.18) 68%,
+      rgba(7, 9, 15, 0.4) 100%
     );
   }
   .veil-y {
     background: linear-gradient(
       180deg,
-      rgba(11, 12, 15, 0.82) 0%,
-      rgba(11, 12, 15, 0.12) 22%,
-      rgba(11, 12, 15, 0) 50%,
-      rgba(11, 12, 15, 0.7) 82%,
+      rgba(7, 9, 15, 0.82) 0%,
+      rgba(7, 9, 15, 0.12) 22%,
+      rgba(7, 9, 15, 0) 50%,
+      rgba(7, 9, 15, 0.7) 82%,
       var(--char-950) 100%
     );
   }
@@ -744,11 +746,11 @@ const deadline = config.deadline
     .veil-x {
       background: linear-gradient(
         90deg,
-        rgba(11, 12, 15, 0.94) 0%,
-        rgba(11, 12, 15, 0.76) 30%,
-        rgba(11, 12, 15, 0.24) 55%,
-        rgba(11, 12, 15, 0.04) 78%,
-        rgba(11, 12, 15, 0.3) 100%
+        rgba(7, 9, 15, 0.94) 0%,
+        rgba(7, 9, 15, 0.76) 30%,
+        rgba(7, 9, 15, 0.24) 55%,
+        rgba(7, 9, 15, 0.04) 78%,
+        rgba(7, 9, 15, 0.3) 100%
       );
     }
     .wrap {

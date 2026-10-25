@@ -87,8 +87,10 @@ const year = new Date().getFullYear();
 
   /* Franja plateada (metal cepillado del ticket) */
   .strip {
+    /* Misma lámina holográfica que la franja del ticket */
     background:
-      linear-gradient(100deg, #c9ced8 0%, #eef0f3 18%, #b7bec9 42%, #e6e9ee 64%, #c0c6d0 84%, #dfe2e8 100%);
+      linear-gradient(180deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 40%, rgba(11, 14, 22, 0.08) 100%),
+      linear-gradient(100deg, #f3c9da 0%, #fff0c8 9%, #d6f6e0 18%, #c4e6ff 27%, #d9ccff 36%, #ffcde8 45%, #f6f7f9 52%, #ffe5c2 60%, #cdf2e4 68%, #c7dcff 77%, #e1cdff 86%, #f3c9da 100%);
     color: var(--navy-950);
     border-top: 1px solid rgba(255, 255, 255, 0.5);
     border-bottom: 1px solid rgba(6, 15, 34, 0.35);
