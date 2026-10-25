@@ -1,0 +1,100 @@
+---
+import { config } from '../config';
+import { sections } from '../content/sections';
+import { links } from '../content/links';
+
+const c = sections.workshops;
+const rows = config.workshops;
+const published = rows.length > 0;
+const placeholders = Array.from({ length: c.placeholderRows });
+---
+
+<section class="ws" id="workshops" aria-labelledby="ws-title">
+  <div class="wrap">
+    <h2 id="ws-title">{c.title}</h2>
+    {!published && <p class="lead">{c.soonText}</p>}
+
+    <div class="board" role="table" aria-label="Agenda de workshops">
+      <div class="row head mono" role="row">
+        {c.columns.map((h) => <span role="columnheader">{h}</span>)}
+      </div>
+      {
+        published
+          ? rows.map((w) => (
+              <div class="row" role="row">
+                <span role="cell" class="day mono">{w.day}</span>
+                <span role="cell" class="time mono">{w.time}</span>
+                <span role="cell" class="topic">
+                  {w.url ? <a href={w.url} target="_blank" rel="noopener noreferrer">{w.topic}</a> : w.topic}
+                </span>
+                <span role="cell" class="speaker">{w.speaker}</span>
+                <span role="cell" class="state"><span class="pill pill--live mono">{c.livePill}</span></span>
+              </div>
+            ))
+          : placeholders.map((_, i) => (
+              <div class="row" role="row">
+                <span role="cell" class="day mono"><span class="chip">———</span></span>
+                <span role="cell" class="time mono"><span class="chip">———</span></span>
+                <span role="cell" class="topic">
+                  {i === 0 ? <span class="note mono">{c.soonNote}</span> : <span class="chip">———</span>}
+                </span>
+                <span role="cell" class="speaker"><span class="chip">———</span></span>
+                <span role="cell" class="state"><span class="pill mono">{c.soonPill}</span></span>
+              </div>
+            ))
+      }
+    </div>
+
+    {
+      !published && (
+        <p class="notify">
+          {links.contact ? <a href={links.contact}>{c.notify}</a> : <span class="muted">{c.notify}</span>}
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .ws { background: var(--navy-900); padding: var(--sp-16) 0; }
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+  h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
+  .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 60ch; margin: 0 0 var(--sp-8); }
+  .board { display: grid; gap: var(--sp-2); }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 0.8fr 2.4fr 1.4fr 1.2fr;
+    gap: var(--sp-4);
+    align-items: center;
+    padding: var(--sp-4);
+    background: var(--surface-2);
+    border: var(--border);
+    border-radius: var(--r-sm);
+    transition: background var(--dur-base) var(--ease-out);
+  }
+  .row:not(.head):hover { background: var(--navy-700); }
+  .row.head { background: transparent; border-color: transparent; font-size: var(--fs-small); color: var(--text-muted); letter-spacing: 0.08em; padding-block: 0; }
+  .mono { font-family: var(--font-mono); }
+  .chip { display: inline-block; min-width: 4ch; padding: 2px 10px; background: rgba(255,255,255,0.08); border-radius: var(--r-xs); color: var(--text-muted); }
+  .note { color: var(--text); font-size: var(--fs-small); }
+  .pill { display: inline-block; font-size: var(--fs-small); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-pill); }
+  .pill--live { border-color: var(--success); color: var(--success); }
+  a { color: var(--white); text-underline-offset: 3px; }
+  .notify { margin-top: var(--sp-6); }
+  .notify a { color: var(--orange-300); font-weight: 600; }
+  .muted { color: var(--text-muted); }
+
+  @media (max-width: 767px) {
+    .row.head { display: none; }
+    .row {
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: 'day topic state' 'time speaker state';
+      gap: var(--sp-2) var(--sp-3);
+    }
+    .day { grid-area: day; }
+    .time { grid-area: time; }
+    .topic { grid-area: topic; font-weight: 600; }
+    .speaker { grid-area: speaker; color: var(--text-muted); font-size: var(--fs-small); }
+    .state { grid-area: state; align-self: start; }
+  }
+</style>
