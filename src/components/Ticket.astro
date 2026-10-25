@@ -1,4 +1,5 @@
 ---
+import { dates } from '../content/dates';
 import { config } from '../config';
 
 interface Props {
@@ -8,9 +9,6 @@ interface Props {
 const { ghost = false } = Astro.props;
 
 const isOpen = config.registration === 'open' && !!config.lumaUrl;
-const deadline = config.deadline
-  ? new Date(config.deadline.iso).toLocaleDateString('es-AR')
-  : 'POR CONFIRMAR';
 
 /* Barcode estilizado determinista (decorativo) */
 const bars: { x: number; w: number }[] = [];
@@ -50,10 +48,9 @@ const cells: [number, number][] = [];
 ---
 
 <!--
-  Ticket "Hackatón Tren Solar" según las refs de Franco (docs/refs/ref-ticket-franco-a/b.jpg):
-  cuerpo noche con el Tren Solar real en la Quebrada al atardecer, título display grande,
-  franja holográfica abajo con el sello circular jujuy.dev, y stub oscuro Admit One con
-  grilla, barcode y QR. Chanfles metálicos en las esquinas exteriores.
+  Ticket "Hackatón Tren Solar" (ref-b): cuerpo noche con el Tren Solar en la Quebrada,
+  título display, franja holográfica y stub Admit One. Una sola marca jujuy.dev,
+  abajo a la izquierda del cuerpo (pestaña de la lámina). Sin sello circular duplicado.
 -->
 <div class:list={['ticket', { ghost }]} aria-hidden={ghost ? 'true' : undefined} data-ticket>
   <div class="body">
@@ -65,7 +62,7 @@ const cells: [number, number][] = [];
     <i class="glow" aria-hidden="true"></i>
     <i class="grain" aria-hidden="true"></i>
 
-    <p class="corner corner-tl mono"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />JUJUY<i>/</i>ARGENTINA</p>
+    <p class="corner corner-tl mono">JUJUY<i>/</i>ARGENTINA</p>
     <p class="corner corner-tr mono"><span>LA ENERGÍA</span><span>DEL FUTURO</span><span>TAMBIÉN ES</span><span>NUESTRA</span></p>
 
     <h3 class="title">
@@ -86,16 +83,11 @@ const cells: [number, number][] = [];
         <p class="tab-brand mono"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" /><i>/</i></p>
       </div>
       <p class="tab-lines mono">
-        <span>RUMBO A LA HACKATÓN TREN SOLAR</span>
-        <span>CIERRE · {deadline}</span>
+        <span>BUILD · {dates.buildMono}</span>
+        <span>GANADORES · {dates.winnersMono}</span>
         <span>ONLINE · JUJUY · ARG</span>
       </p>
     </div>
-
-    <!-- Sello circular jujuy.dev, montado sobre el borde de la franja -->
-    <span class="seal" aria-hidden="true">
-      <img class="mark" src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />
-    </span>
   </div>
 
   <div class="perf" aria-hidden="true"></div>
@@ -260,8 +252,7 @@ const cells: [number, number][] = [];
   .title,
   .tagline,
   .coords,
-  .strip,
-  .seal {
+  .strip {
     position: absolute;
     z-index: 2;
   }
@@ -279,14 +270,8 @@ const cells: [number, number][] = [];
     left: 20px;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.35);
-  }
-  .corner-tl img {
-    height: 14px;
-    width: auto;
-    display: block;
   }
   .corner-tr {
     right: 20px;
@@ -486,39 +471,6 @@ const cells: [number, number][] = [];
     border-left: 1px solid rgba(11, 29, 58, 0.6);
     z-index: 2;
   }
-  .seal {
-    right: 18px;
-    bottom: 40px;
-    width: 82px;
-    height: 82px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    z-index: 3;
-    /* Sello metálico: disco oscuro con aro plateado y reflejo frío */
-    background:
-      radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.16), transparent 42%),
-      radial-gradient(circle at 50% 50%, #1a2238, #0e1322 60%, #06080e 100%);
-    box-shadow:
-      0 0 0 2px #e8edf5,
-      0 0 0 3px rgba(11, 14, 22, 0.9),
-      0 0 0 4px rgba(214, 222, 236, 0.35),
-      0 12px 28px rgba(0, 0, 0, 0.6);
-  }
-  .seal::after {
-    content: '';
-    position: absolute;
-    inset: 7px;
-    border-radius: 50%;
-    border: 1px dashed rgba(255, 255, 255, 0.32);
-  }
-  .mark {
-    position: relative;
-    height: 16px;
-    width: auto;
-    display: block;
-  }
-
   /* ───────── Perforación ───────── */
   .perf {
     position: absolute;
@@ -772,15 +724,6 @@ const cells: [number, number][] = [];
     .tab-lines {
       font-size: 8px;
     }
-    .seal {
-      right: 30px;
-      bottom: 46px;
-      width: 96px;
-      height: 96px;
-    }
-    .mark {
-      height: 19px;
-    }
     .perf {
       left: var(--body-w);
       right: auto;
@@ -833,7 +776,6 @@ const cells: [number, number][] = [];
   .ghost .tagline,
   .ghost .coords,
   .ghost .tab,
-  .ghost .mark,
   .ghost .stub-head,
   .ghost .grid,
   .ghost .codes,

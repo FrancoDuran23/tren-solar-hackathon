@@ -1,5 +1,7 @@
 /** Copy de workshops, jurado, sponsor, FAQ y CTA final (design.md §5). */
 
+import { dates } from './dates';
+
 export interface FaqItem {
   q: string;
   a: string;
@@ -9,9 +11,9 @@ export const sections = {
   workshops: {
     title: 'Workshops de la semana.',
     columns: ['DÍA', 'HORA', 'TEMA', 'SPEAKER', 'ESTADO'],
-    soonNote: 'La agenda de la semana se lanza pronto.',
+    soonNote: `Workshops ${dates.workshops}, del ${dates.build}.`,
     soonText:
-      'La agenda se lanza pronto. Vas a tener workshops durante la semana de build para destrabar producto, tech y pitch.',
+      `Hay workshops ${dates.workshops} del build, del ${dates.build}, para destrabar producto, tech y pitch. La grilla de día y speaker se publica en esa ventana.`,
     soonPill: 'PRÓXIMAMENTE',
     livePill: 'ONLINE',
     notify: 'Avisame cuando salga la agenda →',
@@ -58,7 +60,7 @@ export const sections = {
       },
       {
         q: '¿Cuándo cierra?',
-        a: 'Fecha por confirmar. Anotate en Luma y te avisamos.',
+        a: `La entrega es del ${dates.build}. Los workshops corren ${dates.workshops}. Los ganadores se anuncian el ${dates.winners}.`,
       },
       {
         q: '¿Puedo ver el ranking?',

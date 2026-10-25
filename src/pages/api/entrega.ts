@@ -3,7 +3,6 @@ import { ENTREGA_WEBHOOK_URL } from 'astro:env/server';
 import { config } from '../../config';
 import { MAX_PAYLOAD, coerceEntrega, validateEntrega } from '../../lib/entrega';
 import { profileCompleteness } from '../../lib/profile';
-import { authConfigured } from '../../server/env';
 import { readProfile } from '../../server/profile-store';
 import { currentUser } from '../../server/session';
 
@@ -35,6 +34,25 @@ async function hackerId(email: string, at: string): Promise<string> {
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // Gate de login antes que el resto: sin Google no hay entrega anónima.
+  let userId: string;
+  let email: string;
+  try {
+    const who = await currentUser(request);
+    if (!who.configured || !who.user) {
+      return json(401, { ok: false, error: 'Entrá con Google para despachar tu proyecto.' });
+    }
+    const stored = await readProfile(who.user.id);
+    if (!stored || profileCompleteness(stored) !== 100) {
+      return json(403, { ok: false, error: 'Completá tu perfil al 100% para poder entregar.' });
+    }
+    email = who.user.email;
+    userId = who.user.id;
+  } catch (err) {
+    console.error('[entrega] sesión', err instanceof Error ? err.message : 'error');
+    return json(503, { ok: false, error: 'No pudimos verificar tu sesión. Probá de nuevo en un minuto.' });
+  }
+
   if (config.submissions === 'closed') {
     return json(403, { ok: false, error: 'Las entregas están cerradas.' });
   }
@@ -53,6 +71,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   const at = new Date().toISOString();
   const input = coerceEntrega(raw);
+  input.email = email;
 
   // Honeypot: un bot completa `website`. Respondemos como éxito sin reenviar nada.
   const trap = (raw as Record<string, unknown> | null)?.website;
@@ -65,31 +84,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return json(429, { ok: false, error: 'Demasiados envíos. Probá de nuevo en unos minutos.' }, { 'retry-after': '600' });
   }
 
-  let userId: string | null = null;
-  if (authConfigured()) {
-    try {
-      const who = await currentUser(request);
-      if (!who.configured || !who.user) {
-        return json(401, { ok: false, error: 'Entrá con Google para despachar tu proyecto.' });
-      }
-      const stored = await readProfile(who.user.id);
-      if (!stored || profileCompleteness(stored) !== 100) {
-        return json(403, { ok: false, error: 'Completá tu perfil al 100% para poder entregar.' });
-      }
-      input.email = who.user.email;
-      userId = who.user.id;
-    } catch (err) {
-      console.error('[entrega] sesión', err instanceof Error ? err.message : 'error');
-      return json(503, { ok: false, error: 'No pudimos verificar tu sesión. Probá de nuevo en un minuto.' });
-    }
-  }
-
   const errors = validateEntrega(input);
   if (Object.keys(errors).length > 0) return json(422, { ok: false, error: 'Revisá los campos.', errors });
 
   const dest = ENTREGA_WEBHOOK_URL;
   const id = await hackerId(input.email, at);
-  const payload = { ...input, hackerId: id, submittedAt: at, ...(userId ? { userId } : {}) };
+  const payload = { ...input, hackerId: id, submittedAt: at, userId };
 
   if (!dest) {
     if (import.meta.env.DEV) console.log('[entrega] (stub, sin ENTREGA_WEBHOOK_URL)', payload);

@@ -1,8 +1,11 @@
 ---
+import { copy } from '../content/copy';
+import { dates } from '../content/dates';
 import { config } from '../config';
 import { TRACTION_TYPES } from '../lib/entrega';
 
 const closed = config.submissions === 'closed';
+const { auth } = copy;
 ---
 
 <section class="ent" id="entrega" aria-labelledby="ent-title" data-closed={closed ? 'true' : 'false'}>
@@ -11,17 +14,20 @@ const closed = config.submissions === 'closed';
     <p class="lead">Repo, demo y video. Una entrega por equipo; si te equivocás, reenviá y gana la última.</p>
 
     {closed && (
-      <p class="banner mono" role="status">Las entregas abren pronto. Mientras tanto, el mostrador está cerrado.</p>
+      <p class="banner mono" role="status">
+        Mostrador cerrado. La entrega es del {dates.build}. Los ganadores se anuncian el {dates.winners}.
+      </p>
     )}
 
-    <p class="banner mono" id="entrega-auth" hidden>
-      <span id="entrega-auth-text"></span>
+    <p class="banner mono" id="entrega-auth">
+      <span id="entrega-auth-text">{auth.entregaNeedLogin}</span>
+      <button type="button" class="auth-btn" id="entrega-signin">{auth.signIn}</button>
       <a href="#perfil" id="entrega-auth-link" hidden>Completar perfil</a>
     </p>
 
     <div class="card">
       <form id="entrega-form" novalidate>
-        <fieldset disabled={closed}>
+        <fieldset disabled>
           <legend class="sr">Datos de la entrega</legend>
 
           <div class="field" data-f="proyecto">
@@ -159,7 +165,7 @@ const closed = config.submissions === 'closed';
 
 <script>
   import { copy } from '../content/copy';
-  import { loadMe, onAuthChange } from '../lib/auth-client';
+  import { loadMe, onAuthChange, signInWithGoogle } from '../lib/auth-client';
   import { FIELDS, validateField, validateEntrega, type EntregaField, type EntregaInput } from '../lib/entrega';
   import type { MeResponse } from '../lib/me';
 
@@ -217,6 +223,7 @@ const closed = config.submissions === 'closed';
   const authBanner = $('entrega-auth');
   const authText = $('entrega-auth-text');
   const authLink = $('entrega-auth-link') as HTMLAnchorElement;
+  const signInBtn = $('entrega-signin') as HTMLButtonElement;
   const defaultToast = toast.textContent ?? '';
   let sending = false;
   let last: { id: string; name: string; at: string } | null = null;
@@ -225,36 +232,29 @@ const closed = config.submissions === 'closed';
   let entregaPrefilled = false;
 
   function applyGate(me: MeResponse) {
-    if (closed) return;
     const email = ctl('email');
+    const block = (message: string, opts: { signIn?: boolean; profile?: boolean } = {}) => {
+      gate = 'blocked';
+      gateMessage = message;
+      fieldset.disabled = true;
+      authBanner.hidden = false;
+      authText.textContent = message;
+      authLink.hidden = !opts.profile;
+      signInBtn.hidden = !opts.signIn;
+    };
     if (me.error) {
-      gate = 'blocked';
-      gateMessage = me.error;
-      fieldset.disabled = true;
-      authBanner.hidden = false;
-      authText.textContent = me.error;
-      authLink.hidden = true;
+      block(me.error);
       return;
     }
-    if (!me.configured) {
-      gate = 'open';
-      fieldset.disabled = false;
-      authBanner.hidden = true;
-      email.readOnly = false;
-      return;
-    }
-    email.value = me.user?.email ?? email.value;
-    email.readOnly = Boolean(me.user);
     if (!me.user) {
-      gate = 'blocked';
-      gateMessage = copy.auth.entregaNeedLogin;
-      fieldset.disabled = true;
-      authBanner.hidden = false;
-      authText.textContent = gateMessage;
-      authLink.hidden = true;
+      email.readOnly = false;
       entregaPrefilled = false;
+      block(copy.auth.entregaNeedLogin, { signIn: true });
       return;
     }
+    email.value = me.user.email;
+    email.readOnly = true;
+    signInBtn.hidden = true;
     if (!entregaPrefilled && me.profile) {
       if (ctl('responsable').value.trim() === '') ctl('responsable').value = me.profile.fullName;
       if (me.profile.livesInJujuy) ctl('jujuy').checked = true;
@@ -262,19 +262,36 @@ const closed = config.submissions === 'closed';
       entregaPrefilled = true;
       livePreview();
     }
+    if (closed) {
+      gate = 'blocked';
+      gateMessage = 'Las entregas están cerradas.';
+      fieldset.disabled = true;
+      authBanner.hidden = true;
+      return;
+    }
     if (me.profile?.completeness === 100) {
       gate = 'open';
       fieldset.disabled = false;
       authBanner.hidden = true;
       return;
     }
-    gate = 'blocked';
-    gateMessage = `${copy.auth.entregaNeedProfile} Ahora está al ${me.profile?.completeness ?? 0}%.`;
-    fieldset.disabled = true;
-    authBanner.hidden = false;
-    authText.textContent = gateMessage + ' ';
-    authLink.hidden = false;
+    block(`${copy.auth.entregaNeedProfile} Ahora está al ${me.profile?.completeness ?? 0}%.`, { profile: true });
   }
+
+  signInBtn.addEventListener('click', () => {
+    void loadMe().then(async (me) => {
+      if (!me.configured) {
+        authText.textContent = copy.auth.unavailable;
+        return;
+      }
+      signInBtn.disabled = true;
+      const err = await signInWithGoogle();
+      if (err) {
+        authText.textContent = err;
+        signInBtn.disabled = false;
+      }
+    });
+  });
 
   onAuthChange(() => {
     void loadMe().then(applyGate);
@@ -306,6 +323,7 @@ const closed = config.submissions === 'closed';
     try {
       const res = await fetch('/api/entrega', {
         method: 'POST',
+        credentials: 'same-origin',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ ...d, website: (form.elements.namedItem('website') as HTMLInputElement).value }),
       });
@@ -373,8 +391,20 @@ const closed = config.submissions === 'closed';
   input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
   input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--orange-500); box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.35); }
   input[readonly] { opacity: 0.8; }
-  #entrega-auth a { color: var(--orange-300); margin-left: var(--sp-2); }
+  #entrega-auth:not([hidden]) { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); }
+  #entrega-auth a { color: var(--orange-300); }
   #entrega-auth[hidden] { display: none; }
+  .auth-btn {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 0;
+    background: var(--orange-500);
+    color: var(--cosmos-950);
+    font: 700 13px/1 var(--font-text);
+    cursor: pointer;
+  }
+  .auth-btn:hover:not(:disabled) { background: var(--orange-400); }
+  .auth-btn:disabled { opacity: 0.55; cursor: not-allowed; }
   .field.bad input:not([type='checkbox']), .field.bad select, .field.bad textarea { border-color: var(--error); }
   .field.ok input:not([type='checkbox']), .field.ok select, .field.ok textarea { border-color: var(--success); }
   .field.ok:not(.check)::after { content: '✓'; position: absolute; right: 14px; bottom: 12px; color: var(--success); pointer-events: none; }

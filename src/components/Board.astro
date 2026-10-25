@@ -12,6 +12,7 @@ const flap = (s: string) => [...s];
 
 <section
   class="board"
+  id="tablero"
   aria-label={board.label}
   data-board
   data-mode={mode}
@@ -47,6 +48,7 @@ const flap = (s: string) => [...s];
       <p class="zero" data-zero aria-hidden="true">{board.zero}</p>
     </div>
     <p class="note" data-note hidden={mode !== 'tentative'}>{board.tentativeNote}</p>
+    <p class="when">{board.when}</p>
   </div>
 </section>
 
@@ -223,6 +225,13 @@ const flap = (s: string) => [...s];
     text-transform: none;
     letter-spacing: 0;
     color: var(--text-muted);
+  }
+  .when {
+    margin: var(--sp-4) 0 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--orange-300);
   }
   @media (max-width: 479px) {
     .flap {

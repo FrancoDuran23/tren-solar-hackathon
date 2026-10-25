@@ -15,19 +15,14 @@ const { criteria: c } = copy;
       <span><strong>{c.gate}</strong> {c.gateNote}</span>
     </p>
 
-    <!-- Los cuatro criterios como planilla: filas con regla fina, puntaje 0–10 a la derecha -->
-    <ol class="ledger" aria-label="Criterios de 0 a 10">
+    <ol class="ledger">
       {c.items.map((it) => (
         <li class="row">
           <h3>{it.title}</h3>
           <p>{it.text}</p>
-          <span class="scale mono" aria-label={`Puntaje ${c.scale}`}>
-            <span>0</span><i aria-hidden="true"></i><span>10</span>
-          </span>
         </li>
       ))}
     </ol>
-    <p class="scalenote">{c.scaleNote}</p>
 
     <!-- Tracción: no es la quinta fila; es el bloque que pesa más -->
     <article class="traction tk-panel tk-corner" aria-labelledby="trac-title">
@@ -117,25 +112,8 @@ const { criteria: c } = copy;
     color: var(--text-muted);
     max-width: 52ch;
   }
-  .scale {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-2);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: var(--ink-200);
-    font-variant-numeric: tabular-nums;
-  }
-  .scale i {
-    width: 120px;
-    height: 0;
-    border-top: 2px dotted var(--orange-500);
-  }
-  .scalenote {
-    margin: var(--sp-3) 0 var(--sp-10, 40px);
-    font: var(--fs-small) / var(--lh-small) var(--font-text);
-    color: var(--ink-400);
+  .ledger {
+    margin-bottom: var(--sp-10, 40px);
   }
 
   /* Bloque de tracción: navy sobre papel, esquina chanfleada, naranja como estructura */
@@ -219,7 +197,7 @@ const { criteria: c } = copy;
 
   @media (min-width: 760px) {
     .row {
-      grid-template-columns: minmax(200px, 0.9fr) 2fr auto;
+      grid-template-columns: minmax(200px, 0.9fr) 2fr;
       align-items: baseline;
     }
     .traction {

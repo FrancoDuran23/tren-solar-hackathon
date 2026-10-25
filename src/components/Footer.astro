@@ -1,5 +1,6 @@
 ---
 import { copy } from '../content/copy';
+import { dates } from '../content/dates';
 import { links } from '../content/links';
 import { resolveCta } from '../lib/cta';
 
@@ -50,7 +51,8 @@ const year = new Date().getFullYear();
         <div><dt>SALIDA</dt><dd>JUJUY · ONLINE</dd></div>
         <div><dt>DESTINO</dt><dd>HACKATÓN TREN SOLAR</dd></div>
         <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
-        <div><dt>HORARIO</dt><dd>POR CONFIRMAR</dd></div>
+        <div><dt>BUILD</dt><dd>{dates.buildMono}</dd></div>
+        <div><dt>GANADORES</dt><dd>{dates.winnersMono}</dd></div>
       </dl>
       {items.length > 0 && (
         <ul class="footer__links" aria-label={footer.linksLabel}>
