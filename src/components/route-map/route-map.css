@@ -1,0 +1,424 @@
+/* Mapa de recorrido Volcán → Tilcara, paleta Pre-Hackatón: cosmos navy, ruta naranja, plata para vías y texto.
+   Tokens desde src/styles/tokens.css. */
+.rmap {
+  --acc: var(--orange-500);
+  --acc-soft: rgba(255, 90, 31, 0.22);
+  --acc-halo: rgba(255, 90, 31, 0.38);
+  --line: var(--edge);
+  --line2: var(--edge-strong);
+  --muted: var(--text-muted);
+  --muted2: rgba(214, 222, 236, 0.55);
+  --bone: var(--white);
+  --map-bg: var(--cosmos-950);
+  --rail: #7d879c;
+  --river: #2f5fa3;
+  --road: #4a5468;
+  --f-mono: var(--font-mono);
+  --f-display: var(--font-display);
+  margin-top: var(--sp-8);
+}
+
+/* Animación de la ruta al entrar en viewport */
+.rt {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1px;
+}
+.route-on .rt {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 2.4s cubic-bezier(0.3, 0.7, 0.2, 1) 0.25s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rt {
+    stroke-dasharray: none;
+  }
+}
+
+.rmap-map {
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--map-bg);
+}
+.rmap-map.tk-panel {
+  background:
+    radial-gradient(900px 300px at 50% 0%, rgba(27, 58, 107, 0.35), transparent 70%),
+    linear-gradient(180deg, #0a0f1c 0%, #060a14 100%);
+}
+.rmap-scroll {
+  scrollbar-width: none;
+  overflow-x: auto;
+}
+.rmap-inner {
+  min-width: 620px;
+  position: relative;
+}
+.rmap-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Capas del SVG */
+.gr {
+  stroke: rgba(214, 222, 236, 0.07);
+  stroke-width: 0.6px;
+}
+.rv {
+  fill: none;
+  stroke: var(--river);
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+.rv2 {
+  fill: none;
+  stroke: var(--river);
+  stroke-width: 0.8px;
+  stroke-linecap: round;
+  opacity: 0.32;
+}
+.rd {
+  fill: none;
+  stroke: var(--road);
+  stroke-width: 1.1px;
+  opacity: 0.75;
+  stroke-dasharray: 6 4;
+}
+.rd2 {
+  fill: none;
+  stroke: var(--road);
+  stroke-width: 0.8px;
+  opacity: 0.4;
+  stroke-dasharray: 4 4;
+}
+.rl {
+  fill: none;
+  stroke: var(--rail);
+  stroke-width: 1.4px;
+  opacity: 0.7;
+}
+.rt-under {
+  fill: none;
+  stroke: var(--acc);
+  stroke-width: 9px;
+  stroke-linecap: round;
+  opacity: 0.16;
+}
+.rt {
+  fill: none;
+  stroke: var(--acc);
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pk {
+  fill: #4a5468;
+  opacity: 0.55;
+}
+.place circle {
+  fill: var(--ink-400);
+}
+.place text {
+  font-family: var(--f-mono);
+  fill: var(--muted);
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+.place .pk2 {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+/* Estaciones */
+.stp .dot-halo {
+  fill: var(--acc-soft);
+}
+.stp .dot {
+  fill: var(--map-bg);
+  stroke: var(--acc);
+  stroke-width: 2.8px;
+}
+.stp.sel .dot {
+  fill: var(--acc);
+}
+.stp.sel .dot-halo {
+  fill: var(--acc-halo);
+}
+.stp .lb {
+  font-family: var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  fill: var(--bone);
+  paint-order: stroke;
+  stroke: #070b14;
+  stroke-width: 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.stp .ln {
+  fill: var(--orange-300);
+}
+.stp.sel .lb {
+  fill: var(--orange-300);
+}
+
+/* Norte y escala */
+.north path {
+  stroke: var(--silver);
+  stroke-width: 1.6px;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.north text {
+  font-family: var(--f-mono);
+  fill: var(--silver);
+  font-size: 11px;
+  font-weight: 700;
+}
+.scale line {
+  stroke: var(--muted);
+  stroke-width: 1.4px;
+}
+.scale text {
+  font-family: var(--f-mono);
+  fill: var(--muted);
+  letter-spacing: 0.08em;
+  font-size: 10.5px;
+}
+
+/* Marcador que viaja por la ruta */
+.rmap-trv circle.h {
+  fill: var(--acc-halo);
+}
+.rmap-trv circle.c {
+  fill: var(--white);
+}
+
+/* Hotspots invisibles sobre cada estación */
+.rmap-dot {
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  padding: 0;
+  position: absolute;
+}
+.rmap-dot:focus-visible {
+  outline: 2.5px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Panel de detalle */
+.rmap-detail {
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  column-gap: 28px;
+  padding: 12px 20px 14px;
+}
+.rmap-detail .rmap-dk {
+  grid-area: 1 / 1;
+}
+.rmap-detail .rmap-dn {
+  grid-area: 2 / 1;
+}
+.rmap-detail .rmap-dd {
+  grid-area: 2 / 2;
+  margin: 0;
+}
+.rmap-detail .rmap-dc {
+  text-align: right;
+  grid-area: 2 / 3;
+  margin: 0;
+  line-height: 1.3;
+}
+.rmap-dk {
+  font-family: var(--f-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange-400);
+  font-size: 11px;
+  font-weight: 700;
+}
+.rmap-dn {
+  font-family: var(--f-display);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin-top: 6px;
+  font-size: clamp(22px, 2.2vw, 32px);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--white);
+}
+.rmap-dd {
+  color: var(--muted);
+  margin: 10px 0 0;
+  font-size: var(--fs-small);
+}
+.rmap-dc {
+  font-family: var(--f-mono);
+  color: var(--muted2);
+  letter-spacing: 0.04em;
+  margin: 12px 0 0;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.rmap-dc a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+/* Leyenda */
+.rmap-legend {
+  border-top: 1px solid var(--line);
+  font-family: var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 10px 20px;
+  font-size: 10.5px;
+  display: flex;
+  margin: 0;
+}
+.rmap-legend span {
+  align-items: center;
+  gap: 8px;
+  display: inline-flex;
+}
+.lg {
+  border-top: 2.5px solid var(--acc);
+  flex: none;
+  width: 22px;
+  height: 0;
+  display: inline-block;
+}
+.lg-rl {
+  border-color: var(--rail);
+}
+.lg-rv {
+  border-color: var(--river);
+}
+.lg-rd {
+  border-color: var(--road);
+  border-top-style: dashed;
+}
+
+/* Chips de estaciones */
+.rmap-chips {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: var(--sp-4);
+  display: flex;
+}
+.rmap-chip {
+  border: 1px solid var(--line2);
+  color: var(--bone);
+  font-family: var(--f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: rgba(214, 222, 236, 0.04);
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 11.5px;
+  font-weight: 400;
+  min-height: 40px;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+  display: inline-flex;
+}
+.rmap-chip .rn {
+  color: var(--orange-400);
+  font-weight: 700;
+}
+.rmap-chip:hover {
+  background: rgba(255, 90, 31, 0.1);
+  border-color: var(--orange-400);
+}
+.rmap-chip.sel {
+  background: var(--orange-500);
+  border-color: var(--orange-500);
+  color: var(--cosmos-950);
+}
+.rmap-chip.sel .rn {
+  color: var(--cosmos-950);
+}
+.rmap-chip:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .rmap {
+    margin-top: var(--sp-6);
+  }
+  .rmap-scroll {
+    scroll-behavior: smooth;
+    -webkit-mask-image: linear-gradient(90deg, #000 88%, #0000);
+    mask-image: linear-gradient(90deg, #000 88%, #0000);
+  }
+  .rmap-scroll.end {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .rmap-detail {
+    grid-template-columns: 1fr;
+    row-gap: 0;
+    padding: 12px 16px;
+  }
+  .rmap-detail .rmap-dk,
+  .rmap-detail .rmap-dn,
+  .rmap-detail .rmap-dd,
+  .rmap-detail .rmap-dc {
+    grid-area: auto / 1;
+  }
+  .rmap-detail .rmap-dd {
+    margin-top: 8px;
+  }
+  .rmap-detail .rmap-dc {
+    text-align: left;
+    max-width: none;
+    margin-top: 8px;
+  }
+  .rmap-legend {
+    gap: 6px 14px;
+    padding: 9px 16px;
+    font-size: 10px;
+  }
+  .rmap-legend span {
+    white-space: nowrap;
+  }
+  .rmap-chips {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    margin: 10px calc(-1 * var(--gutter)) 0;
+    padding: 2px var(--gutter);
+    scroll-padding: 0 var(--gutter);
+    overflow-x: auto;
+  }
+  .rmap-chips::-webkit-scrollbar,
+  .rmap-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .rmap-chip {
+    scroll-snap-align: start;
+    flex: none;
+  }
+}
