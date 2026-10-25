@@ -29,10 +29,21 @@
   --ink-200: #c9cdd3;
   --ink-100: #e4e1da;
 
+  /* T19 · universo del ticket (refs Franco): cosmos negro-azulado, plata, lámina holo */
+  --cosmos-950: #05070d;
+  --cosmos-900: #0a0e18;
+  --cosmos-800: #111726;
+  --cosmos-700: #1a2234;
+  --silver: #d6deec;
+  --edge: rgba(214, 222, 236, 0.22);
+  --edge-strong: rgba(214, 222, 236, 0.4);
+  --holo: linear-gradient(100deg, #f0a7c6 0%, #ffd9a8 8%, #bdf3d8 16%, #9fd6ff 25%, #c3b5ff 34%, #ffb6e0 43%, #eef2f7 50%, #ffcf9a 58%, #a8ecd9 66%, #a5c8ff 75%, #d2b8ff 84%, #f0a7c6 100%);
+  --chamfer-lg: 14px;
+
   /* §1.1 Semánticos */
-  --bg: var(--navy-950);
-  --surface: var(--navy-900);
-  --surface-2: var(--navy-800);
+  --bg: var(--cosmos-950);
+  --surface: var(--cosmos-900);
+  --surface-2: var(--cosmos-800);
   --text: var(--white);
   --text-muted: rgba(255, 255, 255, 0.74);
   --accent: var(--orange-500);

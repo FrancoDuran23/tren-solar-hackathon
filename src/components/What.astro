@@ -9,7 +9,7 @@ const { what } = copy;
       <h2 id="what-title">{what.h2}</h2>
       <p>{what.text}</p>
     </div>
-    <dl class="facts" aria-label={what.factsLabel}>
+    <dl class="facts tk-panel tk-corner" aria-label={what.factsLabel}>
       {what.facts.map((f) => (
         <div class="fact">
           <dt>{f.k}</dt>
@@ -23,8 +23,8 @@ const { what } = copy;
 <style>
   /* Sección en papel: corta el muro navy entre el marquee y las paradas */
   .what {
-    background: var(--paper);
-    color: var(--ink-950);
+    background: var(--cosmos-900);
+    color: var(--white);
     padding: var(--sp-12) 0;
   }
   .inner {
@@ -43,17 +43,14 @@ const { what } = copy;
     margin: 0;
     font-size: var(--fs-lead);
     line-height: var(--lh-lead);
-    color: var(--ink-800);
+    color: var(--text-muted);
     max-width: 56ch;
   }
   /* Datos clave como talón de embarque navy sobre el papel */
   .facts {
     margin: 0;
-    background: var(--navy-900);
     color: var(--white);
-    border-radius: var(--r-md);
-    clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
-    box-shadow: 0 24px 48px rgba(6, 15, 34, 0.25);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
     padding: var(--sp-6);
     display: grid;
     gap: var(--sp-4);
@@ -67,7 +64,7 @@ const { what } = copy;
     justify-content: space-between;
     gap: var(--sp-4);
     padding-bottom: var(--sp-3);
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid var(--edge);
   }
   .fact:last-child {
     border: 0;

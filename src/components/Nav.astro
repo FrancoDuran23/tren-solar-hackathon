@@ -68,14 +68,14 @@ const { nav, a11y, auth } = copy;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgba(7, 9, 15, 0.72);
+    background: rgba(5, 7, 13, 0.74);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--edge);
     transition: background var(--dur-base) var(--ease-out);
   }
   .nav[data-scrolled] {
-    background: rgba(7, 9, 15, 0.86);
+    background: rgba(5, 7, 13, 0.9);
   }
   .nav__bar {
     max-width: var(--container-max);
@@ -122,6 +122,7 @@ const { nav, a11y, auth } = copy;
     font-size: var(--fs-small);
     font-weight: 500;
     letter-spacing: 0.01em;
+    white-space: nowrap;
     padding: 6px 0;
     position: relative;
   }
@@ -165,8 +166,10 @@ const { nav, a11y, auth } = copy;
   .nav-auth {
     padding: 0 14px;
     border: 0;
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
     background: var(--orange-500);
-    color: var(--navy-900);
+    color: var(--cosmos-950);
     cursor: pointer;
   }
   .nav-auth:hover:not(:disabled) { background: var(--orange-400); }
@@ -179,7 +182,7 @@ const { nav, a11y, auth } = copy;
     height: 32px;
     border-radius: var(--r-pill);
     overflow: hidden;
-    background: var(--navy-700);
+    background: var(--cosmos-700);
     color: var(--orange-300);
     display: inline-flex;
     align-items: center;
@@ -199,7 +202,8 @@ const { nav, a11y, auth } = copy;
     padding: 0 12px;
     background: transparent;
     color: var(--text);
-    border: var(--border);
+    border: 1px solid var(--edge-strong);
+    border-radius: 0;
     cursor: pointer;
   }
   .nav-note {
@@ -210,7 +214,7 @@ const { nav, a11y, auth } = copy;
     max-width: 260px;
     margin: 0;
     padding: var(--sp-2) var(--sp-3);
-    background: var(--navy-900);
+    background: var(--cosmos-900);
     border: 1px solid var(--orange-500);
     color: var(--orange-300);
     font-size: var(--fs-small);
@@ -258,7 +262,7 @@ const { nav, a11y, auth } = copy;
     top: 64px;
     left: 0;
     right: 0;
-    background: rgba(7, 9, 15, 0.96);
+    background: rgba(5, 7, 13, 0.97);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     padding: var(--sp-2) var(--gutter) var(--sp-4);
@@ -293,7 +297,7 @@ const { nav, a11y, auth } = copy;
       display: block;
     }
   }
-  @media (min-width: 768px) {
+  @media (min-width: 768px) and (max-width: 1023px), (min-width: 1360px) {
     .nav__lockup {
       display: block;
     }
@@ -308,6 +312,7 @@ const { nav, a11y, auth } = copy;
     .nav__links {
       display: flex;
       margin-left: auto;
+      gap: var(--sp-4);
     }
     .nav__brand {
       margin-right: 0;

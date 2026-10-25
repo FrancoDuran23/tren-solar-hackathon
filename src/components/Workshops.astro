@@ -56,7 +56,7 @@ const placeholders = Array.from({ length: c.placeholderRows });
 </section>
 
 <style>
-  .ws { background: var(--navy-900); padding: var(--sp-16) 0; }
+  .ws { background: var(--cosmos-900); padding: var(--sp-16) 0; border-top: 1px solid var(--edge); }
   .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
   h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
   .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 60ch; margin: 0 0 var(--sp-8); }
@@ -67,12 +67,13 @@ const placeholders = Array.from({ length: c.placeholderRows });
     gap: var(--sp-4);
     align-items: center;
     padding: var(--sp-4);
-    background: var(--surface-2);
-    border: var(--border);
-    border-radius: var(--r-sm);
+    background: linear-gradient(180deg, #11151f, #0b0e16);
+    border: 1px solid var(--edge);
+    border-radius: 0;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
     transition: background var(--dur-base) var(--ease-out);
   }
-  .row:not(.head):hover { background: var(--navy-700); }
+  .row:not(.head):hover { background: var(--cosmos-700); }
   .row.head { background: transparent; border-color: transparent; font-size: var(--fs-small); color: var(--text-muted); letter-spacing: 0.08em; padding-block: 0; }
   .mono { font-family: var(--font-mono); }
   /* Agenda vacía: andenes reservados (barras suaves), no texto roto */
@@ -81,7 +82,7 @@ const placeholders = Array.from({ length: c.placeholderRows });
   .row.ghost:nth-child(n + 3) { opacity: 0.7; } .row.ghost:nth-child(n + 4) { opacity: 0.45; }
   .row.ghost:hover { background: transparent; }
   .note { color: var(--text); font-size: var(--fs-small); }
-  .pill { display: inline-block; font-size: var(--fs-small); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-pill); }
+  .pill { display: inline-block; font-size: var(--fs-small); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: 0; }
   .pill--live { border-color: var(--success); color: var(--success); }
   a { color: var(--white); text-underline-offset: 3px; }
   .notify { margin-top: var(--sp-6); }

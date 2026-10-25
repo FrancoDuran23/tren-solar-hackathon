@@ -77,7 +77,7 @@ const year = new Date().getFullYear();
   .footer {
     position: relative;
     overflow: hidden;
-    background: var(--navy-950);
+    background: var(--cosmos-950);
     color: var(--text);
     isolation: isolate;
   }
@@ -194,10 +194,11 @@ const year = new Date().getFullYear();
     gap: 8px;
     font-size: 11px;
     letter-spacing: 0.08em;
-    background: var(--paper);
-    color: var(--ink-950);
+    background: linear-gradient(180deg, #11151f, #0b0e16);
+    color: var(--white);
+    border: 1px solid var(--edge);
     padding: var(--sp-4) var(--sp-4);
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+    clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px);
   }
   .board div {
     display: grid;
@@ -205,7 +206,7 @@ const year = new Date().getFullYear();
     gap: var(--sp-3);
   }
   .board dt {
-    color: var(--ink-600);
+    color: rgba(255, 255, 255, 0.55);
   }
   .board dd {
     margin: 0;
@@ -234,8 +235,8 @@ const year = new Date().getFullYear();
   .footer__bottom {
     position: relative;
     z-index: 1;
-    background: var(--navy-950);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--cosmos-950);
+    border-top: 1px solid var(--edge);
     padding: var(--sp-4) var(--gutter) var(--sp-6);
   }
   .footer__bottom p {

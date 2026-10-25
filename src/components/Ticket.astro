@@ -1,5 +1,5 @@
 ---
-import { config, TICKETS_TOTAL } from '../config';
+import { config } from '../config';
 
 interface Props {
   /** Capa fantasma del stack: mismo markup, aria-hidden, sin canvas WebGPU */
@@ -57,13 +57,16 @@ const cells: [number, number][] = [];
 -->
 <div class:list={['ticket', { ghost }]} aria-hidden={ghost ? 'true' : undefined} data-ticket>
   <div class="body">
-    <!-- Paisaje: Tren Solar en la Quebrada (asset real del repo), oscurecido hacia el título -->
+    <!-- Cosmos arriba (planetas del arte del poster) fundido con el Tren Solar real en la Quebrada -->
     <img class="scene" src="/brand/solar-train-quebrada.jpg" alt="" width="1024" height="775" loading="lazy" decoding="async" />
+    <img class="cosmos" src="/brand/solar-train-sky.jpg" alt="" width="1024" height="512" loading="lazy" decoding="async" />
+    <i class="stars" aria-hidden="true"></i>
     <i class="shade" aria-hidden="true"></i>
+    <i class="glow" aria-hidden="true"></i>
     <i class="grain" aria-hidden="true"></i>
 
     <p class="corner corner-tl mono"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" />JUJUY<i>/</i>ARGENTINA</p>
-    <p class="corner corner-tr mono"><span>ONLINE</span><span>JUJUY · ARG</span><span>{TICKETS_TOTAL} TICKETS</span></p>
+    <p class="corner corner-tr mono"><span>LA ENERGÍA</span><span>DEL FUTURO</span><span>TAMBIÉN ES</span><span>NUESTRA</span></p>
 
     <h3 class="title">
       <span class="t1">Hackatón</span>
@@ -71,18 +74,22 @@ const cells: [number, number][] = [];
     </h3>
     <p class="tagline mono">IDEAS QUE VIAJAN MÁS LEJOS</p>
 
-    <p class="credit mono"><i aria-hidden="true"></i><span>JUJUY.DEV<br /><b>COMUNIDAD DE DESARROLLADORES</b></span></p>
+    <p class="coords mono"><i aria-hidden="true"></i><span>23.9000° S<br />67.1000° W</span></p>
 
-    <!-- Franja holográfica (foil vgpu con fallback CSS) -->
+    <!-- Franja holográfica iridiscente (foil vgpu con fallback CSS) con pestaña oscura a la izquierda -->
     <div class="strip" data-body>
       <i class="holo" aria-hidden="true"></i>
+      <i class="holo-veins" aria-hidden="true"></i>
       <i class="sheen" aria-hidden="true"></i>
       {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
-      <p class="strip-text mono">
-        <span>RUMBO A LA HACKATÓN TREN SOLAR</span>
-        <span>CIERRE · {deadline}</span>
-        <span>ONLINE · JUJUY · ARG</span>
-      </p>
+      <div class="tab">
+        <p class="tab-brand mono"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" /><i>/</i></p>
+        <p class="tab-lines mono">
+          <span>RUMBO A LA HACKATÓN TREN SOLAR</span>
+          <span>CIERRE · {deadline}</span>
+          <span>ONLINE · JUJUY · ARG</span>
+        </p>
+      </div>
     </div>
 
     <!-- Sello circular jujuy.dev, montado sobre el borde de la franja -->
@@ -96,16 +103,16 @@ const cells: [number, number][] = [];
   <div class="stub">
     <div class="stub-head">
       <span class="admit">ADMIT ONE<i aria-hidden="true">/</i></span>
-      <svg class="orbit-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-        <circle cx="12" cy="12" r="5" /><path d="M3.5 15.5c3-1.2 9.8-4.6 16-10.4M4.5 8.5c-.6 3.4 7.8 7.9 15 7" />
+      <svg class="orbit-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3c3 3 4 7.5 3 12h-6c-1-4.5 0-9 3-12z" /><circle cx="12" cy="10" r="1.6" /><path d="M9 13l-3 3 3-.5M15 13l3 3-3-.5M10.5 15.5 12 20l1.5-4.5" />
       </svg>
     </div>
     <dl class="grid mono">
       <div class="full dest"><dt>DESTINO</dt><dd>HACKATÓN TREN SOLAR</dd><i aria-hidden="true"></i></div>
       <div><dt>VAGÓN</dt><dd>01</dd></div>
-      <div><dt>ASIENTO</dt><dd><span class="dots"><i>·</i><i>·</i></span><small>/{TICKETS_TOTAL}</small></dd></div>
+      <div><dt>ASIENTO</dt><dd>303</dd></div>
       <div><dt>GATE</dt><dd>HTS</dd></div>
-      <div><dt>HACKER ID</dt><dd>JDV-2026-····</dd></div>
+      <div><dt>HACKER ID</dt><dd>JDV-2026-001</dd></div>
     </dl>
     <div class="codes">
       <svg class="barcode" viewBox="0 0 120 28" aria-hidden="true">
@@ -120,14 +127,16 @@ const cells: [number, number][] = [];
         </svg>
       </span>
     </div>
-    <p class="foot mono">JUJUY<i>/</i>ARGENTINA<span class="legal">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</span></p>
+    <p class="foot mono">JUJUY<i>/</i>ARGENTINA<i>/</i><span class="legal">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</span></p>
+    <i class="ctri ctri-tr" aria-hidden="true"></i>
+    <i class="ctri ctri-br" aria-hidden="true"></i>
   </div>
 </div>
 
 <style>
   .ticket {
-    --body-h: 364px;
-    --stub-h: 256px;
+    --body-h: 352px;
+    --stub-h: 268px;
     --edge: 14px;
     --night: #0b0e16;
     --night-2: #121726;
@@ -189,15 +198,56 @@ const cells: [number, number][] = [];
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 62% 46%;
-    filter: saturate(0.92) contrast(1.06);
+    object-position: 58% 72%;
+    filter: saturate(1) contrast(1.1) brightness(1.05);
+    /* el cielo de la foto se funde hacia el cosmos de arriba */
+    mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.4) 16%, #000 36%);
+  }
+  /* Planetas del arte del poster (recorte superior derecho, sin el título) */
+  .cosmos {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 330px;
+    height: 150px;
+    object-fit: none;
+    object-position: 100% 0;
+    transform: scale(1.05);
+    transform-origin: 100% 0;
+    opacity: 0.9;
+    mask-image: linear-gradient(180deg, #000 0, #000 40%, transparent 100%);
+  }
+  .stars {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.9), transparent 60%),
+      radial-gradient(1.4px 1.4px at 38% 9%, rgba(255, 255, 255, 0.8), transparent 60%),
+      radial-gradient(1px 1px at 61% 22%, rgba(255, 255, 255, 0.7), transparent 60%),
+      radial-gradient(1.2px 1.2px at 83% 14%, rgba(255, 255, 255, 0.8), transparent 60%),
+      radial-gradient(1px 1px at 27% 31%, rgba(255, 255, 255, 0.5), transparent 60%),
+      radial-gradient(1px 1px at 72% 34%, rgba(255, 255, 255, 0.6), transparent 60%);
+    background-size: 260px 200px;
+    opacity: 0.7;
+    mask-image: linear-gradient(180deg, #000 0, #000 30%, transparent 60%);
   }
   .shade {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(11, 14, 22, 0.96) 0%, rgba(11, 14, 22, 0.78) 34%, rgba(11, 14, 22, 0.18) 62%, rgba(11, 14, 22, 0.08) 100%),
-      linear-gradient(180deg, rgba(11, 14, 22, 0.7) 0%, rgba(11, 14, 22, 0) 32%, rgba(11, 14, 22, 0) 62%, rgba(11, 14, 22, 0.78) 100%);
+      linear-gradient(90deg, rgba(7, 9, 15, 0.94) 0%, rgba(7, 9, 15, 0.7) 34%, rgba(7, 9, 15, 0.1) 60%, rgba(7, 9, 15, 0.04) 100%),
+      linear-gradient(180deg, rgba(7, 9, 15, 0.5) 0%, rgba(7, 9, 15, 0) 26%, rgba(7, 9, 15, 0) 66%, rgba(7, 9, 15, 0.6) 100%);
+  }
+  /* Luz del atardecer detrás del tren (naranja quemado), como el destello de la ref */
+  .glow {
+    position: absolute;
+    left: 42%;
+    top: 22%;
+    width: 60%;
+    height: 50%;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(255, 150, 70, 0.4), rgba(255, 120, 50, 0.12) 45%, transparent 70%);
+    filter: blur(6px);
+    mix-blend-mode: screen;
   }
   .grain {
     position: absolute;
@@ -209,7 +259,7 @@ const cells: [number, number][] = [];
   .corner,
   .title,
   .tagline,
-  .credit,
+  .coords,
   .strip,
   .seal {
     position: absolute;
@@ -258,22 +308,22 @@ const cells: [number, number][] = [];
     text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
   }
   .t1 {
-    font-weight: 500;
-    font-size: 20px;
-    letter-spacing: 0.22em;
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: 0.1em;
     line-height: 1;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--white);
   }
   .t2 {
     font-weight: 900;
-    font-size: 34px;
+    font-size: 36px;
     letter-spacing: -0.01em;
     line-height: 1;
     color: var(--white);
   }
   .tagline {
     left: 20px;
-    top: 152px;
+    top: 150px;
     font-size: 9px;
     letter-spacing: 0.3em;
     color: rgba(255, 255, 255, 0.78);
@@ -288,60 +338,60 @@ const cells: [number, number][] = [];
     height: 2px;
     background: var(--orange-500);
   }
-  .credit {
+  .coords {
     left: 20px;
-    bottom: 86px;
+    bottom: 84px;
     display: inline-flex;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
     font-size: 8px;
-    letter-spacing: 0.18em;
-    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.16em;
+    color: rgba(255, 255, 255, 0.72);
   }
-  .credit b {
-    font-weight: 400;
-    color: rgba(255, 255, 255, 0.55);
-    letter-spacing: 0.12em;
-  }
-  .credit i {
-    margin-top: 3px;
-    width: 14px;
-    height: 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.7);
+  .coords i {
     position: relative;
+    width: 12px;
+    height: 12px;
   }
-  .credit i::after {
+  .coords i::before,
+  .coords i::after {
     content: '';
     position: absolute;
-    right: 0;
-    top: -3px;
-    width: 5px;
-    height: 5px;
-    border-top: 1px solid rgba(255, 255, 255, 0.7);
-    border-right: 1px solid rgba(255, 255, 255, 0.7);
-    transform: rotate(45deg);
+    background: rgba(255, 255, 255, 0.7);
   }
+  .coords i::before { left: 50%; top: 0; width: 1px; height: 100%; }
+  .coords i::after { top: 50%; left: 0; height: 1px; width: 100%; }
 
   /* Franja holográfica */
   .strip {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 72px;
+    height: 76px;
     overflow: hidden;
-    background: #d9dde6;
+    background: #cfd6e4;
     isolation: isolate;
   }
+  /* Iridiscencia saturada tipo lámina metálica (ref-b): rosa, celeste, violeta, menta y oro */
   .holo {
     position: absolute;
     inset: 0;
     width: 220%;
     background: linear-gradient(
       100deg,
-      #f3c9da 0%, #fff0c8 9%, #d6f6e0 18%, #c4e6ff 27%, #d9ccff 36%, #ffcde8 45%,
-      #f6f7f9 52%, #ffe5c2 60%, #cdf2e4 68%, #c7dcff 77%, #e1cdff 86%, #f3c9da 100%
+      #f0a7c6 0%, #ffd9a8 8%, #bdf3d8 16%, #9fd6ff 25%, #c3b5ff 34%, #ffb6e0 43%,
+      #eef2f7 50%, #ffcf9a 58%, #a8ecd9 66%, #a5c8ff 75%, #d2b8ff 84%, #f0a7c6 100%
     );
     animation: holo-drift 16s ease-in-out infinite alternate;
+  }
+  /* Vetas topográficas grabadas sobre la lámina */
+  .holo-veins {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='120'><filter id='t'><feTurbulence type='fractalNoise' baseFrequency='0.02 0.06' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 9 -3.6'/></filter><rect width='320' height='120' filter='url(%23t)'/></svg>");
+    background-size: 320px 120px;
   }
   .ghost .holo {
     animation: none;
@@ -372,23 +422,49 @@ const cells: [number, number][] = [];
     display: block;
   }
   .strip.gl-on .holo,
+  .strip.gl-on .holo-veins,
   .strip.gl-on .sheen {
     display: none;
   }
-  .strip-text {
+  /* Pestaña oscura con borde en diagonal (ref-b) sobre la lámina */
+  .tab {
     position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 64%;
+    padding: 10px 34px 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(180deg, #121622, #0b0e16);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 26px) 100%, 0 100%);
+    z-index: 2;
+  }
+  .tab-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+  }
+  .tab-brand img {
+    height: 14px;
+    width: auto;
+    display: block;
+  }
+  .tab-brand i {
+    font-style: normal;
+    color: var(--orange-500);
+    font-size: 12px;
+  }
+  .tab-lines {
     display: grid;
     gap: 2px;
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    color: var(--navy-950);
-    font-weight: 700;
+    font-size: 7px;
+    letter-spacing: 0.16em;
+    color: rgba(255, 255, 255, 0.86);
     padding-left: 12px;
-    border-left: 1px solid rgba(11, 29, 58, 0.55);
-    z-index: 2;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
   }
   .seal {
     right: 18px;
@@ -399,11 +475,15 @@ const cells: [number, number][] = [];
     display: grid;
     place-items: center;
     z-index: 3;
-    background: radial-gradient(circle at 36% 30%, #1d2740, var(--night-2) 55%, #06080e 100%);
+    /* Sello metálico: disco oscuro con aro plateado y reflejo frío */
+    background:
+      radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.16), transparent 42%),
+      radial-gradient(circle at 50% 50%, #1a2238, #0e1322 60%, #06080e 100%);
     box-shadow:
-      0 0 0 2px rgba(226, 232, 240, 0.75),
-      0 0 0 3px rgba(11, 14, 22, 0.8),
-      0 10px 26px rgba(0, 0, 0, 0.55);
+      0 0 0 2px #e8edf5,
+      0 0 0 3px rgba(11, 14, 22, 0.9),
+      0 0 0 4px rgba(214, 222, 236, 0.35),
+      0 12px 28px rgba(0, 0, 0, 0.6);
   }
   .seal::after {
     content: '';
@@ -524,6 +604,10 @@ const cells: [number, number][] = [];
     font-size: 14px;
     padding-right: 28px;
   }
+  .grid > div:nth-child(5) dd {
+    font-size: 13px;
+    letter-spacing: 0.01em;
+  }
   dd small {
     font-size: 0.6em;
     color: rgba(255, 255, 255, 0.55);
@@ -580,7 +664,24 @@ const cells: [number, number][] = [];
     letter-spacing: 0.04em;
     color: rgba(255, 255, 255, 0.4);
     text-align: right;
-    max-width: 55%;
+    max-width: 50%;
+  }
+  /* Esquinas naranja del stub (ref-b) */
+  .ctri {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    background: var(--orange-500);
+  }
+  .ctri-tr {
+    right: 0;
+    top: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+  .ctri-br {
+    right: 0;
+    bottom: 0;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
   }
 
   /* ───────── Desktop: horizontal 880×320 ───────── */
@@ -598,12 +699,15 @@ const cells: [number, number][] = [];
       height: 100%;
     }
     .scene {
-      object-position: 70% 40%;
+      object-position: 64% 66%;
+    }
+    .cosmos {
+      transform: scale(1.75);
     }
     .shade {
       background:
-        linear-gradient(90deg, rgba(11, 14, 22, 0.97) 0%, rgba(11, 14, 22, 0.84) 30%, rgba(11, 14, 22, 0.22) 58%, rgba(11, 14, 22, 0.06) 100%),
-        linear-gradient(180deg, rgba(11, 14, 22, 0.66) 0%, rgba(11, 14, 22, 0) 30%, rgba(11, 14, 22, 0) 64%, rgba(11, 14, 22, 0.7) 100%);
+        linear-gradient(90deg, rgba(7, 9, 15, 0.96) 0%, rgba(7, 9, 15, 0.8) 30%, rgba(7, 9, 15, 0.14) 56%, rgba(7, 9, 15, 0.04) 100%),
+        linear-gradient(180deg, rgba(7, 9, 15, 0.45) 0%, rgba(7, 9, 15, 0) 24%, rgba(7, 9, 15, 0) 66%, rgba(7, 9, 15, 0.55) 100%);
     }
     .corner {
       top: 20px;
@@ -619,26 +723,33 @@ const cells: [number, number][] = [];
       top: 86px;
     }
     .t1 {
-      font-size: 24px;
-      letter-spacing: 0.24em;
+      font-size: 30px;
+      letter-spacing: 0.1em;
     }
     .t2 {
-      font-size: 44px;
+      font-size: 48px;
     }
     .tagline {
-      top: 166px;
+      top: 176px;
       font-size: 10px;
     }
-    .credit {
+    .coords {
       bottom: 96px;
       left: 26px;
     }
     .strip {
-      height: 84px;
+      height: 86px;
     }
-    .strip-text {
-      left: 26px;
-      font-size: 9px;
+    .tab {
+      width: auto;
+      max-width: 72%;
+      padding: 10px 40px 10px 26px;
+    }
+    .tab-lines {
+      white-space: nowrap;
+    }
+    .tab-lines {
+      font-size: 8px;
     }
     .seal {
       right: 30px;
@@ -678,6 +789,9 @@ const cells: [number, number][] = [];
     .grid > div {
       padding: 6px 9px 7px;
     }
+    .grid > div:nth-child(5) dd {
+      font-size: 12px;
+    }
     .barcode {
       width: 150px;
       height: 32px;
@@ -696,8 +810,8 @@ const cells: [number, number][] = [];
   .ghost .corner,
   .ghost .title,
   .ghost .tagline,
-  .ghost .credit,
-  .ghost .strip-text,
+  .ghost .coords,
+  .ghost .tab,
   .ghost .mark,
   .ghost .stub-head,
   .ghost .grid,

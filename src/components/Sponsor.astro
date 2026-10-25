@@ -6,7 +6,7 @@ const c = sections.sponsor;
 
 <section class="sp" aria-labelledby="sp-title">
   <div class="wrap">
-    <div class="card">
+    <div class="card tk-panel tk-corner">
       <div class="copy">
         <p class="chip mono">{c.chip}</p>
         <h2 id="sp-title">{c.title}</h2>
@@ -28,15 +28,14 @@ const c = sections.sponsor;
 </section>
 
 <style>
-  .sp { background: var(--navy-950); padding: var(--sp-16) 0; }
+  .sp { background: var(--cosmos-950); padding: var(--sp-16) 0; border-top: 1px solid var(--edge); }
   .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
   .card {
     display: grid; gap: var(--sp-8); align-items: center;
-    padding: var(--sp-8); border: var(--border-strong); border-radius: var(--r-lg);
-    background: var(--navy-950); color: var(--white);
+    padding: var(--sp-8); color: var(--white);
   }
   @media (min-width: 768px) { .card { grid-template-columns: 1.4fr 1fr; padding: var(--sp-12); } }
-  .chip { display: inline-block; margin: 0 0 var(--sp-4); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-pill); font-size: var(--fs-small); }
+  .chip { display: inline-block; margin: 0 0 var(--sp-4); padding: 4px 12px; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: 0; font-size: 12px; letter-spacing: 0.12em; }
   .mono { font-family: var(--font-mono); }
   h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
   .text { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 56ch; margin: 0; }

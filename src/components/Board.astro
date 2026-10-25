@@ -100,10 +100,10 @@ const flap = (s: string) => [...s];
 
 <style>
   .board {
-    background: var(--ink-950);
+    background: var(--cosmos-950);
     padding: var(--sp-12) 0;
-    border-top: var(--border);
-    border-bottom: var(--border);
+    border-top: 1px solid var(--edge);
+    border-bottom: 1px solid var(--edge);
   }
   .inner {
     max-width: var(--container-max);
@@ -114,8 +114,9 @@ const flap = (s: string) => [...s];
     letter-spacing: 0.08em;
   }
   .row {
-    background: var(--navy-800);
-    border: 1px solid transparent;
+    background: linear-gradient(180deg, #11151f, #0b0e16);
+    border: 1px solid var(--edge);
+    clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
     padding: var(--sp-6);
     display: flex;
     flex-wrap: wrap;
@@ -181,9 +182,9 @@ const flap = (s: string) => [...s];
     animation-delay: -3s;
   }
   @keyframes idle {
-    0%, 96% { background: var(--ink-950); color: var(--white); }
-    97% { background: var(--navy-700); color: var(--orange-300); }
-    100% { background: var(--ink-950); color: var(--white); }
+    0%, 96% { background: var(--cosmos-950); color: var(--white); }
+    97% { background: var(--cosmos-700); color: var(--orange-300); }
+    100% { background: var(--cosmos-950); color: var(--white); }
   }
   .dot {
     color: var(--orange-500);

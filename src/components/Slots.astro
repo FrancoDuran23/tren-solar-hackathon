@@ -7,7 +7,7 @@ const { slots } = copy;
   <div class="inner">
     <div class="tickets">
       {[slots.a, slots.b].map((t) => (
-        <article class="stub">
+        <article class="stub tk-panel tk-corner">
           <p class="num"><span>{t.n}</span> · {t.label}</p>
           <p class="desc">{t.text}</p>
         </article>
@@ -22,8 +22,8 @@ const { slots } = copy;
   .slots {
     position: relative;
     overflow: hidden;
-    background: var(--navy-950);
-    border-top: var(--border);
+    background: var(--cosmos-950);
+    border-top: 1px solid var(--edge);
     padding: var(--sp-12) 0;
   }
   .slots::after {
@@ -51,16 +51,9 @@ const { slots } = copy;
     margin-bottom: var(--sp-12);
   }
   .stub {
-    background: var(--paper);
-    color: var(--ink-950);
+    color: var(--white);
     padding: var(--sp-6);
-    clip-path: polygon(
-      var(--chamfer) 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer),
-      100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%,
-      var(--chamfer) 100%, 0 calc(100% - var(--chamfer)), 0 var(--chamfer)
-    );
-    border-top: 1px solid var(--ink-200);
-    box-shadow: 0 18px 40px rgba(6, 15, 34, 0.45);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
   }
   .num {
     margin: 0 0 var(--sp-2);
@@ -70,10 +63,11 @@ const { slots } = copy;
   .num span {
     font: 900 var(--fs-ticket-no) / 1 var(--font-display);
     margin-right: var(--sp-2);
+    color: var(--orange-500);
   }
   .desc {
     margin: 0;
-    color: var(--ink-800);
+    color: var(--text-muted);
   }
   h2 {
     font: 700 var(--fs-h1) / var(--lh-h1) var(--font-display);

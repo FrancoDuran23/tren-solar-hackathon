@@ -340,7 +340,7 @@ const closed = config.submissions === 'closed';
   $('download').addEventListener('click', () => {
     if (!last) return;
     const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-    const html = `<!doctype html><meta charset="utf-8"><title>Comprobante ${esc(last.id)}</title><body style="font-family:monospace;background:#f2f0ea;color:#0e0f12;max-width:420px;margin:40px auto;padding:24px;border:2px dashed #0e0f12"><h1>PROYECTO A BORDO</h1><h2>${esc(last.id)}</h2><p>${esc(last.name)}</p><p>${esc(new Date(last.at).toLocaleString('es-AR'))}</p><p>jujuy.dev · Pre-Hackatón</p></body>`;
+    const html = `<!doctype html><meta charset="utf-8"><title>Comprobante ${esc(last.id)}</title><body style="font-family:monospace;background:#f2f0ea;color:#0e0f12;max-width:420px;margin:40px auto;padding:24px;border:2px dashed #0e0f12"><h1>PROYECTO A BORDO</h1><h2>${esc(last.id)}</h2><p>${esc(last.name)}</p><p>${esc(new Date(last.at).toLocaleString('es-AR'))}</p><p>jujuy.dev · Hackatón Tren Solar</p></body>`;
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
     a.download = `comprobante-${last.id}.html`;
@@ -350,14 +350,14 @@ const closed = config.submissions === 'closed';
 </script>
 
 <style>
-  .ent { background: var(--navy-950); padding: var(--sp-16) 0; border-top: var(--border); }
+  .ent { background: var(--cosmos-950); padding: var(--sp-16) 0; border-top: 1px solid var(--edge); }
   .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
   h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
   .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 60ch; margin: 0 0 var(--sp-8); }
   .mono { font-family: var(--font-mono); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .banner { display: inline-block; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-sm); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-small); margin: 0 0 var(--sp-6); }
-  .card { display: grid; grid-template-columns: 1fr 260px; gap: var(--sp-6); background: var(--navy-800); border: var(--border); border-radius: var(--r-md); padding: var(--sp-8); }
+  .card { display: grid; grid-template-columns: 1fr 260px; gap: var(--sp-6); background: linear-gradient(180deg, #11151f, #0b0e16); border: 1px solid var(--edge); border-radius: 0; clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px); padding: var(--sp-8); }
   fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: var(--sp-4); min-width: 0; }
   fieldset:disabled input, fieldset:disabled select, fieldset:disabled textarea, fieldset:disabled .btn { opacity: 0.55; cursor: not-allowed; }
   fieldset:disabled .chk { cursor: not-allowed; }
@@ -366,7 +366,7 @@ const closed = config.submissions === 'closed';
   .opt { text-transform: none; opacity: 0.7; }
   input[type='text'], input[type='email'], input[type='url'], input[type='number'], select, textarea {
     width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 var(--sp-4);
-    background: var(--navy-950); color: var(--white); border: var(--border); border-radius: var(--r-sm);
+    background: var(--cosmos-950); color: var(--white); border: 1px solid var(--edge); border-radius: 0;
     font: inherit;
   }
   textarea { padding-block: var(--sp-3); resize: vertical; }
@@ -392,7 +392,7 @@ const closed = config.submissions === 'closed';
   .privacy { margin: 0; color: var(--text-muted); font-size: var(--fs-small); line-height: var(--lh-small); }
   .btn {
     justify-self: start; min-height: 48px; padding: 0 var(--sp-6); border: 0; border-radius: var(--r-sm);
-    background: var(--orange-500); color: var(--navy-950); font-weight: 700; font-size: var(--fs-small); cursor: pointer;
+    background: var(--orange-500); color: var(--cosmos-950); font-weight: 700; border-radius: 0; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%); font-size: var(--fs-small); cursor: pointer;
   }
   .btn:hover:not(:disabled) { background: var(--orange-400); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -401,16 +401,16 @@ const closed = config.submissions === 'closed';
   .sending .lbl { display: none; }
   .sending .spin { display: inline; animation: blink 0.9s steps(2) infinite; }
   @keyframes blink { 50% { opacity: 0.3; } }
-  .stub { background: var(--paper); color: var(--ink-950); border-radius: var(--r-sm); padding: var(--sp-4); align-self: start; font-size: 12px; }
+  .stub { background: linear-gradient(180deg, #0f1320, #080b12); color: var(--white); border: 1px solid var(--edge); border-radius: 0; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); padding: var(--sp-4); align-self: start; font-size: 12px; }
   .stub-h { margin: 0 0 var(--sp-3); font-weight: 700; letter-spacing: 0.12em; border-bottom: 1px dashed var(--ink-400); padding-bottom: var(--sp-2); }
   .stub dl { margin: 0; display: grid; gap: 2px; }
-  .stub dt { color: var(--ink-400); font-size: 10px; letter-spacing: 0.08em; margin-top: var(--sp-2); }
+  .stub dt { color: rgba(255,255,255,0.55); font-size: 10px; letter-spacing: 0.08em; margin-top: var(--sp-2); }
   .stub dd { margin: 0; overflow-wrap: anywhere; }
   .stub-id { margin: var(--sp-4) 0 0; font-weight: 700; }
   .toast { margin-top: var(--sp-4); border: 1px solid var(--orange-500); color: var(--orange-300); background: transparent; border-radius: var(--r-sm); padding: var(--sp-3) var(--sp-4); font-size: var(--fs-small); }
   .receipt { margin-top: var(--sp-6); display: grid; gap: var(--sp-4); justify-items: start; }
   .receipt[hidden], .toast[hidden], form[hidden] { display: none; }
-  .paper { background: var(--paper); color: var(--ink-950); border-radius: var(--r-sm); padding: var(--sp-6); display: grid; gap: var(--sp-2); min-width: min(100%, 320px); }
+  .paper { background: linear-gradient(180deg, #11151f, #0b0e16); color: var(--white); border: 1px solid var(--edge-strong); border-radius: 0; clip-path: polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px); padding: var(--sp-6); display: grid; gap: var(--sp-2); min-width: min(100%, 320px); }
   .paper p { margin: 0; }
   .paper-h { font-weight: 700; letter-spacing: 0.12em; }
   .paper-id { font-size: 24px; font-weight: 700; }

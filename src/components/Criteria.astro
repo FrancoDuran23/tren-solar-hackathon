@@ -30,7 +30,7 @@ const { criteria: c } = copy;
     <p class="scalenote">{c.scaleNote}</p>
 
     <!-- Tracción: no es la quinta fila; es el bloque que pesa más -->
-    <article class="traction" aria-labelledby="trac-title">
+    <article class="traction tk-panel tk-corner" aria-labelledby="trac-title">
       <div class="traction__head">
         <p class="tag mono"><i aria-hidden="true"></i>{c.traction.tag}</p>
         <h3 id="trac-title">{c.traction.title}</h3>
@@ -51,8 +51,8 @@ const { criteria: c } = copy;
 <style>
   /* Sección en papel: el scoring se lee como una planilla, no como otra pared navy */
   .criteria {
-    background: var(--paper);
-    color: var(--ink-950);
+    background: var(--cosmos-900);
+    color: var(--white);
     padding: var(--sp-12) 0;
   }
   .inner {
@@ -75,21 +75,21 @@ const { criteria: c } = copy;
     align-items: flex-start;
     margin: 0 0 var(--sp-10, 40px);
     padding: var(--sp-5, 20px) 0;
-    border-top: 1px solid var(--ink-950);
-    border-bottom: 1px solid var(--ink-200);
+    border-top: 1px solid var(--edge-strong);
+    border-bottom: 1px solid var(--edge);
     font-size: var(--fs-lead);
     line-height: var(--lh-lead);
-    color: var(--ink-800);
+    color: var(--text-muted);
   }
   .gate strong {
-    color: var(--ink-950);
+    color: var(--white);
   }
   .gate__icon {
     flex: none;
     width: 28px;
     height: 28px;
     margin-top: 2px;
-    color: var(--orange-600);
+    color: var(--orange-400);
   }
 
   .ledger {
@@ -102,10 +102,10 @@ const { criteria: c } = copy;
     grid-template-columns: 1fr;
     gap: var(--sp-2) var(--sp-8);
     padding: var(--sp-5, 20px) 0;
-    border-top: 1px solid var(--ink-200);
+    border-top: 1px solid var(--edge);
   }
   .row:last-child {
-    border-bottom: 1px solid var(--ink-200);
+    border-bottom: 1px solid var(--edge);
   }
   h3 {
     font: 700 var(--fs-h3) / var(--lh-h3) var(--font-display);
@@ -114,7 +114,7 @@ const { criteria: c } = copy;
   }
   .row p {
     margin: 0;
-    color: var(--ink-800);
+    color: var(--text-muted);
     max-width: 52ch;
   }
   .scale {
@@ -124,7 +124,7 @@ const { criteria: c } = copy;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: var(--ink-800);
+    color: var(--ink-200);
     font-variant-numeric: tabular-nums;
   }
   .scale i {
@@ -135,18 +135,26 @@ const { criteria: c } = copy;
   .scalenote {
     margin: var(--sp-3) 0 var(--sp-10, 40px);
     font: var(--fs-small) / var(--lh-small) var(--font-text);
-    color: var(--ink-600);
+    color: var(--ink-400);
   }
 
   /* Bloque de tracción: navy sobre papel, esquina chanfleada, naranja como estructura */
   .traction {
-    background: var(--navy-900);
     color: var(--white);
     padding: var(--sp-8) var(--sp-6);
-    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
     display: grid;
     gap: var(--sp-6);
-    box-shadow: 0 28px 56px rgba(6, 15, 34, 0.28);
+    box-shadow: 0 28px 56px rgba(0, 0, 0, 0.4);
+  }
+  /* Hairline holo arriba del bloque: la lámina del ticket marca lo que pesa más */
+  .traction::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 3px;
+    background: var(--holo);
   }
   .tag {
     margin: 0 0 var(--sp-3);
@@ -199,14 +207,14 @@ const { criteria: c } = copy;
   .verdict {
     margin: var(--sp-10, 40px) 0 0;
     padding-top: var(--sp-5, 20px);
-    border-top: 1px solid var(--ink-950);
+    border-top: 1px solid var(--edge-strong);
     font-size: var(--fs-lead);
     line-height: var(--lh-lead);
-    color: var(--ink-800);
+    color: var(--text-muted);
     max-width: 60ch;
   }
   .verdict::first-line {
-    color: var(--ink-950);
+    color: var(--white);
   }
 
   @media (min-width: 760px) {

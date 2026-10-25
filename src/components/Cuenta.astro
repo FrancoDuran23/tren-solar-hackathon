@@ -9,7 +9,7 @@ const { profile: p, ranking: r, auth } = copy;
     <h2 id="perfil-title">{p.h2}</h2>
     <p class="lead">{p.lead}</p>
 
-    <div class="panel">
+    <div class="panel tk-panel tk-corner">
       <div data-signed-out>
         <p class="lead">{p.signedOut}</p>
         <button type="button" class="btn" data-signin>{auth.signIn}</button>
@@ -95,7 +95,7 @@ const { profile: p, ranking: r, auth } = copy;
       <a class="btn btn--ghost" id="estado-perfil" href="#perfil" hidden>{r.goProfile}</a>
     </p>
     <p class="note" data-auth-note hidden role="status"></p>
-    <article class="card" id="estado-card" hidden>
+    <article class="card tk-panel" id="estado-card" hidden>
       <p class="kicker mono">TOP 35 · JUJUY</p>
       <p class="result" id="estado-result"></p>
       <p class="meta mono" id="estado-meta"></p>
@@ -353,16 +353,14 @@ const { profile: p, ranking: r, auth } = copy;
 </script>
 
 <style>
-  .cuenta, .estado { background: var(--navy-900); padding: var(--sp-16) 0; border-top: var(--border); }
-  .estado { background: var(--navy-950); }
+  .cuenta, .estado { background: var(--cosmos-900); padding: var(--sp-16) 0; border-top: 1px solid var(--edge); }
+  .estado { background: var(--cosmos-950); }
   .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
   h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
   .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 62ch; margin: 0 0 var(--sp-6); }
   .mono { font-family: var(--font-mono); }
   .panel, .card {
-    background: var(--navy-800);
-    border: var(--border);
-    border-radius: var(--r-md);
+    border-radius: 0;
     padding: var(--sp-6);
     max-width: 720px;
   }
@@ -371,8 +369,8 @@ const { profile: p, ranking: r, auth } = copy;
   .meter {
     flex: 1;
     height: 10px;
-    background: var(--navy-950);
-    border-radius: var(--r-pill);
+    background: var(--cosmos-950);
+    border-radius: 0;
     overflow: hidden;
   }
   .meter__fill { height: 100%; width: 0; background: var(--orange-500); }
@@ -385,10 +383,10 @@ const { profile: p, ranking: r, auth } = copy;
     box-sizing: border-box;
     min-height: 48px;
     padding: 0 var(--sp-4);
-    background: var(--navy-950);
+    background: var(--cosmos-950);
     color: var(--white);
-    border: var(--border);
-    border-radius: var(--r-sm);
+    border: 1px solid var(--edge);
+    border-radius: 0;
     font: inherit;
   }
   input[readonly] { opacity: 0.8; }
@@ -401,17 +399,18 @@ const { profile: p, ranking: r, auth } = copy;
   .chk input { width: 22px; height: 22px; accent-color: var(--orange-500); }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
   .steps li { color: var(--text-muted); font-size: var(--fs-small); }
-  .steps li::before { content: '○ '; font-family: var(--font-mono); color: var(--ink-400); }
+  .steps li::before { content: '/ '; font-family: var(--font-mono); color: var(--orange-500); }
   .steps li.ok { color: var(--text); }
-  .steps li.ok::before { content: '✓ '; color: var(--success); }
+  .steps li.ok::before { content: '/ '; color: var(--success); }
   .btn {
     justify-self: start;
     min-height: 48px;
     padding: 0 var(--sp-6);
     border: 0;
-    border-radius: var(--r-sm);
+    border-radius: 0;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
     background: var(--orange-500);
-    color: var(--navy-900);
+    color: var(--cosmos-950);
     font-weight: 700;
     font-size: var(--fs-small);
     cursor: pointer;
@@ -422,9 +421,9 @@ const { profile: p, ranking: r, auth } = copy;
   .btn:hover:not(:disabled) { background: var(--orange-400); }
   .btn:disabled { opacity: 0.55; cursor: not-allowed; }
   [data-estado-actions] { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
-  .btn--ghost { background: transparent; color: var(--text); border: var(--border); }
+  .btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--edge-strong); clip-path: none; }
   .note:not(:empty) { color: var(--orange-300); }
-  .card[data-in='true'] { border-color: var(--orange-500); }
+  .card[data-in='true']::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--holo); }
   .kicker { margin: 0 0 var(--sp-2); letter-spacing: 0.12em; font-size: 12px; color: var(--orange-300); font-weight: 700; }
   .result { margin: 0 0 var(--sp-3); font-family: var(--font-display); font-weight: 700; font-size: var(--fs-h3); }
   .card[data-in='false'] .result { color: var(--text-muted); }
