@@ -1,7 +1,8 @@
 import type { APIRoute } from 'astro';
 import { ENTREGA_WEBHOOK_URL } from 'astro:env/server';
-import { config } from '../../config';
+import { copy } from '../../content/copy';
 import { MAX_PAYLOAD, coerceEntrega, validateEntrega } from '../../lib/entrega';
+import { entregaEditsOpen } from '../../lib/entrega-window';
 import { profileCompleteness } from '../../lib/profile';
 import { readProfile } from '../../server/profile-store';
 import { currentUser } from '../../server/session';
@@ -53,8 +54,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return json(503, { ok: false, error: 'No pudimos verificar tu sesión. Probá de nuevo en un minuto.' });
   }
 
-  if (config.submissions === 'closed') {
-    return json(403, { ok: false, error: 'Las entregas están cerradas.' });
+  if (!entregaEditsOpen(Date.now())) {
+    return json(403, { ok: false, error: copy.entrega.locked });
   }
 
   const declared = Number(request.headers.get('content-length') ?? 0);

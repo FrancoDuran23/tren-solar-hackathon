@@ -32,8 +32,14 @@ export const sections = {
   sponsor: {
     title: 'Sponsor sorpresa a bordo.',
     text:
-      'La Hackatón Tren Solar tiene un sponsor que todavía no podemos nombrar. Se revela en el hackathon. Por ahora, solo te decimos que apunta alto.',
+      'Hay un sponsor en este tren que todavía no podemos nombrar. El nombre viaja sellado y se abre en la Hackatón Tren Solar.',
     chip: 'CLASIFICADO · SE ABRE EN EL HACKATHON',
+    soon: 'Próximamente',
+    rows: [
+      { k: 'ESTADO', v: 'SELLADO' },
+      { k: 'NOMBRE', v: 'SIN REVELAR' },
+      { k: 'SE ABRE', v: 'EN EL HACKATHON' },
+    ],
   },
   faq: {
     title: 'Preguntas frecuentes.',
@@ -60,7 +66,7 @@ export const sections = {
       },
       {
         q: '¿Cuándo cierra?',
-        a: `La entrega es del ${dates.build}. Los workshops corren ${dates.workshops}. Los ganadores se anuncian el ${dates.winners}.`,
+        a: `La entrega es del ${dates.build}. Podés actualizar lo que enviaste hasta el ${dates.buildEndLabel}. Después de esa hora queda cerrada y no se puede modificar. Los workshops corren ${dates.workshops}. Los ganadores se anuncian el ${dates.winners}.`,
       },
       {
         q: '¿Puedo ver el ranking?',

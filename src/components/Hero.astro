@@ -36,7 +36,7 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
 
   <div class="wrap">
     <div class="copy">
-      <h1 id="hero-title">Y vos… ¿te ganás<br />tu ticket?</h1>
+      <h1 id="hero-title"><span class="vos">Y vos…</span> <span class="foil">¿te ganás<br />tu ticket?</span></h1>
       <p class="lead">
         35 tickets a la Hackatón Tren Solar. Buildeá online, subí tu proyecto y subite al tren.
       </p>
@@ -298,7 +298,15 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
     text-transform: uppercase;
     letter-spacing: -0.03em;
     text-wrap: balance;
-    /* Lámina holográfica + un reflejo blanco que cruza las letras. */
+    color: var(--white);
+  }
+  .vos {
+    color: var(--white);
+    -webkit-text-fill-color: var(--white);
+    text-shadow: 0 8px 32px rgba(5, 7, 13, 0.75);
+  }
+  /* Única lámina de letras de la página: la pregunta, no "Y vos…". */
+  .foil {
     background-image:
       linear-gradient(
         115deg,
@@ -327,7 +335,8 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 10px 28px rgba(5, 7, 13, 0.72));
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 10px 28px rgba(5, 7, 13, 0.55));
     animation: foil-letters 2.8s linear infinite;
   }
   @keyframes foil-letters {
@@ -712,10 +721,10 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
     .glow,
     .dot,
     .scroll svg,
-    h1 {
+    .foil {
       animation: none !important;
     }
-    h1 {
+    .foil {
       background-position: 46% 50%, 28% 50%;
     }
     .l1 {
