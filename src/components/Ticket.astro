@@ -50,6 +50,7 @@ const cells: [number, number][] = [];
   <div class="body">
     <div class="frame"></div>
     <div class="foil"></div>
+    {!ghost && <canvas class="foil-gl" data-foil-gl aria-hidden="true"></canvas>}
     <p class="word" aria-hidden="true"><span>PRE-</span><span>HACKATÓN</span></p>
     <div class="info">
       <p class="mono">JUJUY.DEV · ROAD TO SOLAR TRAIN HACKATHON</p>
@@ -147,6 +148,22 @@ const cells: [number, number][] = [];
     z-index: 3;
     pointer-events: none;
     transition: background-position var(--dur-slow) var(--ease-out);
+  }
+  .foil-gl {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    mix-blend-mode: screen;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .body.gl-on .foil-gl {
+    display: block;
+  }
+  .body.gl-on .foil {
+    display: none;
   }
   .word {
     position: absolute;
