@@ -25,6 +25,7 @@ export const copy = {
     logoAlt: 'jujuy.dev',
     lockup: 'HACKATÓN TREN SOLAR',
     links: [
+      { href: '#recorrido', label: 'Recorrido' },
       { href: '#como', label: 'Cómo funciona' },
       { href: '#criterios', label: 'Criterios' },
       { href: '#workshops', label: 'Workshops' },

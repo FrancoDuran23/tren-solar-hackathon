@@ -1,0 +1,54 @@
+---
+import { route } from '../content/route';
+import RouteMap from './route-map/RouteMap';
+---
+
+<section class="route" id={route.id} aria-labelledby="route-title">
+  <div class="inner">
+    <div class="head">
+      <h2 id="route-title">{route.h2}</h2>
+      <p>{route.lead}</p>
+    </div>
+    <RouteMap client:visible />
+  </div>
+</section>
+
+<style>
+  .route {
+    background: var(--cosmos-950);
+    color: var(--white);
+    border-top: 1px solid var(--edge);
+    padding: var(--sp-12) 0;
+  }
+  .inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+  .head {
+    display: grid;
+    gap: var(--sp-4);
+    align-items: end;
+  }
+  h2 {
+    font: 700 var(--fs-h1) / var(--lh-h1) var(--font-display);
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+  p {
+    margin: 0;
+    font-size: var(--fs-lead);
+    line-height: var(--lh-lead);
+    color: var(--text-muted);
+    max-width: 44ch;
+  }
+  @media (min-width: 900px) {
+    .route {
+      padding: var(--sp-24) 0;
+    }
+    .head {
+      grid-template-columns: 1fr minmax(280px, 44ch);
+      gap: var(--sp-8);
+    }
+  }
+</style>

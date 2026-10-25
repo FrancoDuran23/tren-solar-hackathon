@@ -1,10 +1,12 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
 import vercel from '@astrojs/vercel';
+import react from '@astrojs/react';
 import { wgslVitePlugin } from '@vgpu/wgsl/loader-vite';
 
 export default defineConfig({
   adapter: vercel(),
+  integrations: [react()],
   vite: { plugins: [wgslVitePlugin()] },
   env: {
     schema: {
