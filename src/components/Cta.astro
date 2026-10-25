@@ -16,13 +16,13 @@ const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
       {label}
       <span class="cta__arrow" aria-hidden="true">→</span>
     </a>
+  ) : state === 'soon' && href ? (
+    <a class:list={['cta', 'cta--date', `cta--${size}`]} href={href}>
+      {label}
+    </a>
   ) : (
-    <span class:list={['cta', `cta--${state}`, `cta--${size}`]} aria-disabled="true" role="link">
-      {state === 'closed' ? (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-      ) : (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 1.5"/></svg>
-      )}
+    <span class:list={['cta', 'cta--closed', `cta--${size}`]} aria-disabled="true" role="link">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
       {label}
     </span>
   )
@@ -75,10 +75,21 @@ const label = size === 'sm' ? copy.cta.short[state] : copy.cta[state];
   .cta--primary:hover .cta__arrow {
     transform: translateX(4px);
   }
-  .cta--soon {
-    background: rgba(18, 43, 85, 0.8);
-    border: 1px dashed var(--orange-500);
-    color: rgba(255, 255, 255, 0.8);
+  .cta--date {
+    cursor: pointer;
+    background: transparent;
+    color: var(--white);
+    border: 1px solid var(--orange-500);
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+  }
+  .cta--date:hover {
+    background: var(--orange-500);
+    color: var(--cosmos-950);
   }
   .cta--closed {
     background: rgba(18, 43, 85, 0.8);

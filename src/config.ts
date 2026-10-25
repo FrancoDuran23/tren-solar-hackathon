@@ -1,7 +1,9 @@
 /**
- * Fuente única de estado TBD (spec §4.5). Abrir una sección = editar este archivo,
- * no los componentes. `lumaUrl: null` ⇒ todos los CTAs de inscripción muestran "pronto".
+ * Fuente única de estado (spec §4.5). Abrir una sección = editar este archivo,
+ * no los componentes. `lumaUrl: null` ⇒ el CTA de inscripción pasa a la fecha de build.
  */
+
+import { dates } from './content/dates';
 
 export type RegistrationState = 'soon' | 'open' | 'closed';
 export type SubmissionsState = 'closed' | 'open';
@@ -46,7 +48,7 @@ export const TICKETS_TOTAL = 35;
 export const config: SiteConfig = {
   lumaUrl: null,
   registration: 'soon',
-  deadline: null,
+  deadline: { iso: dates.buildEndIso, tentative: false },
   submissions: 'closed',
   workshops: [],
   jury: [],

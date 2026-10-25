@@ -1,5 +1,7 @@
 ---
 import Ticket from './Ticket.astro';
+import { copy } from '../content/copy';
+import { dates } from '../content/dates';
 import { config, TICKETS_TOTAL } from '../config';
 
 const isOpen = config.registration === 'open' && !!config.lumaUrl;
@@ -11,24 +13,21 @@ const assigned = Math.min(Math.max(config.ticketsAssigned, 0), TICKETS_TOTAL);
 const free = TICKETS_TOTAL - assigned;
 const seats = Array.from({ length: TICKETS_TOTAL }, (_, i) => i < assigned);
 const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asignar de ' + TICKETS_TOTAL;
-/* Ambiente muy sutil detrás del tren 3D (y fallback si WebGL falla) */
-const deadline = config.deadline
-  ? new Date(config.deadline.iso).toLocaleDateString('es-AR')
-  : 'por confirmar';
 ---
 
 <section class="hero" id="top" aria-labelledby="hero-title">
   <!-- Cosmos del ticket (ref-b): espacio negro-azulado, planetas del arte del poster, curva
        de la Tierra con atmósfera iluminada y un destello naranja. Sin tren 3D: el tren vive
        en la foto del ticket. -->
-  <div class="backdrop" aria-hidden="true" data-backdrop>
+  <!-- Cosmos + Tren Solar en la Quebrada, a tamaño de foto (sin recorte escalado).
+       El navy cubre la izquierda para que el titular se lea; el naranja es el destello. -->
+  <div class="backdrop" aria-hidden="true">
     <i class="sky"></i>
     <i class="stars"></i>
-    <img class="planets" src="/brand/solar-train-sky.jpg" alt="" width="1024" height="512" loading="eager" decoding="async" />
+    <img class="cosmos" src="/brand/solar-train-sky.jpg" alt="" width="1024" height="512" loading="eager" decoding="async" />
+    <img class="quebrada" src="/brand/solar-train-quebrada.jpg" alt="" width="1024" height="775" loading="eager" decoding="async" />
     <i class="flare"></i>
-    <i class="earth"></i>
-    <i class="atmo"></i>
-    <i class="veil veil-y"></i>
+    <i class="navy"></i>
     <i class="grain"></i>
     <i class="shard shard-tl"></i>
     <i class="shard shard-br"></i>
@@ -37,11 +36,7 @@ const deadline = config.deadline
 
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow mono">
-        <img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" decoding="async" />
-        PRESENTA · ROAD TO HACKATÓN TREN SOLAR
-      </p>
-      <h1 id="hero-title">Y vos… <span class="q">¿te ganás<br />tu ticket?</span></h1>
+      <h1 id="hero-title">Y vos… ¿te ganás<br />tu ticket?</h1>
       <p class="lead">
         35 tickets a la Hackatón Tren Solar. Buildeá online, subí tu proyecto y subite al tren.
       </p>
@@ -52,10 +47,9 @@ const deadline = config.deadline
           </a>
         )}
         {state === 'soon' && (
-          <span class="cta cta-soon" role="link" aria-disabled="true">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 1.5"/></svg>
-            Inscripción abre pronto
-          </span>
+          <a class="cta cta-primary" href="#tablero">
+            {copy.cta.soon} <span class="arrow" aria-hidden="true">→</span>
+          </a>
         )}
         {state === 'closed' && (
           <span class="cta cta-closed" role="link" aria-disabled="true">
@@ -68,9 +62,9 @@ const deadline = config.deadline
           : <a class="cta cta-secondary" href="#como">Ver cómo funciona</a>}
       </div>
       <dl class="facts mono">
-        <div><dt>FORMATO</dt><dd>ONLINE</dd></div>
-        <div><dt>ANDÉN</dt><dd>JUJUY · ARG</dd></div>
-        <div><dt>CIERRE</dt><dd>{deadline.toUpperCase()}</dd></div>
+        <div><dt>BUILD</dt><dd>{dates.buildMono}</dd></div>
+        <div><dt>WORKSHOPS</dt><dd>ESAS SEMANAS</dd></div>
+        <div><dt>GANADORES</dt><dd>{dates.winnersMono}</dd></div>
       </dl>
     </div>
 
@@ -109,18 +103,6 @@ const deadline = config.deadline
 
   // Curva de la Tierra del cosmos a la altura del borde inferior del stack del ticket
   // (el ticket "flota" sobre el planeta, como en la ref).
-  const backdrop = document.querySelector<HTMLElement>('[data-backdrop]');
-  const hero = document.querySelector<HTMLElement>('.hero');
-  if (backdrop && hero && stack) {
-    const setEarth = () => {
-      const h = hero.getBoundingClientRect();
-      const r = stack.getBoundingClientRect();
-      backdrop.style.setProperty('--earth-top', `${Math.round(r.bottom - h.top - 24)}px`);
-    };
-    new ResizeObserver(setEarth).observe(hero);
-    setEarth();
-  }
-
   if (stack && tilt) {
     const fine = matchMedia('(hover: hover) and (pointer: fine)');
 
@@ -183,7 +165,7 @@ const deadline = config.deadline
     padding: var(--sp-8) 0 var(--sp-16);
   }
 
-  /* ───────── Andén / tren ───────── */
+  /* ───────── Cosmos + Quebrada (foto entera, sin scale() que la pixela) ───────── */
   .backdrop {
     position: absolute;
     inset: 0;
@@ -194,8 +176,9 @@ const deadline = config.deadline
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(70% 60% at 78% 10%, rgba(40, 60, 110, 0.35), transparent 70%),
-      linear-gradient(180deg, #05070d 0%, #0a0e18 45%, #0d1322 72%, #05070d 100%);
+      radial-gradient(42% 36% at 82% 12%, rgba(48, 78, 150, 0.55), transparent 70%),
+      radial-gradient(28% 24% at 14% 0%, rgba(255, 122, 42, 0.16), transparent 72%),
+      linear-gradient(180deg, #05070d 0%, #070b16 38%, #120e14 72%, #05070d 100%);
   }
   .stars {
     position: absolute;
@@ -210,67 +193,54 @@ const deadline = config.deadline
       radial-gradient(1px 1px at 93% 48%, rgba(255, 255, 255, 0.5), transparent 60%),
       radial-gradient(1px 1px at 49% 55%, rgba(255, 255, 255, 0.45), transparent 60%);
     background-size: 420px 320px;
-    opacity: 0.75;
-    mask-image: linear-gradient(180deg, #000 0, #000 55%, transparent 85%);
+    opacity: 0.8;
+    mask-image: linear-gradient(180deg, #000 0, #000 48%, transparent 78%);
   }
-  /* Planetas del arte del poster: recorte superior derecho, grande y suave */
-  .planets {
+  /* Cielo del poster, a su tamaño (1024). El mask funde el borde; no hay scale(3). */
+  .cosmos {
     position: absolute;
-    right: 0;
     top: 0;
-    width: 330px;
-    height: 170px;
-    object-fit: none;
-    object-position: 100% 0;
-    transform: scale(1.7);
-    transform-origin: 100% 0;
-    opacity: 0.65;
-    mask-image: radial-gradient(80% 90% at 70% 35%, #000 25%, transparent 78%);
+    right: 0;
+    width: min(640px, 52vw);
+    height: auto;
+    opacity: 0.9;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 24%),
+      linear-gradient(180deg, #000 0%, #000 46%, transparent 100%);
+    mask-composite: intersect;
   }
-  /* Destello naranja (sol tras la curva) */
+  /* Tren en la Quebrada: anclado a la derecha, altura nativa relativa, sin estirar. */
+  .quebrada {
+    position: absolute;
+    right: -2%;
+    bottom: 0;
+    width: min(1040px, 70vw);
+    height: auto;
+    max-height: 86%;
+    object-fit: cover;
+    object-position: 62% 68%;
+    filter: saturate(1.08) contrast(1.06);
+    mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.55) 18%, #000 42%),
+      linear-gradient(180deg, transparent 0%, #000 18%, #000 72%, transparent 100%);
+    mask-composite: intersect;
+  }
   .flare {
     position: absolute;
-    left: 50%;
-    top: calc(var(--earth-top, 78%) - 90px);
-    width: 520px;
-    height: 180px;
-    transform: translateX(-10%);
-    background: radial-gradient(50% 50% at 50% 100%, rgba(255, 150, 70, 0.55), rgba(255, 110, 40, 0.18) 45%, transparent 72%);
-    filter: blur(8px);
+    right: 12%;
+    bottom: 16%;
+    width: min(520px, 46vw);
+    height: 220px;
+    background: radial-gradient(closest-side, rgba(255, 140, 60, 0.5), rgba(255, 90, 31, 0.12) 46%, transparent 72%);
+    filter: blur(6px);
+    mix-blend-mode: screen;
   }
-  /* Curva de la Tierra: disco enorme, oscuro, con atmósfera azul-plata en el borde */
-  .earth {
-    position: absolute;
-    left: 50%;
-    top: var(--earth-top, 78%);
-    width: 220vw;
-    height: 220vw;
-    transform: translateX(-50%);
-    border-radius: 50%;
-    background:
-      radial-gradient(60% 18% at 50% 0%, rgba(120, 160, 230, 0.22), transparent 70%),
-      radial-gradient(circle at 50% 0%, #121a2c 0%, #0a0e18 18%, #05070d 40%);
-    box-shadow:
-      0 -1px 0 rgba(214, 222, 236, 0.55),
-      0 -10px 40px rgba(110, 150, 230, 0.28),
-      0 -30px 120px rgba(60, 90, 170, 0.18);
-  }
-  .atmo {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(var(--earth-top, 78%) - 40px);
-    height: 80px;
-    background: linear-gradient(180deg, transparent, rgba(255, 140, 70, 0.14) 50%, transparent);
-    filter: blur(14px);
-    mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
-  }
-  .veil {
+  .navy {
     position: absolute;
     inset: 0;
-  }
-  .veil-y {
-    background: linear-gradient(180deg, rgba(5, 7, 13, 0.7) 0%, rgba(5, 7, 13, 0) 20%, rgba(5, 7, 13, 0) 70%, rgba(5, 7, 13, 0.8) 100%);
+    background:
+      linear-gradient(90deg, rgba(5, 7, 13, 0.94) 0%, rgba(5, 7, 13, 0.62) 28%, rgba(5, 7, 13, 0.08) 56%, rgba(5, 7, 13, 0.22) 100%),
+      linear-gradient(180deg, rgba(5, 7, 13, 0.45) 0%, rgba(5, 7, 13, 0) 18%, rgba(5, 7, 13, 0) 68%, rgba(5, 7, 13, 0.82) 100%);
   }
   .grain {
     position: absolute;
@@ -322,31 +292,47 @@ const deadline = config.deadline
   .mono {
     font-family: var(--font-mono);
   }
-  .eyebrow {
-    margin: 0 0 var(--sp-4);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--sp-2);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    color: var(--orange-300);
-  }
-  .eyebrow img {
-    height: 18px;
-    width: auto;
-    border-radius: 4px;
-  }
   h1 {
     margin: 0;
     font: 900 var(--fs-hero) / var(--lh-hero) var(--font-display);
     text-transform: uppercase;
     letter-spacing: -0.03em;
     text-wrap: balance;
-    text-shadow: 0 8px 40px rgba(6, 15, 34, 0.7);
+    /* Lámina holográfica + un reflejo blanco que cruza las letras. */
+    background-image:
+      linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 42%,
+        rgba(255, 255, 255, 0.95) 50%,
+        rgba(255, 255, 255, 0) 58%,
+        rgba(255, 255, 255, 0) 100%
+      ),
+      linear-gradient(
+        100deg,
+        #fff4e4 0%,
+        #ffb15a 9%,
+        #fff 16%,
+        #49c4ff 28%,
+        #d9a6ff 40%,
+        #ff6ec7 50%,
+        #fff 58%,
+        #ffe08a 68%,
+        #5dffe0 80%,
+        #ff8a3d 90%,
+        #fff4e4 100%
+      );
+    background-size: 280% 100%, 150% 100%;
+    background-position: 80% 50%, 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 10px 28px rgba(5, 7, 13, 0.72));
+    animation: foil-letters 2.8s linear infinite;
   }
-  h1 .q {
-    display: block;
-    color: var(--orange-400);
+  @keyframes foil-letters {
+    from { background-position: 130% 50%, 0% 50%; }
+    to { background-position: -30% 50%, 100% 50%; }
   }
   .lead {
     margin: var(--sp-6) 0 0;
@@ -396,13 +382,6 @@ const deadline = config.deadline
   }
   .cta-primary:hover .arrow {
     transform: translateX(4px);
-  }
-  .cta-soon {
-    background: rgba(18, 43, 85, 0.75);
-    backdrop-filter: blur(8px);
-    border: 1px dashed var(--orange-500);
-    color: rgba(255, 255, 255, 0.8);
-    cursor: default;
   }
   .cta-closed {
     background: rgba(18, 43, 85, 0.75);
@@ -632,9 +611,13 @@ const deadline = config.deadline
       padding-top: var(--sp-8);
       padding-bottom: var(--sp-12);
     }
-    .planets {
-      transform: scale(3);
-      opacity: 0.55;
+    .cosmos {
+      width: min(720px, 46vw);
+    }
+    .quebrada {
+      width: min(1180px, 62vw);
+      max-height: 92%;
+      right: 0;
     }
     .wrap {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
@@ -728,8 +711,12 @@ const deadline = config.deadline
     .l1,
     .glow,
     .dot,
-    .scroll svg {
+    .scroll svg,
+    h1 {
       animation: none !important;
+    }
+    h1 {
+      background-position: 46% 50%, 28% 50%;
     }
     .l1 {
       transform: none !important;

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import SolarTrain from '../components/SolarTrain.astro';
 import Marquee from '../components/Marquee.astro';
 import What from '../components/What.astro';
 import Steps from '../components/Steps.astro';
@@ -18,9 +19,11 @@ import FinalCta from '../components/FinalCta.astro';
 
 <Base>
   <Hero />
+  <SolarTrain id="hero" />
   <Marquee />
   <What />
   <Steps />
+  <SolarTrain id="mid" />
   <Board />
   <Criteria />
   <Slots />

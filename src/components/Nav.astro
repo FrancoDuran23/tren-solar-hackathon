@@ -9,7 +9,6 @@ const { nav, a11y, auth } = copy;
   <div class="nav__bar">
     <a class="nav__brand" href="#top" aria-label={nav.logoAlt}>
       <img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" decoding="async" />
-      <span class="nav__lockup" aria-hidden="true">{nav.lockup}</span>
     </a>
 
     <nav class="nav__links" id="nav-links" aria-label={a11y.mainNav}>
@@ -98,16 +97,6 @@ const { nav, a11y, auth } = copy;
     height: 26px;
     width: auto;
     display: block;
-  }
-  .nav__lockup {
-    display: none;
-    font-family: var(--font-mono);
-    font-size: var(--fs-micro);
-    letter-spacing: 0.1em;
-    padding-left: var(--sp-3);
-    border-left: 1px solid var(--orange-500);
-    color: var(--text-muted);
-    white-space: nowrap;
   }
   .nav__links {
     display: none;
@@ -294,11 +283,6 @@ const { nav, a11y, auth } = copy;
 
   @media (min-width: 480px) {
     .nav__cta {
-      display: block;
-    }
-  }
-  @media (min-width: 768px) and (max-width: 1023px), (min-width: 1360px) {
-    .nav__lockup {
       display: block;
     }
   }
