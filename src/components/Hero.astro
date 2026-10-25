@@ -11,18 +11,20 @@ const assigned = Math.min(Math.max(config.ticketsAssigned, 0), TICKETS_TOTAL);
 const free = TICKETS_TOTAL - assigned;
 const seats = Array.from({ length: TICKETS_TOTAL }, (_, i) => i < assigned);
 const ticketLabel = 'Ticket Pre-Hackatón jujuy.dev, número por asignar de ' + TICKETS_TOTAL;
-const art = '/brand/solar-train-quebrada.jpg';
+/* Ambiente muy sutil detrás del tren 3D (y fallback si WebGL falla) */
+const ambient = '/brand/solar-train-quebrada.jpg';
 const deadline = config.deadline
   ? new Date(config.deadline.iso).toLocaleDateString('es-AR')
   : 'por confirmar';
 ---
 
 <section class="hero" id="top" aria-labelledby="hero-title">
-  <!-- Andén: el Tren Solar del poster, a pantalla completa, detrás del ticket -->
-  <div class="backdrop" aria-hidden="true">
-    <img class="train" src={art} alt="" width="1024" height="775" loading="eager" fetchpriority="high" decoding="async" />
+  <!-- Andén: Tren Solar 3D procedural (three.js, src/lib/three/solar-train.ts) a pantalla completa, detrás del ticket -->
+  <div class="backdrop" aria-hidden="true" data-backdrop>
+    <img class="ambient" src={ambient} alt="" width="1024" height="775" loading="lazy" decoding="async" />
     <i class="veil veil-x"></i>
     <i class="veil veil-y"></i>
+    <canvas class="train3d" data-train3d></canvas>
     <i class="grain"></i>
     <i class="shard shard-tl"></i>
     <i class="shard shard-br"></i>
@@ -32,8 +34,8 @@ const deadline = config.deadline
   <div class="wrap">
     <div class="copy">
       <p class="eyebrow mono">
-        <img src="/brand/jujuydev-isotipo.png" alt="" width="512" height="353" decoding="async" />
-        JUJUY.DEV PRESENTA · PRE-HACKATÓN ONLINE
+        <img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" decoding="async" />
+        PRESENTA · PRE-HACKATÓN ONLINE
       </p>
       <h1 id="hero-title">Y vos… <span class="q">¿te ganás<br />tu ticket?</span></h1>
       <p class="lead">
@@ -100,6 +102,34 @@ const deadline = config.deadline
   const stack = document.querySelector<HTMLElement>('[data-stack]');
   const tilt = document.querySelector<HTMLElement>('[data-tilt]');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Tren Solar 3D detrás del ticket. three.js va en su propio chunk (import dinámico);
+  // si no hay WebGL o el GLB falla, queda la foto ambiente un poco más visible.
+  const backdrop = document.querySelector<HTMLElement>('[data-backdrop]');
+  const train = backdrop?.querySelector<HTMLCanvasElement>('[data-train3d]');
+  const hero = document.querySelector<HTMLElement>('.hero');
+  if (backdrop && train) {
+    const probe = document.createElement('canvas');
+    const gl = probe.getContext('webgl2') ?? probe.getContext('webgl');
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (gl && !saveData) {
+      import('../lib/three/train')
+        .then(({ mountTrain }) =>
+          mountTrain(train, {
+            reducedMotion: reduced,
+            host: hero ?? backdrop,
+            ...(stack ? { anchor: stack } : {}),
+          }),
+        )
+        .then(() => backdrop.classList.add('gl-on'))
+        .catch((err: unknown) => {
+          console.warn('[train3d] fallback a foto ambiente:', err);
+          backdrop.classList.add('gl-off');
+        });
+    } else {
+      backdrop.classList.add('gl-off');
+    }
+  }
 
   if (stack && tilt) {
     const fine = matchMedia('(hover: hover) and (pointer: fine)');
@@ -172,14 +202,35 @@ const deadline = config.deadline
     z-index: 0;
     pointer-events: none;
   }
-  .train {
+  .ambient {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: 58% 38%;
-    filter: saturate(1.08) contrast(1.05);
+    opacity: 0.55;
+    filter: saturate(0.9) blur(2px);
+    transition: opacity 900ms var(--ease-out);
+  }
+  .backdrop.gl-on .ambient {
+    opacity: 0.22;
+  }
+  .train3d {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 900ms var(--ease-out);
+    mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  }
+  .backdrop.gl-on .train3d {
+    opacity: 1;
+  }
+  .backdrop.gl-off .train3d {
+    display: none;
   }
   .veil {
     position: absolute;
@@ -574,8 +625,14 @@ const deadline = config.deadline
       padding-top: var(--sp-8);
       padding-bottom: var(--sp-12);
     }
-    .train {
+    .ambient {
       object-position: 62% 42%;
+    }
+    .train3d {
+      mask-image:
+        linear-gradient(180deg, transparent 0, #000 8%, #000 92%, transparent 100%),
+        linear-gradient(90deg, transparent 0, #000 22%, #000 100%);
+      mask-composite: intersect;
     }
     .veil-x {
       background: linear-gradient(

@@ -80,7 +80,7 @@ const cells: [number, number][] = [];
   <div class="stub">
     <div class="stub-head">
       <span class="admit mono">ADMIT ONE</span>
-      <img class="stub-logo" src="/brand/jujuydev-logo.webp" alt="jujuy.dev" width="588" height="120" loading="lazy" decoding="async" />
+      <span class="stub-brand"><img class="stub-logo" src="/brand/jujuydev-logo-white.webp" alt="jujuy.dev" width="443" height="120" loading="lazy" decoding="async" /></span>
     </div>
     <p class="no">N° <span class="dots"><i>·</i><i>·</i></span><span class="of">/{TICKETS_TOTAL}</span></p>
     <dl class="grid mono">
@@ -98,8 +98,9 @@ const cells: [number, number][] = [];
         <svg viewBox={`0 0 ${N} ${N}`} shape-rendering="crispEdges">
           {cells.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#0e0f12" />)}
           <rect x="7.5" y="7.5" width="6" height="6" fill="#f2f0ea" />
+          <rect x="8.5" y="8.5" width="4" height="4" fill="#0b1d3a" />
+          <rect x="9.5" y="9.5" width="2" height="2" fill="#ff5a1f" />
         </svg>
-        <img src="/brand/jujuydev-isotipo.png" alt="" width="512" height="353" loading="lazy" decoding="async" />
       </span>
     </div>
     <p class="legal mono">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</p>
@@ -324,9 +325,18 @@ const cells: [number, number][] = [];
     letter-spacing: 0.16em;
     font-size: 11px;
   }
+  .stub-brand {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    border-radius: 3px;
+    background: var(--navy-900);
+    line-height: 0;
+  }
   .stub-logo {
-    height: 18px;
+    height: 11px;
     width: auto;
+    display: block;
   }
   .no {
     margin: 0;
@@ -396,14 +406,6 @@ const cells: [number, number][] = [];
     width: 100%;
     height: 100%;
     display: block;
-  }
-  .qr img {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 18px;
-    height: auto;
-    transform: translate(-50%, -50%);
   }
   .legal {
     font-size: 8px;

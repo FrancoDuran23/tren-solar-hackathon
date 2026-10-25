@@ -29,7 +29,7 @@ const c = sections.finalCta;
     <div class="stub" aria-hidden="true">
       <div class="stub-head mono">
         <span>ADMIT ONE</span>
-        <img src="/brand/jujuydev-logo.webp" alt="" width="588" height="120" loading="lazy" decoding="async" />
+        <span class="stub-brand"><img src="/brand/jujuydev-logo-white.webp" alt="" width="443" height="120" loading="lazy" decoding="async" /></span>
       </div>
       <p class="no">N° <span class="dots">··</span><span class="of">/{TICKETS_TOTAL}</span></p>
       <dl class="grid mono">
@@ -201,9 +201,18 @@ const c = sections.finalCta;
     font-weight: 700;
     letter-spacing: 0.16em;
   }
+  .stub-brand {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    border-radius: 3px;
+    background: var(--navy-900);
+    line-height: 0;
+  }
   .stub-head img {
-    height: 18px;
+    height: 11px;
     width: auto;
+    display: block;
   }
   .no {
     margin: 0;
