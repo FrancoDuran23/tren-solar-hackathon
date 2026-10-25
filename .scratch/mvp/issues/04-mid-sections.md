@@ -4,12 +4,12 @@
 
 **Blocked by:** 01, 02
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Qué es + 3 datos clave (H8)
-- [ ] Pasos Inscribite → Construí → Subite (H9, I5)
-- [ ] Countdown 3 modos; sin ticks en aria-live (C1–C4)
-- [ ] Hard gate + 5 criterios 0–10 + tracción + 50/50 (S1–S4)
-- [ ] Cupos 35+35 + mensaje mejores de Argentina (K1–K3)
-- [ ] Responsive cards en mobile
-- [ ] Commit: `feat(sections): mid flow scoring cupos (T04)`
+- [x] Qué es + 3 datos clave (H8)
+- [x] Pasos Inscribite → Construí → Subite (H9, I5)
+- [x] Countdown 3 modos; sin ticks en aria-live (C1–C4)
+- [x] Hard gate + 5 criterios 0–10 + tracción + 50/50 (S1–S4)
+- [x] Cupos 35+35 + mensaje mejores de Argentina (K1–K3)
+- [x] Responsive cards en mobile
+- [x] Commit: `feat(sections): mid flow scoring cupos (T04)`

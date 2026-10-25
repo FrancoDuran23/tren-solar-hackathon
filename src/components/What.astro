@@ -1,0 +1,91 @@
+---
+import { copy } from '../content/copy';
+const { what } = copy;
+---
+
+<section class="what" id={what.id} aria-labelledby="what-title">
+  <div class="inner">
+    <div class="text">
+      <h2 id="what-title">{what.h2}</h2>
+      <p>{what.text}</p>
+    </div>
+    <dl class="facts" aria-label={what.factsLabel}>
+      {what.facts.map((f) => (
+        <div class="fact">
+          <dt>{f.k}</dt>
+          <dd>{f.v}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .what {
+    background: var(--navy-900);
+    padding: var(--sp-12) 0;
+  }
+  .inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    display: grid;
+    gap: var(--sp-8);
+  }
+  h2 {
+    font: 700 var(--fs-h1) / var(--lh-h1) var(--font-display);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--sp-6);
+  }
+  p {
+    margin: 0;
+    font-size: var(--fs-lead);
+    line-height: var(--lh-lead);
+    color: var(--text-muted);
+    max-width: 56ch;
+  }
+  .facts {
+    margin: 0;
+    background: var(--navy-800);
+    border: var(--border);
+    border-left: 4px solid var(--orange-500);
+    border-radius: var(--r-md);
+    padding: var(--sp-6);
+    display: grid;
+    gap: var(--sp-4);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    align-self: start;
+  }
+  .fact {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    padding-bottom: var(--sp-3);
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+  }
+  .fact:last-child {
+    border: 0;
+    padding: 0;
+  }
+  dt {
+    font-size: var(--fs-small);
+    color: var(--text-muted);
+  }
+  dd {
+    margin: 0;
+    font-weight: 700;
+    color: var(--orange-400);
+    text-align: right;
+  }
+  @media (min-width: 900px) {
+    .what {
+      padding: var(--sp-24) 0;
+    }
+    .inner {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--sp-16);
+    }
+  }
+</style>

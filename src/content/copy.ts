@@ -47,6 +47,101 @@ export const copy = {
       social: 'Redes',
     },
   },
+  what: {
+    id: 'que-es',
+    h2: 'Un pre-hackatón para ganarte el asiento.',
+    text: 'La Solar Train Hackathon tiene cupos contados. El Pre-Hackatón es tu manera de entrar: armás un proyecto, lo entregás acá y los 35 mejores se suben. Es online, así que buildeás desde donde estés en Jujuy.',
+    factsLabel: 'Datos clave',
+    facts: [
+      { k: 'FORMATO', v: 'ONLINE' },
+      { k: 'TICKETS', v: '35' },
+      { k: 'DESTINO', v: 'SOLAR TRAIN HACKATHON' },
+    ],
+  },
+  steps: {
+    h2: 'Tres paradas.',
+    note: 'Inscribirte en Luma y entregar tu proyecto son dos pasos distintos: primero te anotás, después subís repo, demo y video acá.',
+    items: [
+      {
+        n: '01',
+        title: 'Inscribite',
+        text: 'Anotate en Luma. Te llega el kit del Pre-Hackatón y la agenda de workshops.',
+        icon: '🎫',
+      },
+      {
+        n: '02',
+        title: 'Construí',
+        text: 'Tenés la semana para buildear. Solo o en equipo. Lo que importa es que funcione y que alguien lo use.',
+        icon: '🔧',
+      },
+      {
+        n: '03',
+        title: 'Subite al tren',
+        text: 'Entregá repo, demo y video. Si quedás en el top 35, tu ticket a la Solar Train Hackathon tiene tu nombre.',
+        icon: '🚆',
+      },
+    ],
+  },
+  board: {
+    label: 'Tablero de salidas',
+    off: ['SALIDA', 'PRE-HACKATÓN', 'HORARIO POR CONFIRMAR', 'ANDÉN JUJ'],
+    tentative: 'CIERRE TENTATIVO',
+    tentativeChip: 'fecha tentativa',
+    tentativeNote: 'Confirmamos la fecha final cuando abra la inscripción.',
+    live: 'CIERRA EN',
+    zero: 'SALIÓ · ENTREGAS CERRADAS',
+    units: ['DD', 'HH', 'MM', 'SS'],
+    unitsLong: ['días', 'horas', 'minutos', 'segundos'],
+    announce: {
+      off: 'Horario de cierre por confirmar.',
+      tentative: 'Cierre tentativo. Fecha por confirmar.',
+      live: 'Cuenta regresiva en curso.',
+      zero: 'Salió. Entregas cerradas.',
+    },
+  },
+  criteria: {
+    id: 'criterios',
+    h2: 'Cómo se gana el ticket.',
+    gateLabel: 'CONTROL DE ACCESO',
+    gate: 'Para subirte tenés que vivir o residir en Jujuy.',
+    gateNote: 'Es condición excluyente para los 35 tickets del Pre.',
+    scale: '0–10',
+    scaleNote: 'Cada criterio va de 0 a 10.',
+    items: [
+      { title: 'Utilidad', text: '¿Resuelve un problema real? ¿Para quién?' },
+      { title: 'Experiencia de usuario', text: '¿Se entiende solo? ¿Da ganas de volver a usarlo?' },
+      { title: 'Modelo de negocio', text: '¿Cómo se sostiene? ¿Quién paga y por qué?' },
+      {
+        title: 'Tecnología interesante',
+        text: '¿Qué tiene de nuevo por adentro? Contanos la decisión técnica que te enorgullece.',
+      },
+    ],
+    traction: {
+      title: 'Tracción',
+      text: 'Mostranos evidencia: usuarios, revenue, waitlist o stars.',
+      chips: ['USERS', 'REVENUE', 'WAITLIST', 'STARS'],
+      note: 'Número + link o captura.',
+    },
+    split: {
+      text: 'La mitad del puntaje lo pone la organización, la otra mitad el jurado. Suben los 35 con mayor puntaje.',
+      a: { pct: '50%', label: 'organización' },
+      b: { pct: '50%', label: 'jurados' },
+    },
+  },
+  slots: {
+    h2: 'Vas a buildear con los mejores de Argentina.',
+    text: 'En la Solar Train Hackathon vas a compartir vagón con 35 equipos invitados de todo el país. Setenta personas buildeando en el mismo tren.',
+    a: {
+      n: '35',
+      label: 'JUJEÑOS',
+      text: 'Por scoring en el Pre-Hackatón. Vivís o residís en Jujuy.',
+    },
+    b: {
+      n: '35',
+      label: 'INVITADOS ESPECIALES',
+      text: 'De otras provincias. Equipos y empresas ya formadas, invitados por la organización.',
+    },
+  },
 } as const;
 
 export type Copy = typeof copy;

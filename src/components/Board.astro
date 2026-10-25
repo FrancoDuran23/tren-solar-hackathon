@@ -1,0 +1,247 @@
+---
+import { copy } from '../content/copy';
+import { config } from '../config';
+import { boardMode, parts } from '../lib/countdown';
+const { board } = copy;
+const mode = boardMode();
+const iso = config.deadline?.iso ?? '';
+const initial = config.deadline ? parts(Date.parse(config.deadline.iso) - Date.now()) : [0, 0, 0, 0];
+const pad = (n: number) => String(n).padStart(2, '0');
+const flap = (s: string) => [...s];
+---
+
+<section
+  class="board"
+  aria-label={board.label}
+  data-board
+  data-mode={mode}
+  data-deadline={iso}
+  data-tentative={config.deadline?.tentative ? '1' : '0'}
+>
+  <div class="inner">
+    <!-- Único aria-live: solo cambia cuando cambia el modo, nunca por tick -->
+    <p class="sr-only" role="status" aria-live="polite" data-announce>{board.announce[mode]}</p>
+    <div class="row" data-row>
+      <div class="text-row" data-text-off>
+        {board.off.map((w, i) => (
+          <>
+            {i > 0 && <span class="dot" aria-hidden="true">·</span>}
+            <span class="word" aria-hidden="true">
+              {flap(w).map((c) => <span class="flap idle">{c}</span>)}
+            </span>
+          </>
+        ))}
+      </div>
+      <p class="label" data-label aria-hidden="true">
+        {mode === 'tentative' ? board.tentative : mode === 'live' ? board.live : ''}
+        <span class="chip" data-chip hidden={mode !== 'tentative'}>{board.tentativeChip}</span>
+      </p>
+      <div class="digits" data-digits aria-hidden="true">
+        {initial.map((v, i) => (
+          <div class="unit">
+            <span class="flap big" data-unit={i}>{pad(v)}</span>
+            <span class="u">{board.units[i]}</span>
+          </div>
+        ))}
+      </div>
+      <p class="zero" data-zero aria-hidden="true">{board.zero}</p>
+    </div>
+    <p class="note" data-note hidden={mode !== 'tentative'}>{board.tentativeNote}</p>
+  </div>
+</section>
+
+<script define:vars={{ announce: board.announce, label: { tentative: board.tentative, live: board.live } }}>
+  document.querySelectorAll('[data-board]').forEach((el) => {
+    const iso = el.dataset.deadline;
+    if (!iso) return;
+    const end = Date.parse(iso);
+    const tentative = el.dataset.tentative === '1';
+    const units = el.querySelectorAll('[data-unit]');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pad = (n) => String(n).padStart(2, '0');
+    const setMode = (m) => {
+      if (el.dataset.mode === m) return;
+      el.dataset.mode = m;
+      el.querySelector('[data-announce]').textContent = announce[m];
+      const l = el.querySelector('[data-label]');
+      l.firstChild.textContent = m === 'tentative' ? label.tentative : m === 'live' ? label.live : '';
+      el.querySelector('[data-chip]').hidden = m !== 'tentative';
+      el.querySelector('[data-note]').hidden = m !== 'tentative';
+    };
+    const tick = () => {
+      const left = end - Date.now();
+      if (left <= 0) {
+        setMode('zero');
+        document.dispatchEvent(new CustomEvent('deadline:zero'));
+        return true;
+      }
+      setMode(tentative ? 'tentative' : 'live');
+      const s = Math.floor(left / 1000);
+      const v = [Math.floor(s / 86400), Math.floor((s % 86400) / 3600), Math.floor((s % 3600) / 60), s % 60];
+      el.classList.toggle('urgent', left < 86400000 && !tentative);
+      v.forEach((n, i) => {
+        const t = pad(n);
+        if (units[i].textContent !== t) {
+          units[i].textContent = t;
+          if (i === 3 && !reduce) {
+            units[i].classList.remove('flip');
+            void units[i].offsetWidth;
+            units[i].classList.add('flip');
+          }
+        }
+      });
+      return false;
+    };
+    if (!tick()) {
+      const id = setInterval(() => tick() && clearInterval(id), 1000);
+    }
+  });
+</script>
+
+<style>
+  .board {
+    background: var(--ink-950);
+    padding: var(--sp-12) 0;
+    border-top: var(--border);
+    border-bottom: var(--border);
+  }
+  .inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .row {
+    background: var(--navy-800);
+    border: 1px solid transparent;
+    padding: var(--sp-6);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-4);
+  }
+  .board.urgent .row {
+    border-color: var(--orange-500);
+  }
+  .text-row,
+  .digits,
+  .label,
+  .zero {
+    display: none;
+  }
+  [data-mode='off'] .text-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-3);
+    align-items: center;
+  }
+  [data-mode='tentative'] .label,
+  [data-mode='live'] .label {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: 0;
+    font-weight: 700;
+    color: var(--orange-400);
+  }
+  [data-mode='tentative'] .digits,
+  [data-mode='live'] .digits {
+    display: flex;
+    gap: var(--sp-3);
+  }
+  [data-mode='zero'] .zero {
+    display: block;
+    margin: 0;
+    font: 700 var(--fs-h3) / var(--lh-h3) var(--font-mono);
+    color: var(--orange-400);
+  }
+  .word {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .flap {
+    display: inline-block;
+    background: var(--ink-950);
+    color: var(--white);
+    padding: 6px 4px;
+    min-width: 1.1em;
+    text-align: center;
+    font-weight: 700;
+    font-size: var(--fs-small);
+    border-bottom: 1px solid var(--navy-600);
+  }
+  .flap.idle:nth-child(3n) {
+    animation: idle 8s steps(1) infinite;
+  }
+  @keyframes idle {
+    0%, 96% { transform: none; }
+    97% { transform: scaleY(0.1); }
+    100% { transform: none; }
+  }
+  .dot {
+    color: var(--orange-500);
+  }
+  .unit {
+    display: grid;
+    justify-items: center;
+    gap: var(--sp-1);
+  }
+  .flap.big {
+    font-size: var(--fs-h2);
+    padding: var(--sp-2) var(--sp-3);
+    min-width: 2ch;
+  }
+  .flap.flip {
+    animation: flip var(--dur-base) var(--ease-out);
+  }
+  @keyframes flip {
+    from { transform: scaleY(0.2); }
+    to { transform: none; }
+  }
+  .u {
+    font-size: var(--fs-micro);
+    color: var(--ink-400);
+  }
+  .chip {
+    border: 1px solid var(--orange-500);
+    color: var(--orange-400);
+    border-radius: var(--r-pill);
+    padding: 2px 10px;
+    font-size: var(--fs-micro);
+  }
+  .note {
+    margin: var(--sp-3) 0 0;
+    font: var(--fs-small) / var(--lh-small) var(--font-text);
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-muted);
+  }
+  [hidden] {
+    display: none !important;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (min-width: 900px) {
+    .board {
+      padding: var(--sp-16) 0;
+    }
+    .row {
+      padding: var(--sp-8);
+      gap: var(--sp-8);
+    }
+    .flap {
+      font-size: var(--fs-body);
+    }
+    .flap.big {
+      font-size: 40px;
+    }
+  }
+</style>

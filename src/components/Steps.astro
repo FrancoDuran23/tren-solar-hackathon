@@ -1,0 +1,125 @@
+---
+import { copy } from '../content/copy';
+const { steps } = copy;
+---
+
+<section class="steps" id="como" aria-labelledby="steps-title">
+  <div class="inner">
+    <h2 id="steps-title">{steps.h2}</h2>
+    <ol class="list">
+      {steps.items.map((s, i) => (
+        <li class:list={['card', i === 2 && 'card--shard']}>
+          <span class="n">{s.n}</span>
+          <span class="icon" aria-hidden="true">{s.icon}</span>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+    <p class="note">{steps.note}</p>
+  </div>
+</section>
+
+<style>
+  .steps {
+    background: var(--navy-950);
+    border-top: var(--border);
+    padding: var(--sp-12) 0;
+  }
+  .inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+  h2 {
+    font: 700 var(--fs-h1) / var(--lh-h1) var(--font-display);
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--sp-12);
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--sp-6);
+    display: grid;
+    gap: var(--sp-8);
+    position: relative;
+  }
+  /* línea de vía */
+  .list::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-left: 2px dashed var(--orange-500);
+  }
+  .card {
+    position: relative;
+    background: var(--navy-800);
+    border: var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-6);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * var(--sp-6) - 5px);
+    top: var(--sp-6);
+    width: 10px;
+    height: 10px;
+    background: var(--orange-500);
+  }
+  .card--shard::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--orange-500);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+  .n {
+    font: 700 var(--fs-h2) / 1 var(--font-mono);
+    color: var(--orange-500);
+  }
+  .icon {
+    float: right;
+    font-size: 24px;
+    margin-right: var(--sp-6);
+  }
+  h3 {
+    font: 700 var(--fs-h3) / var(--lh-h3) var(--font-display);
+    margin: var(--sp-3) 0;
+  }
+  .card p {
+    margin: 0;
+    color: var(--text-muted);
+  }
+  .note {
+    margin: var(--sp-8) 0 0;
+    font: var(--fs-small) / var(--lh-small) var(--font-mono);
+    color: var(--ink-400);
+    max-width: 70ch;
+  }
+  @media (min-width: 900px) {
+    .steps {
+      padding: var(--sp-24) 0;
+    }
+    .list {
+      grid-template-columns: repeat(3, 1fr);
+      padding: var(--sp-6) 0 0;
+    }
+    .list::before {
+      inset: 0 0 auto 0;
+      border-left: 0;
+      border-top: 2px dashed var(--orange-500);
+    }
+    .card::before {
+      left: var(--sp-6);
+      top: calc(-1 * var(--sp-6) - 5px);
+    }
+  }
+</style>
