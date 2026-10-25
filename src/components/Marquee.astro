@@ -1,0 +1,109 @@
+---
+const items = [
+  'PRÓXIMA SALIDA',
+  'PRE-HACKATÓN',
+  '35 TICKETS',
+  'ONLINE',
+  'ANDÉN JUJUY',
+  'IDEAS QUE VIAJAN MÁS LEJOS',
+  'SPONSOR SORPRESA A BORDO',
+];
+---
+
+<section class="marquee" aria-label="Movida tren" data-marquee>
+  <div class="track" aria-hidden="true">
+    {[0, 1].map(() => (
+      <ul class="row">
+        {items.map((t) => (
+          <li>{t}<span class="sep">◆</span></li>
+        ))}
+      </ul>
+    ))}
+  </div>
+  <p class="sr-only">{items.join(' · ')}</p>
+  <button type="button" class="toggle" aria-pressed="false" aria-label="Pausar marquee">
+    <span aria-hidden="true">❚❚</span>
+  </button>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((m) => {
+    const b = m.querySelector<HTMLButtonElement>('.toggle')!;
+    b.addEventListener('click', () => {
+      const paused = m.classList.toggle('paused');
+      b.setAttribute('aria-pressed', String(paused));
+      b.setAttribute('aria-label', paused ? 'Reanudar marquee' : 'Pausar marquee');
+      b.firstElementChild!.textContent = paused ? '▶' : '❚❚';
+    });
+  });
+</script>
+
+<style>
+  .marquee {
+    position: relative;
+    background: var(--navy-950);
+    border-top: var(--border);
+    border-bottom: var(--border);
+    overflow: hidden;
+    font: 14px/1 var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    padding: 16px 0;
+    animation: run 40s linear infinite;
+  }
+  .row {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: none;
+  }
+  li {
+    white-space: nowrap;
+    color: var(--white);
+  }
+  .sep {
+    color: var(--orange-500);
+    margin: 0 24px;
+  }
+  @keyframes run {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .marquee:hover .track,
+  .marquee:focus-within .track,
+  .marquee.paused .track {
+    animation-play-state: paused;
+  }
+  .toggle {
+    position: absolute;
+    right: var(--gutter);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--navy-800);
+    color: var(--white);
+    border: var(--border-strong);
+    border-radius: var(--r-xs);
+    padding: 6px 8px;
+    font: 10px/1 var(--font-mono);
+    cursor: pointer;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track {
+      animation: none;
+    }
+  }
+</style>

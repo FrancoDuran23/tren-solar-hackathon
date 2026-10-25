@@ -1,0 +1,382 @@
+---
+import Ticket from './Ticket.astro';
+import { config, TICKETS_TOTAL } from '../config';
+
+const isOpen = config.registration === 'open' && !!config.lumaUrl;
+const isClosed = config.registration === 'closed';
+const state: 'open' | 'closed' | 'soon' = isClosed ? 'closed' : isOpen ? 'open' : 'soon';
+
+const chip = state === 'open' ? 'Inscripción abierta' : '35 tickets en juego';
+const assigned = Math.min(Math.max(config.ticketsAssigned, 0), TICKETS_TOTAL);
+const free = TICKETS_TOTAL - assigned;
+const seats = Array.from({ length: TICKETS_TOTAL }, (_, i) => i < assigned);
+const ticketLabel =
+  'Ticket Pre-Hackatón jujuy.dev, número por asignar de ' + TICKETS_TOTAL;
+---
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="copy">
+      <p class="eyebrow mono">JUJUY.DEV PRESENTA · PRE-HACKATÓN ONLINE</p>
+      <h1 id="hero-title">Y vos… ¿te ganás tu ticket?</h1>
+      <p class="lead">
+        35 tickets a la Solar Train Hackathon. Buildeá online, subí tu proyecto y subite al tren.
+      </p>
+      <div class="ctas">
+        {state === 'open' && (
+          <a class="cta cta-primary" href={config.lumaUrl!} target="_blank" rel="noopener noreferrer">
+            Inscribite en Luma <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        )}
+        {state === 'soon' && (
+          <span class="cta cta-soon" role="link" aria-disabled="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5V8l2.5 1.5"/></svg>
+            Inscripción abre pronto
+          </span>
+        )}
+        {state === 'closed' && (
+          <span class="cta cta-closed" role="link" aria-disabled="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+            Inscripción cerrada
+          </span>
+        )}
+        {state === 'closed'
+          ? <a class="cta cta-secondary" href="#proyectos">Ver proyectos</a>
+          : <a class="cta cta-secondary" href="#como">Ver cómo funciona</a>}
+      </div>
+      <p class="micro mono">Online · Jujuy, Argentina · Cierre: {config.deadline ? new Date(config.deadline.iso).toLocaleDateString('es-AR') : 'por confirmar'}</p>
+    </div>
+
+    <div class="stage">
+      <p class="chip mono"><span class="dot"></span>{chip}</p>
+      <div class="stack" data-stack>
+        <div class="layer l3"><Ticket ghost /></div>
+        <div class="layer l2"><Ticket ghost /></div>
+        <div class="layer l1 tilt" data-tilt role="img" aria-label={ticketLabel}><Ticket /></div>
+      </div>
+      <div class="box">
+        <p class="pill mono"><span class="dot"></span>35 TICKETS · 35 JUJEÑOS</p>
+        <ul class="seats" aria-label={`${free} de ${TICKETS_TOTAL} asientos libres`}>
+          {seats.map((taken) => <li class:list={['seat', { taken }]}></li>)}
+        </ul>
+        <p class="legend mono">{free === TICKETS_TOTAL ? '35 asientos libres' : `${free} asientos libres`}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const stack = document.querySelector<HTMLElement>('[data-stack]');
+  const tilt = document.querySelector<HTMLElement>('[data-tilt]');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (stack && tilt && !reduced) {
+    const desktop = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+    const set = (rx: number, ry: number, sheen: number) => {
+      stack.style.setProperty('--rx', `${rx}deg`);
+      stack.style.setProperty('--ry', `${ry}deg`);
+      stack.style.setProperty('--sheen', String(sheen));
+    };
+    stack.addEventListener('pointermove', (e) => {
+      if (!desktop.matches) return;
+      const r = stack.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      stack.classList.add('is-hover');
+      set(-py * 16, px * 16, (px + 0.5) * 100);
+    });
+    stack.addEventListener('pointerleave', () => {
+      stack.classList.remove('is-hover');
+      set(0, 0, 0);
+    });
+    // Sheen al entrar en viewport (mobile/touch): una pasada
+    new IntersectionObserver(
+      (entries, obs) => {
+        for (const en of entries)
+          if (en.isIntersecting && !desktop.matches) {
+            stack.classList.add('sweep');
+            obs.disconnect();
+          }
+      },
+      { threshold: 0.5 }
+    ).observe(stack);
+  }
+</script>
+
+<style>
+  .hero {
+    background: var(--grad-sky);
+    padding: var(--sp-12) var(--gutter) var(--sp-12);
+    overflow: hidden;
+  }
+  .wrap {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    display: grid;
+    gap: var(--sp-8);
+  }
+  .mono {
+    font-family: var(--font-mono);
+  }
+  .eyebrow {
+    margin: 0 0 var(--sp-4);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--orange-400);
+  }
+  h1 {
+    margin: 0;
+    font: 900 var(--fs-hero) / var(--lh-hero) var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .lead {
+    margin: var(--sp-6) 0 0;
+    max-width: 52ch;
+    font-size: var(--fs-lead);
+    line-height: var(--lh-lead);
+    color: var(--text-muted);
+  }
+  .ctas {
+    margin-top: var(--sp-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    padding: 16px 28px;
+    border-radius: var(--r-sm);
+    font: 600 16px/1.2 var(--font-text);
+    text-decoration: none;
+    transition:
+      background var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      border-color var(--dur-base) var(--ease-out);
+  }
+  .cta-primary {
+    background: var(--orange-500);
+    color: var(--navy-900);
+    box-shadow: var(--shadow-cta);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+    border-radius: 0;
+  }
+  .cta-primary:hover {
+    background: var(--orange-400);
+    box-shadow: var(--shadow-cta-hover);
+  }
+  .cta-primary:active {
+    background: var(--orange-600);
+  }
+  .arrow {
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .cta-primary:hover .arrow {
+    transform: translateX(4px);
+  }
+  .cta-soon {
+    background: var(--navy-800);
+    border: 1px dashed var(--orange-500);
+    color: var(--text-muted);
+    cursor: default;
+  }
+  .cta-closed {
+    background: var(--navy-800);
+    color: rgba(255, 255, 255, 0.64);
+    cursor: default;
+  }
+  .cta-secondary {
+    border: var(--border-strong);
+    color: var(--white);
+  }
+  .cta-secondary:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .micro {
+    margin: var(--sp-6) 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-6);
+    padding-bottom: var(--sp-6);
+  }
+  .chip,
+  .pill {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .chip {
+    padding: 6px 12px;
+    border: 1px solid var(--orange-500);
+    border-radius: var(--r-pill);
+    color: var(--orange-300);
+  }
+  .pill {
+    padding: 10px 18px;
+    border-radius: var(--r-pill);
+    background: var(--navy-800);
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--orange-500);
+    animation: ping 1.6s ease-in-out infinite;
+  }
+  @keyframes ping {
+    50% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+  }
+
+  .stack {
+    --rx: 0deg;
+    --ry: 0deg;
+    --sheen: 0;
+    position: relative;
+    width: 340px;
+    max-width: 100%;
+    perspective: 1200px;
+  }
+  .layer {
+    transform-style: preserve-3d;
+  }
+  .l2,
+  .l3 {
+    display: none;
+  }
+  .l1 {
+    filter: drop-shadow(0 20px 30px rgba(6, 15, 34, 0.6));
+    transform: rotateX(var(--rx)) rotateY(var(--ry));
+    transition: transform var(--dur-base) var(--ease-out), filter var(--dur-base) var(--ease-out);
+    animation: breathe 6s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    50% {
+      transform: rotateX(1deg) rotateY(-2deg);
+    }
+  }
+  .stack.sweep :global(.foil) {
+    animation: sweep 1.4s var(--ease-out) 1 forwards;
+  }
+  @keyframes sweep {
+    from {
+      background-position: 0% 0;
+    }
+    to {
+      background-position: 100% 0;
+    }
+  }
+
+  .box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+  }
+  .seats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(7, 10px);
+    gap: 4px;
+  }
+  .seat {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--r-xs);
+    border: var(--border);
+  }
+  .seat.taken {
+    background: var(--orange-500);
+    border-color: var(--orange-500);
+  }
+  .legend {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  @media (min-width: 768px) {
+    .hero {
+      padding-top: var(--sp-16);
+      padding-bottom: var(--sp-16);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .wrap {
+      gap: var(--sp-16);
+    }
+    .stage {
+      padding: var(--sp-12) 0 var(--sp-6);
+    }
+    .stack {
+      width: 880px;
+      height: 320px;
+    }
+    .layer {
+      position: absolute;
+      inset: 0;
+    }
+    .l2,
+    .l3 {
+      display: block;
+      filter: blur(0.5px);
+    }
+    .l2 {
+      transform: rotate(-6deg) translate(-28px, 22px);
+      opacity: 0.55;
+    }
+    .l3 {
+      transform: rotate(4deg) translate(26px, 40px);
+      opacity: 0.3;
+      filter: blur(1px);
+    }
+    .stack.is-hover .l1 {
+      filter: drop-shadow(0 40px 50px rgba(6, 15, 34, 0.7));
+      animation: none;
+    }
+    .l1 {
+      animation: none;
+    }
+    .box {
+      margin-top: var(--sp-16);
+      flex-direction: row;
+      gap: var(--sp-6);
+    }
+    .seats {
+      grid-template-columns: repeat(35, 10px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .l1 {
+      transform: none !important;
+    }
+    .dots,
+    .dot {
+      animation: none !important;
+    }
+  }
+</style>

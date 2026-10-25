@@ -4,13 +4,15 @@
 
 **Blocked by:** 01
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Ticket anatomía desktop §2.2 + mobile §2.3
-- [ ] Tilt ±8° + foil sheen; off en reduced-motion y mobile
-- [ ] Boletería pill + 35 asientos (H5)
-- [ ] Marquee pausable (H6)
-- [ ] CTA hero estados según config (I1–I4)
-- [ ] `aria-label` en ticket; contraste CTA navy-on-orange
-- [ ] Smoke visual: screenshot desktop+mobile en `.scratch/mvp/playwright/03/`
-- [ ] Commit: `feat(hero): ticket boletería marquee (T03)`
+- [x] Ticket anatomía desktop §2.2 + mobile §2.3
+- [x] Tilt ±8° + foil sheen; off en reduced-motion y mobile
+- [x] Boletería pill + 35 asientos (H5)
+- [x] Marquee pausable (H6)
+- [x] CTA hero estados según config (I1–I4)
+- [x] `aria-label` en ticket; contraste CTA navy-on-orange
+- [x] Smoke visual: screenshot desktop+mobile en `.scratch/mvp/playwright/03/`
+- [x] Commit: `feat(hero): ticket boletería marquee (T03)`
+
+**Notas:** QR y barcode son decorativos (patrón determinista, sin lib); QR real con URL Luma queda para cuando exista el link. "Avisame cuando abra" no se renderiza (canal sin definir, spec §6). Estado `open` verificado temporalmente con config alterada (`desktop-1440-open.png`); config final intacto. Dev requiere Node ≥22.23.4 (VM tiene 20).
