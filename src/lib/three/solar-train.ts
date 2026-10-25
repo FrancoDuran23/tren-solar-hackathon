@@ -2,10 +2,11 @@
  * Tren Solar de la Quebrada — modelo 3D procedural low-poly (three.js).
  *
  * Referencias: public/brand/guideline-solar-train-poster.jpg y solar-train-quebrada.jpg.
- * Lectura buscada: dúo/tren turístico moderno (CRRC), carrocería blanca, banda de
- * ventanales panorámicos oscura, nariz aerodinámica con parabrisas envolvente sobre
- * frente navy con logo "M" naranja, faldón naranja que sube hacia la cabina, techo gris
- * con paneles solares, bogies y bajos oscuros.
+ * Es un DÚO (dos coches, cabina en cada extremo), no un tren largo: carrocería blanca,
+ * banda de ventanales panorámicos oscura, nariz aerodinámica con parabrisas envolvente,
+ * frente navy/negro de parabrisas a paragolpes con logo "M" naranja, faldón naranja
+ * continuo que sube en cuña hacia la cabina, display "JUJUY", faros dobles, techo gris
+ * con equipos y paneles, bogies y bajos oscuros.
  *
  * Todo se construye con lofts de un perfil de sección redondeada; los colores van por
  * cara (vertex colors, flat shading) según región, así no dependemos de texturas.
@@ -17,6 +18,8 @@ import {
   CylinderGeometry,
   Float32BufferAttribute,
   Group,
+  InstancedMesh,
+  Matrix4,
   Mesh,
   MeshStandardMaterial,
   Shape,
@@ -26,13 +29,13 @@ import {
 } from 'three';
 
 /* ───────── Dimensiones (unidades de escena) ───────── */
-export const CAR_LEN = 3.4; // largo de la caja recta por coche
+export const CAR_LEN = 3.9; // largo de la caja recta por coche
 export const CAR_W = 1.0;
 export const CAR_H = 1.3; // alto de la caja (desde el piso de la caja)
 export const FLOOR_Y = 0.42; // altura del piso de la caja sobre el riel
 export const NOSE_LEN = 1.05;
 export const GAP = 0.14; // separación entre coches (fuelle)
-export const CARS = 3;
+export const CARS = 2; // dúo: cabina + cabina (Franco: son DOS vagones)
 
 /* ───────── Paleta ───────── */
 const C = {
@@ -41,7 +44,7 @@ const C = {
   orange: new Color('#ff5a1f'),
   orangeDeep: new Color('#e04a12'),
   navy: new Color('#0b1d3a'),
-  glass: new Color('#131c30'),
+  glass: new Color('#1d2c4d'),
   ink: new Color('#1c1f26'),
   ink2: new Color('#2a2f3a'),
 };
@@ -75,27 +78,48 @@ type Painter = (centroid: Vector3, normal: Vector3) => Color;
 
 /**
  * Loft no indexado (flat shading) entre anillos del perfil. Devuelve geometría con
- * `color` por cara según `paint`. `cap` cierra el último anillo con un abanico.
+ * `color` según `paint`. `cap` cierra el último anillo con un abanico.
+ * `perVertex`: el color se decide por vértice (normal promediada) y se interpola, así
+ * los bordes de región que cruzan la malla en diagonal (nariz) no quedan en escalera.
  */
-function loft(profile: Vector2[], rings: Ring[], paint: Painter, cap: boolean): BufferGeometry {
+function loft(profile: Vector2[], rings: Ring[], paint: Painter, cap: boolean, perVertex = false): BufferGeometry {
   const pos: number[] = [];
   const col: number[] = [];
   const n = profile.length;
+  const R = rings.length;
   const P = (r: Ring, i: number) => new Vector3(profile[i % n]!.x * r.sx, profile[i % n]!.y * r.sy, r.z);
   const faceNormal = (a: Vector3, b: Vector3, c: Vector3) =>
     new Vector3().subVectors(b, a).cross(new Vector3().subVectors(c, a)).normalize();
-  const tri = (a: Vector3, b: Vector3, c: Vector3, color: Color) => {
-    for (const v of [a, b, c]) {
-      pos.push(v.x, v.y, v.z);
-      col.push(color.r, color.g, color.b);
-    }
+  const tri = (a: Vector3, b: Vector3, c: Vector3, ca: Color, cb: Color, cc: Color) => {
+    pos.push(a.x, a.y, a.z, b.x, b.y, b.z, c.x, c.y, c.z);
+    col.push(ca.r, ca.g, ca.b, cb.r, cb.g, cb.b, cc.r, cc.g, cc.b);
   };
   // El perfil es CCW mirando desde +z. Con anillos en z creciente, el orden
   // (a0, b1, b0) deja la normal hacia afuera; si los anillos van en z decreciente
   // (nariz trasera) se invierte el orden.
-  const forward = rings[rings.length - 1]!.z >= rings[0]!.z;
+  const forward = rings[R - 1]!.z >= rings[0]!.z;
+  // Normales por quad (q[r][i]) y por vértice (promedio de los 4 quads vecinos)
+  const quadN: Vector3[][] = [];
+  for (let r = 0; r < R - 1; r++) {
+    quadN.push([]);
+    for (let i = 0; i < n; i++) {
+      const a0 = P(rings[r]!, i);
+      const b0 = P(rings[r + 1]!, i);
+      const b1 = P(rings[r + 1]!, i + 1);
+      quadN[r]!.push(forward ? faceNormal(a0, b1, b0) : faceNormal(a0, b0, b1));
+    }
+  }
+  const vertColor = (r: number, i: number): Color => {
+    const nn = new Vector3();
+    const ii = ((i % n) + n) % n;
+    const ip = (ii - 1 + n) % n;
+    if (r > 0) nn.add(quadN[r - 1]![ii]!).add(quadN[r - 1]![ip]!);
+    if (r < R - 1) nn.add(quadN[r]![ii]!).add(quadN[r]![ip]!);
+    nn.normalize();
+    return paint(P(rings[r]!, ii), nn);
+  };
   // Color decidido por quad (no por triángulo) para que los bordes de región no serruchen
-  for (let r = 0; r < rings.length - 1; r++) {
+  for (let r = 0; r < R - 1; r++) {
     const A = rings[r]!;
     const B = rings[r + 1]!;
     for (let i = 0; i < n; i++) {
@@ -103,27 +127,40 @@ function loft(profile: Vector2[], rings: Ring[], paint: Painter, cap: boolean): 
       const a1 = P(A, i + 1);
       const b0 = P(B, i);
       const b1 = P(B, i + 1);
-      const ctr = new Vector3().addVectors(a0, a1).add(b0).add(b1).multiplyScalar(0.25);
-      if (forward) {
-        const color = paint(ctr, faceNormal(a0, b1, b0));
-        tri(a0, b1, b0, color);
-        tri(a0, a1, b1, color);
+      let ca0: Color, ca1: Color, cb0: Color, cb1: Color;
+      if (perVertex) {
+        ca0 = vertColor(r, i);
+        ca1 = vertColor(r, i + 1);
+        cb0 = vertColor(r + 1, i);
+        cb1 = vertColor(r + 1, i + 1);
       } else {
-        const color = paint(ctr, faceNormal(a0, b0, b1));
-        tri(a0, b0, b1, color);
-        tri(a0, b1, a1, color);
+        const ctr = new Vector3().addVectors(a0, a1).add(b0).add(b1).multiplyScalar(0.25);
+        ca0 = ca1 = cb0 = cb1 = paint(ctr, quadN[r]![i]!);
+      }
+      if (forward) {
+        tri(a0, b1, b0, ca0, cb1, cb0);
+        tri(a0, a1, b1, ca0, ca1, cb1);
+      } else {
+        tri(a0, b0, b1, ca0, cb0, cb1);
+        tri(a0, b1, a1, ca0, cb1, ca1);
       }
     }
   }
   if (cap) {
-    const L = rings[rings.length - 1]!;
+    const L = rings[R - 1]!;
     const c = new Vector3(0, (CAR_H * L.sy) / 2, L.z);
+    const capN = new Vector3(0, 0, forward ? 1 : -1);
     for (let i = 0; i < n; i++) {
       // Tapa mirando hacia afuera del extremo (+z si forward, -z si no)
       const a = forward ? P(L, i) : P(L, i + 1);
       const b = forward ? P(L, i + 1) : P(L, i);
-      const ctr = new Vector3().addVectors(a, b).add(c).multiplyScalar(1 / 3);
-      tri(a, b, c, paint(ctr, faceNormal(a, b, c)));
+      if (perVertex) {
+        tri(a, b, c, paint(a, capN), paint(b, capN), paint(c, capN));
+      } else {
+        const ctr = new Vector3().addVectors(a, b).add(c).multiplyScalar(1 / 3);
+        const cc = paint(ctr, faceNormal(a, b, c));
+        tri(a, b, c, cc, cc, cc);
+      }
     }
   }
   const g = new BufferGeometry();
@@ -134,31 +171,69 @@ function loft(profile: Vector2[], rings: Ring[], paint: Painter, cap: boolean): 
 }
 
 /* Curvas de la nariz: t = 0 en la unión con la caja, 1 en la punta */
-const noseSX = (t: number) => 1 - 0.64 * Math.pow(t, 2.1);
-const noseSY = (t: number) => 1 - 0.5 * Math.pow(t, 1.6);
+// Frente ancho (poster): la planta apenas se estrecha; el techo baja en el parabrisas
+const noseSX = (t: number) => 1 - 0.3 * Math.pow(t, 2.4);
+const noseSY = (t: number) => 1 - 0.42 * Math.pow(t, 1.9);
 
 /** Pintor de la caja recta */
 function paintBody(c: Vector3, n: Vector3): Color {
   if (n.y > 0.72) return C.roof;
   if (c.y < 0.11 * CAR_H) return C.orange;
+  if (c.y < 0.135 * CAR_H && Math.abs(n.x) > 0.5) return C.orange;
   if (n.y < -0.5) return C.ink;
   return C.white;
 }
 
-/** Pintor de la nariz; `dir` = +1 si la punta mira a +z */
+const smooth = (edge0: number, edge1: number, x: number) => {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+};
+const mix = (a: Color, b: Color, t: number) => (t <= 0 ? a : t >= 1 ? b : a.clone().lerp(b, t));
+
+/**
+ * Pintor de la nariz; `dir` = +1 si la punta mira a +z. Los bordes que cruzan la malla
+ * en diagonal (cuña naranja, parabrisas) se mezclan en ~1 quad para que, interpolados
+ * por vértice, queden rectos y no en escalera. La cara frontal plana va aparte.
+ */
 function paintNose(z0: number, dir: 1 | -1): Painter {
+  const E = 0.02; // ancho de mezcla (la interpolación por quad agrega el resto)
   return (c, n) => {
-    const t = Math.min(1, Math.max(0, (Math.abs(c.z - z0) / NOSE_LEN)));
+    const t = Math.min(1, Math.max(0, Math.abs(c.z - z0) / NOSE_LEN));
     const fwd = n.z * dir;
     if (n.y < -0.5) return C.ink;
-    // Parabrisas envolvente: zona alta que ya se inclina hacia adelante
-    if (fwd > 0.32 && c.y > 0.58 * CAR_H) return C.glass;
-    // (El paragolpes navy es una placa aparte, ver buildSolarTrain; la trompa queda blanca)
-    // Faldón naranja lateral que sube hacia la cabina
-    if (Math.abs(n.x) > 0.35 && c.y < CAR_H * (0.11 + 0.16 * t)) return t > 0.6 ? C.orangeDeep : C.orange;
-    if (n.y > 0.72) return C.roof;
-    return C.white;
+    const skirtTop = CAR_H * (0.11 + 0.3 * Math.pow(t, 1.3));
+    const orange = t > 0.75 ? C.orangeDeep : C.orange;
+    let base: Color = n.y > 0.72 ? C.roof : C.white;
+    // Parabrisas envolvente: la pendiente del techo que mira adelante (centro); parantes blancos
+    if (fwd > 0.22 && n.y > 0.12) {
+      const g = smooth(0.46 * CAR_H, 0.46 * CAR_H + E, c.y) * (1 - smooth(0.55, 0.68, Math.abs(n.x)));
+      base = mix(base, C.glass, g);
+    }
+    // Faldón naranja: banda continua que sube en cuña hacia la cabina (poster)
+    const side = Math.max(smooth(0.18, 0.3, Math.abs(n.x)), smooth(0.4, 0.55, fwd));
+    const k = side * (1 - smooth(skirtTop - E, skirtTop + E, c.y));
+    return mix(base, orange, k);
   };
+}
+
+/** Recorta un polígono (CCW) a la banda y0 ≤ y ≤ y1 (Sutherland–Hodgman) */
+function clipBandY(poly: Vector2[], y0: number, y1: number): Vector2[] {
+  const clip = (pts: Vector2[], inside: (p: Vector2) => boolean, yCut: number) => {
+    const out: Vector2[] = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i]!;
+      const b = pts[(i + 1) % pts.length]!;
+      const ia = inside(a);
+      const ib = inside(b);
+      if (ia) out.push(a);
+      if (ia !== ib) {
+        const u = (yCut - a.y) / (b.y - a.y);
+        out.push(new Vector2(a.x + (b.x - a.x) * u, yCut));
+      }
+    }
+    return out;
+  };
+  return clip(clip(poly, (p) => p.y >= y0, y0), (p) => p.y <= y1, y1);
 }
 
 function box(w: number, h: number, d: number, mat: MeshStandardMaterial, x: number, y: number, z: number): Mesh {
@@ -170,17 +245,33 @@ function box(w: number, h: number, d: number, mat: MeshStandardMaterial, x: numb
 }
 
 export interface SolarTrain {
+  /** Contenedor: vía fija + `cars` */
   group: Group;
-  /** Punta de la nariz delantera (coords del grupo) */
+  /** Los coches (lo que avanza por la vía, eje +z = adelante) */
+  cars: Group;
+  /** Ruedas (giran con el avance; rotación sobre el eje x local) */
+  wheels: Mesh[];
+  /** Radio de rueda */
+  wheelRadius: number;
+  /** Punta de la nariz delantera (coords de `cars`) */
   noseTip: Vector3;
   /** Largo total */
   length: number;
+  /** Largo de la vía construida (centrada en z = 0) */
+  trackLength: number;
   materials: MeshStandardMaterial[];
 }
 
+/** Largo de la vía (el tren recorre ±trackLength/2 menos su propio largo) */
+export const TRACK_LEN = 110;
+
 export function buildSolarTrain(): SolarTrain {
   const group = new Group();
-  const profile = sectionProfile(40);
+  const cars = new Group();
+  group.add(cars);
+  const wheels: Mesh[] = [];
+  const WHEEL_R = 0.17;
+  const profile = sectionProfile(96);
 
   const bodyMat = new MeshStandardMaterial({ vertexColors: true, roughness: 0.48, metalness: 0.06, flatShading: true });
   const glassMat = new MeshStandardMaterial({
@@ -208,11 +299,12 @@ export function buildSolarTrain(): SolarTrain {
   const lampMat = new MeshStandardMaterial({
     color: new Color('#fff6e0'),
     emissive: new Color('#ffe9b0'),
-    emissiveIntensity: 1.3,
+    emissiveIntensity: 2.6,
     roughness: 0.3,
   });
   const materials = [bodyMat, glassMat, inkMat, darkMat, panelMat, orangeMat, lampMat];
 
+  const wheelGeo = new CylinderGeometry(WHEEL_R, WHEEL_R, 0.06, 14);
   const pitch = CAR_LEN + GAP;
   const total = CARS * CAR_LEN + (CARS - 1) * GAP + 2 * NOSE_LEN;
   const z0 = -(CARS * CAR_LEN + (CARS - 1) * GAP) / 2; // inicio del primer coche
@@ -267,11 +359,12 @@ export function buildSolarTrain(): SolarTrain {
       car.add(box(0.7, 0.16, 0.9, darkMat, 0, -0.26, zb));
       for (const side of [-1, 1])
         for (const dz of [-0.28, 0.28]) {
-          const wheel = new Mesh(new CylinderGeometry(0.17, 0.17, 0.06, 14), darkMat);
+          const wheel = new Mesh(wheelGeo, darkMat);
           wheel.rotation.z = Math.PI / 2;
-          wheel.position.set(side * 0.4, -FLOOR_Y + 0.17, zb + dz);
+          wheel.position.set(side * 0.4, -FLOOR_Y + WHEEL_R, zb + dz);
           wheel.castShadow = true;
           car.add(wheel);
+          wheels.push(wheel);
         }
     }
 
@@ -284,29 +377,53 @@ export function buildSolarTrain(): SolarTrain {
     if (k === 0) noses.push({ at: zs, dir: -1 });
     for (const { at, dir } of noses) {
       const rings: Ring[] = [];
-      const N = 30;
+      const N = 56;
       for (let i = 0; i <= N; i++) {
         const t = i / N;
         rings.push({ z: at + dir * t * NOSE_LEN, sx: noseSX(t), sy: noseSY(t) });
       }
-      const nose = new Mesh(loft(profile, rings, paintNose(at, dir), true), bodyMat);
+      const nose = new Mesh(loft(profile, rings, paintNose(at, dir), false, true), bodyMat);
       nose.castShadow = true;
       nose.receiveShadow = true;
       car.add(nose);
 
       const tipZ = at + dir * NOSE_LEN;
       const tipSX = noseSX(1);
-      // Faros
-      for (const side of [-1, 1]) {
-        const lamp = new Mesh(new CylinderGeometry(0.03, 0.03, 0.03, 12), lampMat);
-        lamp.rotation.x = Math.PI / 2;
-        lamp.position.set(side * tipSX * CAR_W * 0.33, CAR_H * 0.42, tipZ + dir * 0.004);
-        car.add(lamp);
+      const tipSY = noseSY(1);
+      // Cara frontal plana, en tres bandas (poster): franja negra con faros arriba,
+      // panel blanco con la "M" en el medio, paragolpes oscuro abajo.
+      const tipPoly = profile.map((q) => new Vector2(q.x * tipSX, q.y * tipSY));
+      const bands: Array<[number, number, Color]> = [
+        [0, 0.12 * CAR_H, C.ink],
+        [0.12 * CAR_H, 0.37 * CAR_H, C.white],
+        [0.37 * CAR_H, CAR_H, C.navy],
+      ];
+      for (const [b0, b1, color] of bands) {
+        const poly = clipBandY(tipPoly, b0, b1);
+        if (poly.length < 3) continue;
+        const sg = new ShapeGeometry(new Shape(poly));
+        const cnt = sg.getAttribute('position').count;
+        const cols: number[] = [];
+        for (let i = 0; i < cnt; i++) cols.push(color.r, color.g, color.b);
+        sg.setAttribute('color', new Float32BufferAttribute(cols, 3));
+        const plate = new Mesh(sg, bodyMat);
+        plate.position.z = tipZ - dir * 0.002;
+        if (dir < 0) plate.rotation.y = Math.PI;
+        plate.castShadow = true;
+        car.add(plate);
       }
+      // Faros
+      for (const side of [-1, 1])
+        for (const k2 of [0, 1]) {
+          const lamp = new Mesh(new CylinderGeometry(0.034, 0.034, 0.03, 12), lampMat);
+          lamp.rotation.x = Math.PI / 2;
+          lamp.position.set(side * tipSX * CAR_W * (0.27 + 0.14 * k2), CAR_H * 0.43, tipZ + dir * 0.012);
+          car.add(lamp);
+        }
       // Paragolpes navy (placa plana sobre la trompa) + logo "M" naranja
-      const navyMat = new MeshStandardMaterial({ color: C.navy, roughness: 0.6, metalness: 0.1 });
-      materials.push(navyMat);
-      car.add(box(tipSX * CAR_W - 0.03, 0.34 * CAR_H, 0.03, navyMat, 0, 0.17 * CAR_H, tipZ + dir * 0.005));
+      // Paragolpes / acople (caja oscura baja en la punta)
+      car.add(box(tipSX * CAR_W - 0.1, 0.1 * CAR_H, 0.08, inkMat, 0, 0.06 * CAR_H, tipZ + dir * 0.03));
+      car.add(box(0.18, 0.14, 0.12, darkMat, 0, 0.1 * CAR_H, tipZ + dir * 0.06));
       const m = new Shape();
       m.moveTo(-0.11, 0);
       m.lineTo(-0.045, 0.1);
@@ -320,32 +437,46 @@ export function buildSolarTrain(): SolarTrain {
       m.lineTo(-0.06, 0);
       m.closePath();
       const logo = new Mesh(new ShapeGeometry(m), orangeMat);
-      logo.position.set(0, CAR_H * 0.13, tipZ + dir * 0.024);
+      logo.scale.setScalar(1.35);
+      logo.position.set(0, CAR_H * 0.22, tipZ + dir * 0.03);
       if (dir < 0) logo.rotation.y = Math.PI;
       car.add(logo);
       // Display "JUJUY" (franja naranja luminosa sobre el parabrisas)
-      const tD = 0.12;
-      const disp = box(0.34, 0.045, 0.02, orangeMat, 0, noseSY(tD) * CAR_H * 0.985, at + dir * tD * NOSE_LEN);
-      disp.rotation.x = dir * -0.35;
+      const tD = 0.3;
+      const disp = box(0.42, 0.06, 0.025, orangeMat, 0, noseSY(tD) * CAR_H + 0.012, at + dir * tD * NOSE_LEN);
+      disp.rotation.x = dir * -0.45;
       car.add(disp);
       // Bajos bajo la nariz (parachoques)
       car.add(box(CAR_W * 0.62 * tipSX + 0.2, 0.2, NOSE_LEN * 0.8, inkMat, 0, -0.1, at + dir * NOSE_LEN * 0.4));
       car.add(box(0.5, 0.1, 0.08, darkMat, 0, 0.06, tipZ - dir * 0.02));
     }
 
-    group.add(car);
+    cars.add(car);
   }
 
-  /* Rieles */
-  const railMat = new MeshStandardMaterial({ color: new Color('#4a505c'), roughness: 0.35, metalness: 0.7 });
+  /* Vía fija: rieles + durmientes (referencia estática para leer el avance) */
+  const railMat = new MeshStandardMaterial({ color: new Color('#5a606c'), roughness: 0.3, metalness: 0.75 });
   for (const side of [-1, 1]) {
-    const rail = new Mesh(new BoxGeometry(0.05, 0.05, total * 2.2), railMat);
+    const rail = new Mesh(new BoxGeometry(0.05, 0.05, TRACK_LEN), railMat);
     rail.position.set(side * 0.42, 0.025, 0);
     rail.receiveShadow = true;
     group.add(rail);
   }
   materials.push(railMat);
+  const sleeperMat = new MeshStandardMaterial({ color: new Color('#2b2f3a'), roughness: 0.9, metalness: 0.05 });
+  materials.push(sleeperMat);
+  const sleeperPitch = 0.62;
+  const nSleeper = Math.floor(TRACK_LEN / sleeperPitch);
+  const sleepers = new InstancedMesh(new BoxGeometry(1.2, 0.05, 0.2), sleeperMat, nSleeper);
+  const m4 = new Matrix4();
+  for (let i = 0; i < nSleeper; i++) {
+    m4.makeTranslation(0, -0.025, -TRACK_LEN / 2 + sleeperPitch * (i + 0.5));
+    sleepers.setMatrixAt(i, m4);
+  }
+  sleepers.instanceMatrix.needsUpdate = true;
+  sleepers.receiveShadow = true;
+  group.add(sleepers);
 
   const noseTip = new Vector3(0, FLOOR_Y + (noseSY(1) * CAR_H) / 2, z0 + CARS * CAR_LEN + (CARS - 1) * GAP + NOSE_LEN);
-  return { group, noseTip, length: total, materials };
+  return { group, cars, wheels, wheelRadius: WHEEL_R, noseTip, length: total, trackLength: TRACK_LEN, materials };
 }

@@ -435,6 +435,8 @@ const deadline = config.deadline
     flex-direction: column;
     align-items: center;
     gap: var(--sp-6);
+    /* Franja para que el Tren Solar 3D pase por detrás del borde superior del ticket */
+    padding-top: 104px;
   }
   .chip,
   .pill {
@@ -660,6 +662,7 @@ const deadline = config.deadline
     .stage {
       align-items: flex-end;
       gap: var(--sp-5, 20px);
+      padding-top: 0;
     }
     .stage-box {
       --s: 0.56;
