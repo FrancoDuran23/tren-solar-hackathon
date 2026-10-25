@@ -16,7 +16,6 @@ const c = sections.finalCta;
 
   <div class="wrap">
     <div class="copy">
-      <p class="eyebrow mono"><span class="dot"></span>ÚLTIMA LLAMADA · ANDÉN JUJ</p>
       <h2 id="final-title">{c.title}</h2>
       <p class="text">{c.text}</p>
       <div class="ctas">
@@ -35,8 +34,8 @@ const c = sections.finalCta;
       <dl class="grid mono">
         <div><dt>VAGÓN</dt><dd>01</dd></div>
         <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
-        <div><dt>GATE</dt><dd>PRE</dd></div>
-        <div><dt>DESTINO</dt><dd>SOLAR TRAIN</dd></div>
+        <div><dt>GATE</dt><dd>HTS</dd></div>
+        <div><dt>DESTINO</dt><dd>TREN SOLAR</dd></div>
       </dl>
       <p class="legal mono">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</p>
       <i class="stripe"></i>
@@ -118,19 +117,6 @@ const c = sections.finalCta;
     letter-spacing: 0.16em;
     color: var(--orange-300);
   }
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--orange-500);
-    box-shadow: 0 0 12px var(--orange-500);
-    animation: ping 1.6s ease-in-out infinite;
-  }
-  @keyframes ping {
-    50% {
-      opacity: 0.3;
-    }
-  }
   h2 {
     font: 900 clamp(44px, 7vw, 88px) / 0.95 var(--font-display);
     letter-spacing: -0.03em;
@@ -186,12 +172,6 @@ const c = sections.finalCta;
     );
     box-shadow: var(--shadow-ticket);
     transform: rotate(-4deg);
-    animation: float 8s ease-in-out infinite;
-  }
-  @keyframes float {
-    50% {
-      transform: rotate(-3deg) translateY(-8px);
-    }
   }
   .stub-head {
     display: flex;
@@ -285,12 +265,6 @@ const c = sections.finalCta;
     .stub {
       justify-self: end;
       width: 380px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .stub,
-    .dot {
-      animation: none;
     }
   }
 </style>

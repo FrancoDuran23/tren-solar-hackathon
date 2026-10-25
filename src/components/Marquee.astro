@@ -1,7 +1,7 @@
 ---
 const items = [
   'PRÓXIMA SALIDA',
-  'PRE-HACKATÓN',
+  'ROAD TO HACKATÓN TREN SOLAR',
   '35 TICKETS',
   'ONLINE',
   'ANDÉN JUJUY',
@@ -15,14 +15,15 @@ const items = [
     {[0, 1].map(() => (
       <ul class="row">
         {items.map((t) => (
-          <li>{t}<span class="sep">◆</span></li>
+          <li>{t}<i class="sep" aria-hidden="true"></i></li>
         ))}
       </ul>
     ))}
   </div>
   <p class="sr-only">{items.join(' · ')}</p>
   <button type="button" class="toggle" aria-pressed="false" aria-label="Pausar marquee">
-    <span aria-hidden="true">❚❚</span>
+    <svg class="ic-pause" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="3" height="8" fill="currentColor"/><rect x="6" y="1" width="3" height="8" fill="currentColor"/></svg>
+    <svg class="ic-play" width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 1l7 4-7 4z" fill="currentColor"/></svg>
   </button>
 </section>
 
@@ -33,7 +34,6 @@ const items = [
       const paused = m.classList.toggle('paused');
       b.setAttribute('aria-pressed', String(paused));
       b.setAttribute('aria-label', paused ? 'Reanudar marquee' : 'Pausar marquee');
-      b.firstElementChild!.textContent = paused ? '▶' : '❚❚';
     });
   });
 </script>
@@ -84,12 +84,17 @@ const items = [
     white-space: nowrap;
   }
   .sep {
-    color: var(--navy-950);
-    opacity: 0.55;
+    display: inline-block;
+    width: 6px;
+    height: 6px;
     margin: 0 26px;
-    font-size: 9px;
-    vertical-align: 2px;
+    background: var(--navy-950);
+    opacity: 0.6;
+    transform: translateY(-1px) rotate(45deg);
   }
+  .ic-play { display: none; }
+  .marquee.paused .ic-play { display: block; }
+  .marquee.paused .ic-pause { display: none; }
   @keyframes run {
     to {
       transform: translateX(-50%);
@@ -109,8 +114,8 @@ const items = [
     color: var(--white);
     border: 1px solid rgba(6, 15, 34, 0.6);
     border-radius: var(--r-xs);
-    padding: 6px 8px;
-    font: 10px/1 var(--font-mono);
+    padding: 7px 8px;
+    line-height: 0;
     cursor: pointer;
   }
   .sr-only {

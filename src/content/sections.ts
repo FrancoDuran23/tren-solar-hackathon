@@ -11,7 +11,7 @@ export const sections = {
     columns: ['DÍA', 'HORA', 'TEMA', 'SPEAKER', 'ESTADO'],
     soonNote: 'La agenda de la semana se lanza pronto.',
     soonText:
-      'La agenda se lanza pronto. Vas a tener workshops durante la semana del Pre para destrabar producto, tech y pitch.',
+      'La agenda se lanza pronto. Vas a tener workshops durante la semana de build para destrabar producto, tech y pitch.',
     soonPill: 'PRÓXIMAMENTE',
     livePill: 'ONLINE',
     notify: 'Avisame cuando salga la agenda →',
@@ -20,8 +20,8 @@ export const sections = {
   jury: {
     title: 'Jurado.',
     soonText:
-      'Próximamente. Estamos confirmando nombres. El jurado pone el 50% del puntaje.',
-    liveText: 'El jurado pone el 50% del puntaje.',
+      'Próximamente. Estamos confirmando nombres. El jurado evalúa junto con la organización, con los mismos criterios.',
+    liveText: 'Evalúan junto con la organización, con los mismos criterios.',
     apply: '¿Querés ser jurado? Escribinos →',
     placeholderCards: 4,
     placeholderName: '',
@@ -30,7 +30,7 @@ export const sections = {
   sponsor: {
     title: 'Sponsor sorpresa a bordo.',
     text:
-      'La Solar Train Hackathon tiene un sponsor que todavía no podemos nombrar. Se revela en el hackathon. Por ahora, solo te decimos que apunta alto.',
+      'La Hackatón Tren Solar tiene un sponsor que todavía no podemos nombrar. Se revela en el hackathon. Por ahora, solo te decimos que apunta alto.',
     chip: 'CLASIFICADO · SE ABRE EN EL HACKATHON',
   },
   faq: {
@@ -38,7 +38,7 @@ export const sections = {
     items: [
       {
         q: '¿Tengo que vivir en Jujuy?',
-        a: 'Sí, para competir por los 35 tickets del Pre. Si sos de otra provincia, los cupos de invitados especiales se gestionan aparte.',
+        a: 'Sí, para competir por los 35 tickets. Si sos de otra provincia, los cupos de invitados especiales se gestionan aparte.',
       },
       {
         q: '¿Puedo participar en equipo?',
@@ -49,8 +49,8 @@ export const sections = {
         a: 'Usuarios reales, revenue, una waitlist con gente anotada o stars en el repo. Siempre con número y evidencia.',
       },
       {
-        q: '¿El Pre es presencial?',
-        a: 'No, es 100% online. El tren es después.',
+        q: '¿Hay que viajar para participar?',
+        a: 'No, esta etapa es 100% online. El tren es después.',
       },
       {
         q: '¿Qué pasa si no tengo demo deployada?',

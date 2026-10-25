@@ -13,8 +13,8 @@ const { nav, a11y } = copy;
     </a>
 
     <nav class="nav__links" id="nav-links" aria-label={a11y.mainNav}>
-      {nav.links.map((l, i) => (
-        <a href={l.href}><span class="nav__idx" aria-hidden="true">0{i + 1}</span>{l.label}</a>
+      {nav.links.map((l) => (
+        <a href={l.href}>{l.label}</a>
       ))}
     </nav>
 
@@ -49,10 +49,10 @@ const { nav, a11y } = copy;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: linear-gradient(180deg, rgba(6, 15, 34, 0.9), rgba(6, 15, 34, 0.55));
-    backdrop-filter: blur(14px) saturate(1.2);
-    -webkit-backdrop-filter: blur(14px) saturate(1.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(6, 15, 34, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: background var(--dur-base) var(--ease-out);
   }
   .nav[data-scrolled] {
@@ -102,14 +102,9 @@ const { nav, a11y } = copy;
     text-decoration: none;
     font-size: var(--fs-small);
     font-weight: 500;
+    letter-spacing: 0.01em;
     padding: 6px 0;
     position: relative;
-  }
-  .nav__idx {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--orange-400);
-    letter-spacing: 0.08em;
   }
   .nav__links a::after {
     content: '';
@@ -139,7 +134,7 @@ const { nav, a11y } = copy;
     width: 44px;
     height: 44px;
     padding: 0 11px;
-    background: rgba(255, 255, 255, 0.04);
+    background: transparent;
     border: var(--border);
     border-radius: var(--r-sm);
     cursor: pointer;
@@ -193,8 +188,7 @@ const { nav, a11y } = copy;
   .nav__rail {
     height: 100%;
     width: 100%;
-    background: linear-gradient(90deg, var(--orange-600), var(--orange-300));
-    box-shadow: 0 0 10px rgba(255, 90, 31, 0.6);
+    background: var(--orange-500);
     transform: scaleX(var(--progress, 0));
     transform-origin: left;
   }

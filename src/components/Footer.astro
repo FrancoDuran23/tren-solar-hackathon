@@ -16,16 +16,12 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <!-- Franja naranja del tren (poster) -->
-  <div class="band" aria-hidden="true">
-    <div class="band__track">
-      {[0, 1].map(() => (
-        <span class="band__row">
-          {footer.mono.split(' · ').map((t) => (
-            <span>{t}<i>◆</i></span>
-          ))}
-        </span>
-      ))}
+  <!-- Franja plateada: el metal del ticket, estática. Una sola marquee en la página (la de arriba). -->
+  <div class="strip" aria-hidden="true">
+    <div class="strip__inner mono">
+      <span>{nav.lockup}</span>
+      <span class="strip__route"><b>JUJ</b><i></i><b>HTS</b></span>
+      <span class="strip__right">IDEAS QUE VIAJAN MÁS LEJOS</span>
     </div>
   </div>
 
@@ -33,14 +29,17 @@ const year = new Date().getFullYear();
     <div class="footer__brand">
       <img src="/brand/jujuydev-logo-white.webp" alt={nav.logoAlt} width="443" height="120" loading="lazy" decoding="async" />
       <p class="footer__made">{footer.madeIn}</p>
-      <a class="footer__site" href={links.site} rel="noopener">{footer.site} ↗</a>
+      <a class="footer__site" href={links.site} rel="noopener">
+        {footer.site}
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" /></svg>
+      </a>
     </div>
 
     <nav class="footer__nav" aria-label={nav.lockup}>
       <p class="footer__label mono">RECORRIDO</p>
       <ul>
-        {anchors.map((l, i) => (
-          <li><a href={l.href}><span class="mono">0{i + 1}</span>{l.label}</a></li>
+        {anchors.map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
         ))}
       </ul>
     </nav>
@@ -48,15 +47,20 @@ const year = new Date().getFullYear();
     <div class="footer__board">
       <p class="footer__label mono">{board.label.toUpperCase()}</p>
       <dl class="board mono">
-        <div><dt>SALIDA</dt><dd>PRE-HACKATÓN</dd></div>
-        <div><dt>DESTINO</dt><dd>SOLAR TRAIN HACKATHON</dd></div>
+        <div><dt>SALIDA</dt><dd>JUJUY · ONLINE</dd></div>
+        <div><dt>DESTINO</dt><dd>HACKATÓN TREN SOLAR</dd></div>
         <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
-        <div><dt>HORARIO</dt><dd><span class="blink">●</span> POR CONFIRMAR</dd></div>
+        <div><dt>HORARIO</dt><dd>POR CONFIRMAR</dd></div>
       </dl>
       {items.length > 0 && (
         <ul class="footer__links" aria-label={footer.linksLabel}>
           {items.map((i) => (
-            <li><a href={i.href!} rel="noopener">{i.label} ↗</a></li>
+            <li>
+              <a href={i.href!} rel="noopener">
+                {i.label}
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5" /></svg>
+              </a>
+            </li>
           ))}
         </ul>
       )}
@@ -81,40 +85,51 @@ const year = new Date().getFullYear();
     font-family: var(--font-mono);
   }
 
-  /* Franja naranja */
-  .band {
-    background: var(--orange-500);
+  /* Franja plateada (metal cepillado del ticket) */
+  .strip {
+    background:
+      linear-gradient(100deg, #c9ced8 0%, #eef0f3 18%, #b7bec9 42%, #e6e9ee 64%, #c0c6d0 84%, #dfe2e8 100%);
     color: var(--navy-950);
-    overflow: hidden;
-    font: 700 12px/1 var(--font-mono);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(6, 15, 34, 0.35);
+  }
+  .strip__inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 14px var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    font-size: 11px;
+    font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    transform: skewY(-1.2deg);
-    transform-origin: left;
-    margin-top: 12px;
   }
-  .band__track {
-    display: flex;
-    width: max-content;
-    padding: 14px 0;
-    animation: run 48s linear infinite;
+  .strip__route {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
   }
-  .band__row {
-    display: flex;
-    flex: none;
+  .strip__route i {
+    width: 72px;
+    height: 0;
+    border-top: 2px dotted var(--orange-600);
+    position: relative;
   }
-  .band__row span {
-    white-space: nowrap;
+  .strip__route i::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -5px;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid var(--orange-600);
+    border-right: 2px solid var(--orange-600);
+    transform: rotate(45deg);
   }
-  .band__row i {
-    font-style: normal;
-    margin: 0 20px;
-    opacity: 0.7;
-  }
-  @keyframes run {
-    to {
-      transform: translateX(-50%);
-    }
+  .strip__right {
+    display: none;
   }
 
   .footer__inner {
@@ -136,6 +151,9 @@ const year = new Date().getFullYear();
     color: var(--text);
   }
   .footer__site {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     color: var(--orange-400);
     text-decoration: none;
     font-weight: 600;
@@ -146,7 +164,7 @@ const year = new Date().getFullYear();
   }
   .footer__label {
     margin: 0 0 var(--sp-3);
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0.16em;
     color: var(--ink-400);
   }
@@ -158,31 +176,26 @@ const year = new Date().getFullYear();
     gap: var(--sp-2);
   }
   .footer__nav a {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 10px;
     color: var(--text);
     text-decoration: none;
     font-weight: 500;
   }
-  .footer__nav a .mono {
-    font-size: 10px;
-    color: var(--orange-400);
-    letter-spacing: 0.08em;
-  }
   .footer__nav a:hover {
     color: var(--orange-300);
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
+  /* Tablero como talón de papel: el único bloque claro del pie */
   .board {
     margin: 0;
     display: grid;
-    gap: 6px;
+    gap: 8px;
     font-size: 11px;
     letter-spacing: 0.08em;
-    background: var(--ink-950);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--r-xs);
-    padding: var(--sp-3) var(--sp-4);
+    background: var(--paper);
+    color: var(--ink-950);
+    padding: var(--sp-4) var(--sp-4);
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
   }
   .board div {
     display: grid;
@@ -190,21 +203,11 @@ const year = new Date().getFullYear();
     gap: var(--sp-3);
   }
   .board dt {
-    color: var(--ink-400);
+    color: var(--ink-600);
   }
   .board dd {
     margin: 0;
-    color: var(--white);
     font-weight: 700;
-  }
-  .blink {
-    color: var(--orange-500);
-    animation: blink 1.6s ease-in-out infinite;
-  }
-  @keyframes blink {
-    50% {
-      opacity: 0.25;
-    }
   }
   .footer__links {
     list-style: none;
@@ -215,7 +218,10 @@ const year = new Date().getFullYear();
     gap: var(--sp-4);
   }
   .footer__links a {
-    color: var(--orange-500);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--orange-400);
     font-family: var(--font-mono);
     font-size: var(--fs-small);
     text-transform: uppercase;
@@ -226,47 +232,40 @@ const year = new Date().getFullYear();
   .footer__bottom {
     position: relative;
     z-index: 1;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--navy-950);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: var(--sp-4) var(--gutter) var(--sp-6);
-    text-align: center;
   }
   .footer__bottom p {
     margin: 0 auto;
     max-width: var(--container-max);
-    font-size: var(--fs-micro);
+    font-size: 11px;
     letter-spacing: 0.1em;
     color: var(--ink-400);
   }
+  /* Shard naranja del poster, esquina inferior izquierda */
   .footer__shard {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 260px;
-    height: 200px;
+    width: 220px;
+    height: 160px;
     background: var(--orange-500);
     clip-path: polygon(0 45%, 0 100%, 55% 100%);
-    opacity: 0.95;
     z-index: 0;
   }
 
   @media (min-width: 768px) {
+    .strip__right {
+      display: inline;
+    }
     .footer__inner {
       grid-template-columns: 1.2fr 1fr 1.4fr;
       padding-top: var(--sp-24);
     }
     .footer__shard {
-      width: 420px;
-      height: 300px;
-    }
-    .footer__bottom p {
-      text-align: left;
-      padding-left: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .band__track,
-    .blink {
-      animation: none;
+      width: 360px;
+      height: 260px;
     }
   }
 </style>
