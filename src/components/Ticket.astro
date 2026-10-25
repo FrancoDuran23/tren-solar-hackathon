@@ -1,0 +1,388 @@
+---
+import { config, TICKETS_TOTAL } from '../config';
+
+interface Props {
+  /** Capa fantasma del stack: mismo markup, aria-hidden, sin número propio */
+  ghost?: boolean;
+}
+const { ghost = false } = Astro.props;
+
+const isOpen = config.registration === 'open' && !!config.lumaUrl;
+
+/* Barcode estilizado determinista (decorativo) */
+const bars: { x: number; w: number }[] = [];
+{
+  let x = 0;
+  let seed = 7;
+  while (x < 118) {
+    seed = (seed * 31 + 11) % 97;
+    const w = 1 + (seed % 3);
+    if (seed % 5 !== 0) bars.push({ x, w });
+    x += w + 1 + (seed % 2);
+  }
+}
+
+/* QR decorativo 21x21 determinista; finder patterns en 3 esquinas */
+const N = 21;
+const cells: [number, number][] = [];
+{
+  let s = 42;
+  const finder = (r: number, c: number) => {
+    const inF = (a: number, b: number) => a >= 0 && a < 7 && b >= 0 && b < 7;
+    const fr = r < 7 ? r : r - (N - 7);
+    const fc = c < 7 ? c : c - (N - 7);
+    if (!((r < 7 && c < 7) || (r < 7 && c >= N - 7) || (r >= N - 7 && c < 7))) return null;
+    if (!inF(fr, fc)) return null;
+    const ring = Math.max(Math.abs(fr - 3), Math.abs(fc - 3));
+    return ring !== 2;
+  };
+  for (let r = 0; r < N; r++)
+    for (let c = 0; c < N; c++) {
+      const f = finder(r, c);
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      const on = f === null ? (s >> 8) % 2 === 0 : f;
+      if (on) cells.push([c, r]);
+    }
+}
+---
+
+<div class="ticket" aria-hidden={ghost ? 'true' : undefined}>
+  <div class="body">
+    <div class="frame"></div>
+    <div class="foil"></div>
+    <p class="word" aria-hidden="true"><span>PRE-</span><span>HACKATÓN</span></p>
+    <div class="info">
+      <p class="mono">JUJUY.DEV · ROAD TO SOLAR TRAIN HACKATHON</p>
+      <p class="mono">CIERRE · {config.deadline ? new Date(config.deadline.iso).toLocaleDateString('es-AR') : 'POR CONFIRMAR'}</p>
+      <p class="mono">ONLINE · ARG</p>
+    </div>
+    <div class="sun"></div>
+    <div class="trajectory"></div>
+    <p class="slogan mono">IDEAS QUE VIAJAN <b>MÁS LEJOS</b></p>
+    <div class="shard"></div>
+  </div>
+  <div class="perf"></div>
+  <div class="stub">
+    <div class="stub-head">
+      <span class="admit mono">ADMIT ONE</span>
+      <svg class="stub-logo" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" fill="#0e0f12"/><text x="14" y="19" font-size="14" font-weight="700" text-anchor="middle" fill="#f2f0ea" font-family="JetBrains Mono, monospace">jd</text></svg>
+    </div>
+    <p class="no">N° <span class="dots"><i>·</i><i>·</i></span>/{TICKETS_TOTAL}</p>
+    <dl class="grid mono">
+      <div><dt>VAGÓN</dt><dd>01</dd></div>
+      <div><dt>ANDÉN</dt><dd>JUJ</dd></div>
+      <div><dt>ASIENTO</dt><dd>··</dd></div>
+      <div><dt>GATE</dt><dd>PRE</dd></div>
+      <div class="full"><dt>HACKER ID</dt><dd>——</dd></div>
+    </dl>
+    <div class="codes">
+      <svg class="barcode" viewBox="0 0 120 28" aria-hidden="true">
+        {bars.map((b) => <rect x={b.x} y="0" width={b.w} height="28" fill="#0e0f12" />)}
+      </svg>
+      <svg class={`qr ${isOpen ? 'qr-live' : ''}`} viewBox={`0 0 ${N} ${N}`} aria-hidden="true" shape-rendering="crispEdges">
+        {cells.map(([x, y]) => <rect x={x} y={y} width="1" height="1" fill="#0e0f12" />)}
+        <rect x="8" y="8" width="5" height="5" fill="#f2f0ea" />
+        <rect x="9" y="9" width="3" height="3" fill="#ff5a1f" />
+      </svg>
+    </div>
+    <p class="legal mono">UNAUTHORISED RESALE PROHIBITED · VÁLIDO SOLO CON RESIDENCIA EN JUJUY</p>
+    <div class="stripe"></div>
+  </div>
+</div>
+
+<style>
+  .ticket {
+    --body-h: 360px;
+    --stub-h: 260px;
+    position: relative;
+    width: 340px;
+    max-width: 100%;
+    height: calc(var(--body-h) + var(--stub-h));
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    isolation: isolate;
+    --hole: radial-gradient(circle var(--notch) at 0 var(--body-h), transparent 98%, #000 100%),
+      radial-gradient(circle var(--notch) at 100% var(--body-h), transparent 98%, #000 100%);
+    -webkit-mask: var(--hole);
+    -webkit-mask-composite: source-in;
+    mask: var(--hole);
+    mask-composite: intersect;
+  }
+  .body {
+    position: relative;
+    height: var(--body-h);
+    flex: none;
+    background:
+      radial-gradient(circle at 80% 15%, rgba(255, 138, 61, 0.35), transparent 50%),
+      var(--tex-quebrada);
+    color: var(--white);
+    overflow: hidden;
+  }
+  .body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+  }
+  .frame {
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: var(--r-md);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .foil {
+    position: absolute;
+    inset: 0;
+    background: var(--grad-foil);
+    background-size: 220% 100%;
+    background-position: calc(var(--sheen, 0) * 1%) 0;
+    mix-blend-mode: screen;
+    z-index: 3;
+    pointer-events: none;
+    transition: background-position var(--dur-slow) var(--ease-out);
+  }
+  .word {
+    position: absolute;
+    top: 28px;
+    left: 24px;
+    margin: 0;
+    font: 900 40px/0.95 var(--font-display);
+    letter-spacing: -0.02em;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+  .info {
+    position: absolute;
+    left: 24px;
+    bottom: 70px;
+    z-index: 1;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-size: var(--fs-micro);
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .info .mono {
+    color: rgba(255, 255, 255, 0.82);
+  }
+  .sun {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    right: 28px;
+    top: 120px;
+    background: var(--grad-sun);
+    box-shadow: 0 0 60px rgba(255, 138, 61, 0.55);
+    z-index: 1;
+  }
+  .trajectory {
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 54px;
+    border-top: 2px dotted var(--orange-500);
+    z-index: 1;
+  }
+  .slogan {
+    position: absolute;
+    left: 24px;
+    bottom: 26px;
+    font-size: 10px;
+    z-index: 1;
+  }
+  .slogan b {
+    color: var(--orange-400);
+  }
+  .shard {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 48px;
+    height: 48px;
+    background: var(--orange-500);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    z-index: 4;
+  }
+  .perf {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    top: var(--body-h);
+    border-top: 2px dashed rgba(255, 255, 255, 0.45);
+    z-index: 5;
+    pointer-events: none;
+  }
+  .stub {
+    position: relative;
+    flex: 1;
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 11px, rgba(201, 205, 211, 0.55) 11px 12px),
+      var(--paper);
+    color: var(--ink-950);
+    padding: 20px 24px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+  }
+  .stub-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .admit {
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    font-size: 11px;
+  }
+  .stub-logo {
+    width: 24px;
+    height: 24px;
+  }
+  .no {
+    margin: 0;
+    font: 700 var(--fs-ticket-no)/var(--lh-ticket-no) var(--font-display);
+    color: var(--ink-950);
+  }
+  .dots i {
+    font-style: normal;
+    color: var(--orange-500);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .dots i:nth-child(2) {
+    animation-delay: 0.3s;
+  }
+  @keyframes pulse {
+    50% {
+      opacity: 0.25;
+    }
+  }
+  .grid {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+  }
+  .grid div {
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .grid .full {
+    grid-column: 1 / -1;
+  }
+  dt {
+    font-size: 9px;
+    color: var(--ink-600);
+    letter-spacing: 0.08em;
+  }
+  dd {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .codes {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .barcode {
+    width: 120px;
+    height: 28px;
+  }
+  .qr {
+    width: 56px;
+    height: 56px;
+  }
+  .legal {
+    font-size: 8px;
+    color: var(--ink-600);
+    letter-spacing: 0.04em;
+  }
+  .stripe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    background: var(--orange-500);
+  }
+
+  @media (min-width: 1024px) {
+    .ticket {
+      --body-w: 600px;
+      width: 880px;
+      height: 320px;
+      flex-direction: row;
+      border-radius: var(--r-lg);
+      --hole: radial-gradient(circle var(--notch) at var(--body-w) 0, transparent 98%, #000 100%),
+        radial-gradient(circle var(--notch) at var(--body-w) 100%, transparent 98%, #000 100%);
+    }
+    .body {
+      width: var(--body-w);
+      height: 100%;
+    }
+    .perf {
+      left: var(--body-w);
+      right: auto;
+      top: 14px;
+      bottom: 14px;
+      height: auto;
+      border-top: 0;
+      border-left: 2px dashed var(--ink-400);
+    }
+    .word {
+      flex-direction: column;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      top: 24px;
+      height: 272px;
+      left: 26px;
+      font-size: 33px;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .word span {
+      display: block;
+    }
+    .no {
+      font-size: 40px;
+      white-space: nowrap;
+    }
+    .stub {
+      padding-top: 16px;
+      gap: 4px;
+    }
+    .info {
+      left: 130px;
+      bottom: 90px;
+    }
+    .sun {
+      width: 140px;
+      height: 140px;
+      right: 24px;
+      top: 60px;
+    }
+    .trajectory {
+      left: 130px;
+      right: 0;
+      bottom: 66px;
+    }
+    .slogan {
+      left: 130px;
+      bottom: 34px;
+    }
+  }
+</style>
