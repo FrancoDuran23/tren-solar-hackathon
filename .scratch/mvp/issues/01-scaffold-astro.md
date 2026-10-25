@@ -4,11 +4,11 @@
 
 **Blocked by:** —
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `npm create` / scaffold Astro 7 + TypeScript estricto; `astro check` y `astro build` pasan
-- [ ] `src/styles/tokens.css` con tokens de design.md (navy/naranja/blanco, tipografía, spacing, radios)
-- [ ] `src/config.ts` tipado con estados TBD; un solo lugar gobierna "pronto/próximamente"
-- [ ] Fuentes self-hosted declaradas (Unbounded, Inter, JetBrains Mono) o placeholders documentados
-- [ ] README: scripts, deploy Vercel, env del destino del form
-- [ ] Commit: `feat(scaffold): Astro 7 + tokens + config (T01)`
+- [x] `npm create` / scaffold Astro 7 + TypeScript estricto; `astro check` y `astro build` pasan
+- [x] `src/styles/tokens.css` con tokens de design.md (navy/naranja/blanco, tipografía, spacing, radios)
+- [x] `src/config.ts` tipado con estados TBD; un solo lugar gobierna "pronto/próximamente"
+- [x] Fuentes self-hosted declaradas (Unbounded, Inter, JetBrains Mono) o placeholders documentados
+- [x] README: scripts, deploy Vercel, env del destino del form
+- [x] Commit: `feat(scaffold): Astro 7 + tokens + config (T01)`
