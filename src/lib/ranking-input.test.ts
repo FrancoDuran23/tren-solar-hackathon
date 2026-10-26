@@ -22,9 +22,11 @@ describe('ranking admin body', () => {
     assert.equal(parsed.value.weekLabel, null);
   });
 
-  it('rechaza más de 35 y emails rotos', () => {
-    const many = parseRankingBody({ emails: Array.from({ length: 36 }, (_, i) => `a${i}@jujuy.dev`) });
+  it('rechaza más de 30 y emails rotos', () => {
+    const many = parseRankingBody({ emails: Array.from({ length: 31 }, (_, i) => `a${i}@jujuy.dev`) });
     assert.equal(many.ok, false);
+    const atCap = parseRankingBody({ emails: Array.from({ length: 30 }, (_, i) => `a${i}@jujuy.dev`) });
+    assert.equal(atCap.ok, true);
     const bad = parseRankingBody({ emails: ['no-es-email'] });
     assert.equal(bad.ok, false);
   });

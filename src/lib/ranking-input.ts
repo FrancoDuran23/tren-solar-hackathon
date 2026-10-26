@@ -1,7 +1,7 @@
 /** Body de POST /api/admin/ranking. Reemplazo total del top, no un delta. */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-export const RANKING_EMAIL_CAP = 35;
+export const RANKING_EMAIL_CAP = 30;
 
 export interface RankingUpdate {
   emails: string[];

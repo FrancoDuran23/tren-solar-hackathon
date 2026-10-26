@@ -22,7 +22,7 @@ export const route = {
   id: 'recorrido',
   h2: 'El recorrido.',
   lead:
-    'Volcán → Tilcara. Seis estaciones y unos 42 km de Quebrada a 2.500 m s. n. m., sobre el ramal del FC Belgrano. Los 35 tickets viajan por acá.',
+    'Volcán → Tilcara. Seis estaciones y unos 42 km de Quebrada a 2.500 m s. n. m., sobre el ramal del FC Belgrano. Los 30 tickets viajan por acá.',
   mapLabel:
     'Mapa del recorrido del Tren Solar de la Quebrada: seis estaciones de Volcán a Tilcara, con el Río Grande y la RN9.',
   stationOf: (n: number, total: number) => `Estación ${n} de ${total}`,

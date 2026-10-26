@@ -46,11 +46,11 @@ export const sections = {
     items: [
       {
         q: '¿Tengo que vivir en Jujuy?',
-        a: 'Sí, para competir por los 35 tickets. Si sos de otra provincia, los cupos de invitados especiales se gestionan aparte.',
+        a: 'Sí, para competir por los 30 tickets. Si sos de otra provincia, los cupos de invitados especiales se gestionan aparte.',
       },
       {
         q: '¿Puedo participar en equipo?',
-        a: 'Sí. Entregás un proyecto por equipo y el ticket es por persona del equipo ganador, hasta donde alcancen los 35.',
+        a: 'Sí. Entregás un proyecto por equipo y el ticket es por persona del equipo ganador, hasta donde alcancen los 30.',
       },
       {
         q: '¿Qué cuenta como tracción?',
@@ -70,12 +70,12 @@ export const sections = {
       },
       {
         q: '¿Puedo ver el ranking?',
-        a: 'No hay lista pública. Si entrás con Google y tu perfil está al 100%, ves solo tu estado: si estás en el top 35 o todavía no. La organización lo actualiza los fines de semana.',
+        a: 'No hay lista pública. Si entrás con Google y tu perfil está al 100%, ves solo tu estado: si estás en el top 30 o todavía no. La organización lo actualiza los fines de semana.',
       },
     ] satisfies FaqItem[],
   },
   finalCta: {
     title: 'Sacá tu ticket.',
-    text: '35 asientos. Uno puede ser tuyo.',
+    text: '30 asientos. Uno puede ser tuyo.',
   },
 } as const;

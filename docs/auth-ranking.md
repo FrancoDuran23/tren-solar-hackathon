@@ -55,7 +55,7 @@ Los previews de Vercel (`https://<rama>-<proyecto>.vercel.app`) solo van a poder
 1. Nav: **Entrar con Google**. Con sesión: avatar (o inicial), link a `#mi-estado` y **Salir**.
 2. `#perfil`: email de solo lectura, nombre, "Vivo o resido en Jujuy", localidad, GitHub, una línea. El medidor va de 0 a 100 de a 20.
 3. El 100% pide los cinco: nombre y apellido, confirmación de Jujuy en sí, localidad (2–80, solo si Jujuy), `https://github.com/usuario` o `…/usuario/repo`, y una línea de 3–120 caracteres.
-4. `#mi-estado`: con perfil al 100%, una sola frase — **Estás en el top 35** o **Todavía no estás en el top** — más la etiqueta de la semana si la organización la mandó. No hay listas ni puntajes.
+4. `#mi-estado`: con perfil al 100%, una sola frase — **Estás en el top 30** o **Todavía no estás en el top** — más la etiqueta de la semana si la organización la mandó. No hay listas ni puntajes.
 5. `#entrega`: si el auth está configurado, hace falta sesión y perfil al 100%. El email que se despacha es el de Google (`userId` viaja en el webhook). Si el auth no está configurado, el form sigue como en T06.
 
 ## Ranking del fin de semana
@@ -64,7 +64,7 @@ La lista del body **reemplaza** el top. No es un delta.
 
 - Cada email del array queda `inTop=true` (se compara en minúsculas con el email de Google).
 - Cualquier otra fila de `ranking` pasa a `inTop=false`.
-- Máximo 35 emails. Duplicados se ignoran. `emails: []` deja a nadie en el top.
+- Máximo 30 emails. Duplicados se ignoran. `emails: []` deja a nadie en el top.
 - `weekLabel` (opcional, hasta 80 caracteres) es el texto que ve cada persona, también quien no está en el top.
 - Quien todavía no tiene fila se muestra como "Todavía no estás en el top" y ve la etiqueta de `ranking_meta`.
 

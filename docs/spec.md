@@ -9,7 +9,7 @@
 
 ## 1. Problem Statement
 
-La Solar Train Hackathon tiene cupos contados (70 personas: 35 jujeños + 35 invitados especiales). Hace falta un mecanismo online, transparente y con identidad propia para elegir a los 35 jujeños. Hoy no hay un lugar único donde un dev o equipo de Jujuy pueda:
+La Solar Train Hackathon tiene cupos contados: 30 jujeños por esta landing (Pre) y 30 invitados especiales de otras provincias, que se gestionan aparte. Hace falta un mecanismo online, transparente y con identidad propia para elegir a los 30 jujeños. Hoy no hay un lugar único donde un dev o equipo de Jujuy pueda:
 
 - entender cómo se gana un ticket y con qué criterios lo evalúan,
 - inscribirse (Luma) y entregar su proyecto (repo, demo, video),
@@ -19,7 +19,7 @@ y la landing existente (https://pre-hacka-landing.vercel.app/) tiene un ticket f
 
 ## 2. Solution
 
-Una **landing de una página** con estética "movida tren" (navy + naranja + blanco) que funciona como andén: el visitante llega, ve el **ticket hero** (35 ADMIT ONE), entiende las reglas (hard gate Jujuy, 5 criterios 0–10, 50% organización + 50% jurados), se inscribe en **Luma** (link externo) y **entrega su proyecto en la misma página** (repo + demo + video + tracción). Lo que todavía no está definido (link Luma, fecha de cierre, workshops, jurado) se muestra en estados "pronto / próximamente" diseñados, no como huecos. El sponsor del hackathon se insinúa con un cohete y **no se nombra**.
+Una **landing de una página** con estética "movida tren" (navy + naranja + blanco) que funciona como andén: el visitante llega, ve el **ticket hero** (30 ADMIT ONE), entiende las reglas (hard gate Jujuy, 5 criterios 0–10, 50% organización + 50% jurados), se inscribe en **Luma** (link externo) y **entrega su proyecto en la misma página** (repo + demo + video + tracción). Lo que todavía no está definido (link Luma, fecha de cierre, workshops, jurado) se muestra en estados "pronto / próximamente" diseñados, no como huecos. El sponsor del hackathon se insinúa con un cohete y **no se nombra**.
 
 ---
 
@@ -30,20 +30,20 @@ Convención: `H1`, `I1`… = letra de grupo + número. Cada historia tiene crite
 
 ### H — Hero / Home
 
-- **H1.** Como visitante, quiero ver arriba de todo el headline "Y vos… ¿te ganás tu ticket?" con una bajada que diga "35 tickets a la Solar Train Hackathon", para entender el producto en 5 segundos.
+- **H1.** Como visitante, quiero ver arriba de todo el headline "Y vos… ¿te ganás tu ticket?" con una bajada que diga "30 tickets a la Solar Train Hackathon", para entender el producto en 5 segundos.
   *CA:* H1 es `<h1>` único de la página; eyebrow, bajada y micro-línea según `design.md §5 Hero`.
-- **H2.** Como visitante, quiero ver el **ticket hero** (cuerpo + notch + stub, N° ··/35, ADMIT ONE, barcode/QR, ANDÉN JUJ / GATE PRE) para sentir el nivel del evento.
+- **H2.** Como visitante, quiero ver el **ticket hero** (cuerpo + notch + stub, N° ··/30, ADMIT ONE, barcode/QR, ANDÉN JUJ / GATE PRE) para sentir el nivel del evento.
   *CA:* anatomía de `design.md §2.2` (desktop) y `§2.3` (mobile); estado *placeholder* por defecto; `aria-label` descriptivo.
 - **H3.** Como visitante en desktop, quiero que el ticket tenga stack 3D con tilt y sheen de foil al pasar el puntero, para que se sienta un objeto premium.
   *CA:* tilt ±8°, sheen en hover; todo se congela con `prefers-reduced-motion: reduce`.
 - **H4.** Como visitante en mobile, quiero el ticket en layout vertical sin tilt, con sheen al entrar en viewport, para que cargue liviano.
   *CA:* 340×620 nominal, sin capas fantasma; breakpoint horizontal ≥ 1024px.
-- **H5.** Como visitante, quiero ver la boletería "35 TICKETS · 35 JUJEÑOS" (pill + tira de 35 asientos libres), para dimensionar la escasez.
+- **H5.** Como visitante, quiero ver la boletería "30 TICKETS · 30 JUJEÑOS" (pill + tira de 30 asientos libres), para dimensionar la escasez.
 - **H6.** Como visitante, quiero un marquee "movida tren" debajo del hero, para sentir el vibe sin que me estorbe.
   *CA:* se pausa en hover/foco y en reduced motion.
 - **H7.** Como visitante, quiero una nav fija con "Cómo funciona · Criterios · Workshops · Entregar proyecto" y barra de progreso "vía", para moverme rápido.
   *CA:* anclas `#como`, `#criterios`, `#workshops`, `#entrega`; menú colapsable en mobile.
-- **H8.** Como visitante, quiero entender qué es el Pre ("Un pre-hackatón para ganarte el asiento") con los 3 datos clave (Formato online · Tickets 35 · Destino Solar Train Hackathon), para saber de qué se trata antes de comprometerme.
+- **H8.** Como visitante, quiero entender qué es el Pre ("Un pre-hackatón para ganarte el asiento") con los 3 datos clave (Formato online · Tickets 30 · Destino Solar Train Hackathon), para saber de qué se trata antes de comprometerme.
 - **H9.** Como visitante, quiero ver los tres pasos **Inscribite → Construí → Subite al tren** unidos por una línea de vía, para entender el flujo completo.
 
 ### I — Inscripción (Luma)
@@ -59,7 +59,7 @@ Convención: `H1`, `I1`… = letra de grupo + número. Cada historia tiene crite
 
 ### K — Cupos e invitados
 
-- **K1.** Como visitante, quiero ver los dos cupos (`35 · JUJEÑOS` por scoring y `35 · INVITADOS ESPECIALES` de otras provincias), para entender la composición del hackathon.
+- **K1.** Como visitante, quiero ver los dos cupos (`30 · JUJEÑOS` por scoring y `30 · INVITADOS ESPECIALES` de otras provincias), para entender la composición del hackathon.
 - **K2.** Como invitado de otra provincia, quiero que la página me diga que mi cupo se gestiona aparte, para no intentar entrar por el scoring.
 - **K3.** Como visitante, quiero leer "Vas a buildear con los mejores de Argentina", para sentir que vale la pena competir.
 
@@ -77,7 +77,7 @@ Convención: `H1`, `I1`… = letra de grupo + número. Cada historia tiene crite
 - **S1.** Como visitante, quiero ver el **hard gate** destacado ("Para subirte tenés que vivir o residir en Jujuy"), para saber si puedo competir antes de invertir tiempo.
 - **S2.** Como visitante, quiero ver los **5 criterios** (utilidad, experiencia de usuario, modelo de negocio, tecnología interesante, tracción) con puntaje **0–10** cada uno, para saber cómo me evalúan.
 - **S3.** Como participante, quiero que **tracción** liste las evidencias válidas (users, revenue, waitlist, stars; número + link o captura), para saber qué debo mostrar.
-- **S4.** Como visitante, quiero ver el split **50% organización / 50% jurados** y la regla "suben los 35 con mayor puntaje", para confiar en el proceso.
+- **S4.** Como visitante, quiero ver el split **50% organización / 50% jurados** y la regla "suben los 30 con mayor puntaje", para confiar en el proceso.
 - **S5.** Como visitante, quiero un FAQ de ~6 preguntas (¿vivir en Jujuy?, ¿equipo?, ¿tracción?, ¿presencial?, ¿sin demo?, ¿cuándo cierra?), para resolver dudas sin escribir.
 
 ### E — Entrega de proyecto
@@ -106,9 +106,9 @@ Convención: `H1`, `I1`… = letra de grupo + número. Cada historia tiene crite
 - **A3.** Como participante, después de entrar quiero completar mi perfil y ver el porcentaje (0–100) antes de poder ver mi estado o despachar.
   *CA:* 100% exige nombre completo, confirmación "vivo o resido en Jujuy", localidad (si Jujuy), URL https de github.com y una línea de 3 a 120 caracteres. Email y avatar salen de Google; el email no se edita.
 
-### R — Estado propio del top 35
+### R — Estado propio del top 30
 
-- **R1.** Como participante con perfil al 100%, quiero ver solo si estoy en el top 35 o todavía no, para saber mi situación sin comparar con el resto.
+- **R1.** Como participante con perfil al 100%, quiero ver solo si estoy en el top 30 o todavía no, para saber mi situación sin comparar con el resto.
   *CA:* la UI (`#mi-estado`) no muestra otras personas, puntajes, puestos ni listas.
 - **R2.** Como organización, quiero publicar el top del fin de semana con un POST autenticado por secreto, sin un panel público.
   *CA:* `POST /api/admin/ranking` con `ADMIN_SECRET`. El body es la lista completa: esos emails quedan `inTop=true` y el resto `inTop=false`.
@@ -188,7 +188,7 @@ Un módulo de configuración tipado concentra el estado que hoy es TBD, para que
 | `submissions` | `'closed' \| 'open'` | Habilita el form de entrega. |
 | `workshops` | `Workshop[]` | Vacío ⇒ "próximamente". |
 | `jury` | `Juror[]` | Vacío ⇒ siluetas. |
-| `ticketsAssigned` | `number` (0–35) | Tira de asientos y sello "EMITIDO". |
+| `ticketsAssigned` | `number` (0–30) | Tira de asientos y sello "EMITIDO". |
 
 Los textos de FAQ, criterios y pasos viven en archivos de contenido tipados, no en los componentes.
 
@@ -237,7 +237,7 @@ Stack elegido: **Better Auth** (solo Google, sin email/contraseña) + **Neon Pos
 
 **Perfil al 100%.** Cinco checks de 20%: nombre completo (nombre y apellido), confirmación de que vive o reside en Jujuy, localidad (solo cuenta si esa confirmación es sí), URL `https://github.com/…` y una línea de 3–120 caracteres. Se puede guardar un borrador. El porcentaje que gatea es el guardado en la base, no el del formulario sin enviar.
 
-**Ranking privado.** Tabla `ranking` por email (el de Google, en minúsculas) con `in_top` y `updated_at`, más `ranking_meta` para la etiqueta de la semana. La UI muestra una de dos frases: "Estás en el top 35" o "Todavía no estás en el top", y la etiqueta si existe. Quien no tiene fila se lee como "todavía no".
+**Ranking privado.** Tabla `ranking` por email (el de Google, en minúsculas) con `in_top` y `updated_at`, más `ranking_meta` para la etiqueta de la semana. La UI muestra una de dos frases: "Estás en el top 30" o "Todavía no estás en el top", y la etiqueta si existe. Quien no tiene fila se lee como "todavía no".
 
 **Actualización de la organización (reemplazo total, no incremental).** Cada fin de semana se manda la lista completa de quienes están en el top. Esos emails quedan `inTop=true`; cualquier otra fila pasa a `inTop=false`. No hay UI de admin. Detalle, variables y el `curl` están en `docs/auth-ranking.md`.
 
@@ -257,8 +257,8 @@ Fuera del alcance de este spec y del MVP:
 4. **App móvil** (nativa o PWA instalable).
 5. Pasarela de pago o venta de tickets (los tickets no se compran).
 6. Hosting de archivos/capturas de tracción (solo URL).
-7. **Ranking público.** La landing no publica listas, puntajes ni posiciones de otras personas. El estado propio (top 35 sí/no) está en §4.9.
-8. Gestión de los 35 invitados especiales en la web (se coordinan aparte).
+7. **Ranking público.** La landing no publica listas, puntajes ni posiciones de otras personas. El estado propio (top 30 sí/no) está en §4.9.
+8. Gestión de los 30 invitados especiales en la web (se coordinan aparte).
 9. Landing del hackathon principal y cualquier mención del sponsor real.
 10. CMS o backoffice: el contenido se edita en archivos del repo.
 11. i18n: solo español (es-AR).
@@ -272,7 +272,7 @@ La landing se considera lista para producción cuando cumple **todo**:
 ### Contenido y reglas de negocio
 - [ ] Están presentes las secciones y el orden de `design.md §4` (salvo las explícitamente en fase 2).
 - [ ] Hard gate, 5 criterios 0–10, tracción con evidencias y split 50/50 son visibles y coinciden con `docs/brief.md`.
-- [ ] Cupos 35 + 35 y el mensaje "mejores de Argentina" están visibles.
+- [ ] Cupos 30 + 30 y el mensaje "mejores de Argentina" están visibles.
 - [ ] Jurado y workshops muestran estado "próximamente" mientras sus listas estén vacías; al cargar datos se reemplazan sin tocar markup.
 - [ ] El sponsor **no está nombrado** ni insinuado fuera del cohete (revisión de HTML, assets, `alt`, meta, comentarios y nombres de archivo).
 - [ ] Copy en español con voseo.
@@ -326,7 +326,7 @@ Numeración de secciones = `design.md §4`.
 | 4 | Cómo funciona (3 pasos) | `#como` | H9, I5 |
 | 5 | Tablero / countdown | — | C1, C2, C3, C4 |
 | 6 | Criterios | `#criterios` | S1, S2, S3, S4 |
-| 7 | Cupos 35 + 35 | — | K1, K2, K3 |
+| 7 | Cupos 30 + 30 | — | K1, K2, K3 |
 | 8 | Workshops | `#workshops` | W1, W2, W3, W4 |
 | 9 | Tu perfil + tu estado | `#perfil`, `#mi-estado` | A1–A3, R1, R2 |
 | 9b | Entregá tu proyecto | `#entrega` | E1–E11, F3 |
