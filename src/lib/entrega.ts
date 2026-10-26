@@ -65,7 +65,7 @@ export function validateField(f: EntregaField, d: EntregaInput): string | null {
     case 'email':
       return v.length <= 120 && EMAIL_RE.test(v) ? null : 'Ingresá un email válido.';
     case 'jujuy':
-      return d.jujuy === true ? null : 'Es condición para competir por los 35 tickets.';
+      return d.jujuy === true ? null : 'Es condición para competir por los 30 tickets.';
     case 'localidad':
       return d.jujuy && (v.length < 2 || v.length > 80) ? 'Indicá tu localidad.' : null;
     case 'repo': {

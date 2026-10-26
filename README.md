@@ -34,7 +34,7 @@ Logos reales de la comunidad en `public/brand/`: `jujuydev-logo-white.webp` (sob
 
 ## Cuenta, perfil y estado (T16–T18)
 
-Ingreso **solo con Google** (Better Auth + Neon Postgres). Después del login hay que completar el perfil al 100% para ver el estado propio del top 35 y para despachar el proyecto atado a la cuenta. No hay lista pública de ranking.
+Ingreso **solo con Google** (Better Auth + Neon Postgres). Después del login hay que completar el perfil al 100% para ver el estado propio del top 30 y para despachar el proyecto atado a la cuenta. No hay lista pública de ranking.
 
 Setup (Neon, redirect URIs de Google, `curl` del fin de semana): **`docs/auth-ranking.md`**.
 

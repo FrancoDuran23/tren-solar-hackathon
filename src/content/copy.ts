@@ -9,8 +9,8 @@ export const copy = {
   meta: {
     title: 'Hackatón Tren Solar · jujuy.dev',
     description:
-      '35 tickets a la Hackatón Tren Solar. Buildeá online, subí tu proyecto y subite al tren.',
-    ogAlt: 'Ticket Hackatón Tren Solar · jujuy.dev, 35 tickets en juego',
+      '30 tickets a la Hackatón Tren Solar. Buildeá online, subí tu proyecto y subite al tren.',
+    ogAlt: 'Ticket Hackatón Tren Solar · jujuy.dev, 30 tickets en juego',
     locale: 'es_AR',
     siteName: 'jujuy.dev',
   },
@@ -54,11 +54,11 @@ export const copy = {
   what: {
     id: 'que-es',
     h2: 'Una semana online para ganarte el asiento.',
-    text: `La Hackatón Tren Solar tiene cupos contados. Del ${dates.build} armás un proyecto, lo entregás acá y los 35 mejores se suben. Los ganadores se anuncian el ${dates.winners}. Hay workshops ${dates.workshops}. Buildeás desde donde estés en Jujuy.`,
+    text: `La Hackatón Tren Solar tiene cupos contados. Del ${dates.build} armás un proyecto, lo entregás acá y los 30 mejores se suben. Los ganadores se anuncian el ${dates.winners}. Hay workshops ${dates.workshops}. Buildeás desde donde estés en Jujuy.`,
     factsLabel: 'Datos clave',
     facts: [
       { k: 'FORMATO', v: 'ONLINE' },
-      { k: 'TICKETS', v: '35' },
+      { k: 'TICKETS', v: '30' },
       { k: 'DESTINO', v: 'HACKATÓN TREN SOLAR' },
     ],
   },
@@ -81,7 +81,7 @@ export const copy = {
       {
         n: '03',
         title: 'Subite al tren',
-        text: 'Entregá repo, demo y video. Si quedás en el top 35, tu ticket a la Hackatón Tren Solar tiene tu nombre.',
+        text: 'Entregá repo, demo y video. Si quedás en el top 30, tu ticket a la Hackatón Tren Solar tiene tu nombre.',
         icon: '🚆',
       },
     ],
@@ -109,7 +109,7 @@ export const copy = {
     h2: 'Cómo se gana el ticket.',
     gateLabel: 'CONTROL DE ACCESO',
     gate: 'Para subirte tenés que vivir o residir en Jujuy.',
-    gateNote: 'Es condición excluyente para los 35 tickets.',
+    gateNote: 'Es condición excluyente para los 30 tickets.',
     items: [
       { title: 'Utilidad', text: '¿Resuelve un problema real? ¿Para quién?' },
       { title: 'Experiencia de usuario', text: '¿Se entiende solo? ¿Da ganas de volver a usarlo?' },
@@ -127,20 +127,20 @@ export const copy = {
       note: 'Siempre con número y link o captura que lo respalde.',
     },
     verdict:
-      'Organización y jurado evalúan juntos cada proyecto, con los mismos criterios y la misma planilla. Suben los 35 con mayor puntaje.',
+      'Organización y jurado evalúan juntos cada proyecto, con los mismos criterios y la misma planilla. Suben los 30 con mayor puntaje.',
   },
   slots: {
     h2: 'Vas a buildear con los mejores de Argentina.',
-    text: 'En la Hackatón Tren Solar compartís vagón con 35 equipos invitados de todo el país: vos y 34 jujeños más, codo a codo con ellos, construyendo mientras la Quebrada pasa por la ventana.',
+    text: 'En la Hackatón Tren Solar compartís vagón con 30 invitados especiales de otras provincias: vos y 29 jujeños más, codo a codo con ellos, construyendo mientras la Quebrada pasa por la ventana.',
     a: {
-      n: '35',
+      n: '30',
       label: 'JUJEÑOS',
       text: 'Por scoring en la etapa online. Vivís o residís en Jujuy.',
     },
     b: {
-      n: '35',
+      n: '30',
       label: 'INVITADOS ESPECIALES',
-      text: 'De otras provincias. Equipos y empresas ya formadas, invitados por la organización.',
+      text: 'De otras provincias. Equipos y empresas ya formadas, invitados por la organización. Se gestionan aparte.',
     },
   },
   auth: {
@@ -162,7 +162,7 @@ export const copy = {
   },
   profile: {
     h2: 'Tu perfil.',
-    lead: 'Para ver si estás en el top 35 y para despachar el proyecto, el perfil tiene que llegar al 100%.',
+    lead: 'Para ver si estás en el top 30 y para despachar el proyecto, el perfil tiene que llegar al 100%.',
     signedOut:
       'Entrá con Google. Te pedimos nombre completo, si vivís o residís en Jujuy, localidad, un GitHub y una línea del proyecto. El email queda el de Google.',
     email: 'Email',
@@ -170,7 +170,7 @@ export const copy = {
     fullName: 'Nombre completo',
     fullNameHelp: 'Nombre y apellido.',
     jujuy: 'Vivo o resido en Jujuy',
-    jujuyHelp: 'Es condición para competir por los 35 tickets.',
+    jujuyHelp: 'Es condición para competir por los 30 tickets.',
     localidad: 'Localidad',
     localidadHelp: 'Obligatoria si vivís o residís en Jujuy.',
     github: 'GitHub',
@@ -187,10 +187,10 @@ export const copy = {
   },
   ranking: {
     h2: 'Tu estado.',
-    lead: 'La organización actualiza el top 35 los fines de semana. Acá ves solo el tuyo: sin listas, sin puntajes y sin el lugar de los demás.',
-    signedOut: 'Entrá con Google para ver si estás en el top 35.',
+    lead: 'La organización actualiza el top 30 los fines de semana. Acá ves solo el tuyo: sin listas, sin puntajes y sin el lugar de los demás.',
+    signedOut: 'Entrá con Google para ver si estás en el top 30.',
     needProfile: 'Completá tu perfil al 100% para ver tu estado.',
-    inTop: 'Estás en el top 35',
+    inTop: 'Estás en el top 30',
     out: 'Todavía no estás en el top',
     updated: 'Última actualización',
     privateNote: 'Este dato es solo para vos.',

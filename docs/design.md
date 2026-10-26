@@ -15,10 +15,10 @@
 |---|---|
 | Concepto | "Movida tren": la landing es un **andén**. El usuario llega, mira el tablero de salidas, saca su ticket y se sube. |
 | Paleta | Navy profundo + naranja vivo + blanco. Grises/negro solo para los stubs técnicos del ticket. **Sin lime** Clavius. |
-| Pieza hero | Ticket "tope de gama": mitad objeto premium (foil solar sobre Quebrada), mitad boarding pass (grilla mono densa, ADMIT ONE, N° __/35, barcode + QR). Apilado 3D, con notch y perforación. |
+| Pieza hero | Ticket "tope de gama": mitad objeto premium (foil solar sobre Quebrada), mitad boarding pass (grilla mono densa, ADMIT ONE, N° __/30, barcode + QR). Apilado 3D, con notch y perforación. |
 | Tono | Cinematográfico, premium, tech regional. Voseo. Frases cortas. Nada de jerga crypto. |
 | Estado de datos | Luma: link TBD → CTA en estado "pronto". Jurado y workshops: "próximamente". Countdown: apagado o tentativo. Sponsor: sorpresa, motif cohete, **no se nombra**. |
-| Cupos | 35 tickets por scoring (viven/residen en Jujuy) + 35 invitados especiales de otras provincias. Mensaje: "vas a buildear con los mejores de Argentina". |
+| Cupos | 30 tickets por scoring (viven/residen en Jujuy) + 30 invitados especiales de otras provincias. El copy de Pre no suma los dos bloques. Mensaje: "vas a buildear con los mejores de Argentina". |
 
 ---
 
@@ -114,7 +114,7 @@ Escala (desktop → mobile). Base 16px, ratio ≈ 1.25.
 | `--fs-body` | 16px | 16px | 1.6 | Texto. |
 | `--fs-small` | 14px | 14px | 1.5 | Ayudas de form, metadatos. |
 | `--fs-micro` | 11px | 10px | 1.3 | Mono del stub, legales, "ADMIT ONE". |
-| `--fs-ticket-no` | 56px | 36px | 1.0 | "N° 07/35" en el stub. |
+| `--fs-ticket-no` | 56px | 36px | 1.0 | "N° 07/30" en el stub. |
 
 ### 1.3 Espaciado
 
@@ -144,7 +144,7 @@ Contenedor: `max-width: 1200px`, gutter 16px mobile / 32px tablet / 48px desktop
 | `--r-sm` | 8 | Inputs, botones. |
 | `--r-md` | 12 | Cards. |
 | `--r-lg` | 20 | Esquinas exteriores del ticket. |
-| `--r-pill` | 999 | Badge "35 tickets", pills de estado. |
+| `--r-pill` | 999 | Badge "30 tickets", pills de estado. |
 | `--chamfer` | 12px | Corte diagonal en las esquinas exteriores del stub (LABITCONF). Se hace con `clip-path`, no con radio. |
 | `--notch` | 14px radio | Semicírculos en la perforación (Clavius/Soul). |
 | `--border` | 1px `rgba(255,255,255,.12)` | Borde por defecto sobre navy. |
@@ -183,7 +183,7 @@ Dimensiones nominales **880 × 320 px** (ratio 2.75:1). Cuerpo 600px + stub 280p
  ┌──────────────────────────────────────────────────────────┐ ╭─╮ ┌──────────────────────────┐
  │ ▌ P R E - H A C K A T Ó N  (vertical, display 900)       │ │ │ │ ADMIT ONE        ● logo  │
  │ ▌                                                        │ │ │ │                          │
- │ ▌  jujuy.dev · Road to Solar Train Hackathon             │ ┆ ┆ │  N°  07 / 35             │
+ │ ▌  jujuy.dev · Road to Solar Train Hackathon             │ ┆ ┆ │  N°  07 / 30             │
  │ ▌                              ┌───────────┐             │ ┆ ┆ │  ───────────────────     │
  │ ▌  CIERRE  ·  DD.MM.2026       │   SOL     │             │ ┆ ┆ │  VAGÓN  01   ANDÉN  JUJ  │
  │ ▌  ONLINE  ·  ARG             │  naranja  │             │ ┆ ┆ │  ASIENTO 07  GATE   PRE  │
@@ -221,7 +221,7 @@ Dimensiones nominales **880 × 320 px** (ratio 2.75:1). Cuerpo 600px + stub 280p
 |---|---|
 | Fondo | `--paper` con grilla de 1px `--ink-200` (filas de 12px), chanfles de 12px en las dos esquinas exteriores. |
 | Cabecera | "ADMIT ONE" mono 11px bold tracking +0.16em, `--ink-950`. Logo jujuy.dev monocromo en ink a la derecha, 24px. |
-| Número | `N° 07/35` Unbounded 700, 56px, `--ink-950`. Antes de la asignación muestra `N° ··/35` con los puntos en naranja pulsando (ver estados). |
+| Número | `N° 07/30` Unbounded 700, 56px, `--ink-950`. Antes de la asignación muestra `N° ··/30` con los puntos en naranja pulsando (ver estados). |
 | Grilla de datos | Mono, 2 columnas × 3 filas: `VAGÓN 01` · `ANDÉN JUJ` / `ASIENTO 07` · `GATE PRE` / `HACKER ID JDV-2026-0007` (full width). Labels 9px `--ink-600`, valores 16px bold `--ink-950` (Tokyo). |
 | Barcode | Code-128 estilizado, 120 × 28px, abajo a la izquierda. |
 | QR | 56px, abajo a la derecha, con el logo tren "M" naranja en el centro. Apunta a la URL de la landing con `?t=<hackerId>`. |
@@ -244,10 +244,10 @@ Stack vertical como `ticket-tokyo-equestrian.jpg`: **340 × 620 px** nominales, 
 
 | Estado | Cuándo | Qué cambia |
 |---|---|---|
-| **Placeholder** (default) | Inscripción no abrió o visitante anónimo. | `N° ··/35` con puntos naranja pulsando 1.6s. `HACKER ID  ——`. Chip "35 tickets en juego" arriba del ticket. |
+| **Placeholder** (default) | Inscripción no abrió o visitante anónimo. | `N° ··/30` con puntos naranja pulsando 1.6s. `HACKER ID  ——`. Chip "30 tickets en juego" arriba del ticket. |
 | **Inscripción abierta** | Luma vivo. | Igual al placeholder, pero el QR es real (link Luma) y el chip dice "Inscripción abierta". |
-| **Personalizado** | Visitante llega con `?t=<hackerId>` (post-entrega) o ganador anunciado. | Número real `N° 07/35`, nombre del equipo en mono bajo "ADMIT ONE", HACKER ID real. Sheen más intenso al cargar (una pasada de 1.2s). Botón "Descargar ticket" (PNG 1600×582). |
-| **Emitido / Sold out** | Los 35 asignados y el visitante no es ganador. | Sello circular "EMITIDO · 35/35" en naranja rotado −12° sobre el stub (Tokyo). CTA cambia a "Mirá los proyectos". |
+| **Personalizado** | Visitante llega con `?t=<hackerId>` (post-entrega) o ganador anunciado. | Número real `N° 07/30`, nombre del equipo en mono bajo "ADMIT ONE", HACKER ID real. Sheen más intenso al cargar (una pasada de 1.2s). Botón "Descargar ticket" (PNG 1600×582). |
+| **Emitido / Sold out** | Los 30 asignados y el visitante no es ganador. | Sello circular "EMITIDO · 30/30" en naranja rotado −12° sobre el stub (Tokyo). CTA cambia a "Mirá los proyectos". |
 | **Hover / tilt** | Desktop, puntero sobre el ticket. | Tilt ±8°, foil se desplaza, sombra crece a `0 40px 80px`. |
 | **Foco** | Teclado. | Anillo `--focus` 2px + offset 4px alrededor del ticket completo. El ticket es un `<a>`/botón al CTA. |
 | **Reduced motion** | OS. | Sin tilt, sin sheen, sin pulso. Puntos del número estáticos en naranja. |
@@ -256,7 +256,7 @@ Stack vertical como `ticket-tokyo-equestrian.jpg`: **340 × 620 px** nominales, 
 
 ### 2.5 Datos que muestra
 
-`Pre-Hackatón` · `jujuy.dev` · `Ticket N° __/35` · `Cierre DD.MM.2026` · `Hacker ID` · `Online · ARG` · `VAGÓN / ANDÉN / ASIENTO / GATE` (decorativos pero consistentes: ANDÉN siempre `JUJ`, GATE siempre `PRE`, VAGÓN `01`, ASIENTO = N°).
+`Pre-Hackatón` · `jujuy.dev` · `Ticket N° __/30` · `Cierre DD.MM.2026` · `Hacker ID` · `Online · ARG` · `VAGÓN / ANDÉN / ASIENTO / GATE` (decorativos pero consistentes: ANDÉN siempre `JUJ`, GATE siempre `PRE`, VAGÓN `01`, ASIENTO = N°).
 
 ---
 
@@ -280,10 +280,10 @@ Stack vertical como `ticket-tokyo-equestrian.jpg`: **340 × 620 px** nominales, 
 
 Texto blanco sobre naranja **no** (3.1:1). Siempre navy sobre naranja.
 
-### 3.3 Boletería (contador 35)
+### 3.3 Boletería (contador 30)
 
-- Pill grande sobre el ticket: `35 TICKETS · 35 JUJEÑOS` en mono, fondo navy-800, punto naranja pulsando a la izquierda.
-- Debajo del ticket, tira de 35 cuadraditos de 10px (`--r-xs`), gap 4px, en fila (desktop) o 5×7 (mobile). Vacíos: borde `--border`. Asignados: relleno naranja. Antes del cierre, todos vacíos + leyenda "35 asientos libres".
+- Pill grande sobre el ticket: `30 TICKETS · 30 JUJEÑOS` en mono, fondo navy-800, punto naranja pulsando a la izquierda.
+- Debajo del ticket, tira de 30 cuadraditos de 10px (`--r-xs`), gap 4px, en fila (desktop) o 5×6 (mobile). Vacíos: borde `--border`. Asignados: relleno naranja. Antes del cierre, todos vacíos + leyenda "30 asientos libres".
 
 ### 3.4 Countdown / tablero de andén
 
@@ -306,13 +306,13 @@ Tres cards unidas por una línea de vía punteada naranja (horizontal desktop, v
 - Encabezado con el **hard gate** como "control de acceso": card full-width `--navy-800` con borde izquierdo naranja 4px, icono de molinete: "Para subirte tenés que vivir o residir en Jujuy."
 - Debajo, 5 cards en grilla (5 desktop / 2+2+1 tablet / 1 mobile). Cada una: título, bajada de una línea, barra `0 ——— 10` en mono con la marca "0–10".
 - La card **Tracción** es más alta y lista las evidencias como chips mono: `USERS` · `REVENUE` · `WAITLIST` · `STARS`, más la nota "número + link o captura".
-- Al pie, split visual 50/50: dos bloques iguales, "50% organización" y "50% jurados", separados por la perforación punteada. Texto: "Suben los 35 con mayor puntaje."
+- Al pie, split visual 50/50: dos bloques iguales, "50% organización" y "50% jurados", separados por la perforación punteada. Texto: "Suben los 30 con mayor puntaje."
 
-### 3.7 Cupos (35 + 35)
+### 3.7 Cupos (30 + 30)
 
 Dos tickets chicos (versión 320×120 del stub, solo paper + número) lado a lado:
-- `35 · JUJEÑOS` — "Por scoring. Vivís o residís en Jujuy."
-- `35 · INVITADOS ESPECIALES` — "Otras provincias. Equipos y empresas ya formadas."
+- `30 · JUJEÑOS` — "Por scoring. Vivís o residís en Jujuy."
+- `30 · INVITADOS ESPECIALES` — "Otras provincias. Equipos y empresas ya formadas."
 Debajo, headline H2: "Vas a buildear con los mejores de Argentina."
 
 ### 3.8 Cards de workshops ("próximamente")
@@ -340,7 +340,7 @@ Campos (en este orden):
 | Nombre del proyecto | text, requerido | 3–60 chars | — |
 | Equipo / responsable | text, requerido | — | "Nombre y apellido de quien entrega." |
 | Email de contacto | email, requerido | formato | "El mismo que usaste en Luma." |
-| **Vivo o resido en Jujuy** | checkbox, requerido | debe estar marcado para habilitar Enviar | "Es condición para competir por los 35 tickets." |
+| **Vivo o resido en Jujuy** | checkbox, requerido | debe estar marcado para habilitar Enviar | "Es condición para competir por los 30 tickets." |
 | Localidad | text, requerido si el checkbox está marcado | — | — |
 | URL del repo | url, requerido | https + host github.com / gitlab.com / codeberg.org | "Público, o con acceso para el jurado." |
 | URL de la demo | url, requerido | https | "Deploy navegable. Si es app móvil, link a TestFlight/APK." |
@@ -367,12 +367,12 @@ Estados del form:
 
 ### 3.12 Marquee "movida tren"
 
-Tira horizontal mono 14px, mayúsculas, separadores `◆` naranja, scroll infinito 40s: `PRÓXIMA SALIDA · PRE-HACKATÓN · 35 TICKETS · ONLINE · ANDÉN JUJUY · IDEAS QUE VIAJAN MÁS LEJOS · SPONSOR SORPRESA A BORDO ·`. Se pausa en hover y en reduced motion.
+Tira horizontal mono 14px, mayúsculas, separadores `◆` naranja, scroll infinito 40s: `PRÓXIMA SALIDA · PRE-HACKATÓN · 30 TICKETS · ONLINE · ANDÉN JUJUY · IDEAS QUE VIAJAN MÁS LEJOS · SPONSOR SORPRESA A BORDO ·`. Se pausa en hover y en reduced motion.
 
 ### 3.13 Chips y badges
 
 - `--r-pill`, mono 11px tracking +0.08em, padding 4×10.
-- Outline naranja: estados ("PRÓXIMAMENTE", "FECHA TENTATIVA"). Relleno naranja + texto navy: destacados ("35 TICKETS"). Outline blanco 28%: neutros.
+- Outline naranja: estados ("PRÓXIMAMENTE", "FECHA TENTATIVA"). Relleno naranja + texto navy: destacados ("30 TICKETS"). Outline blanco 28%: neutros.
 
 ### 3.14 Inputs
 
@@ -391,11 +391,11 @@ Fondo `--navy-950`, shard naranja grande cortando la esquina inferior izquierda 
 | 0 | **Nav** | Logo, links, CTA chico. | Blur navy. | Barra de progreso "vía". |
 | 1 | **Hero** | Eyebrow mono `JUJUY.DEV PRESENTA · PRE-HACKATÓN ONLINE`. Headline "Y vos… ¿te ganás tu ticket?". Bajada. CTA primario (Luma) + secundario "Ver cómo funciona". Pill boletería. **Ticket hero** en stack 3D a la derecha (desktop) / debajo (mobile). | `--grad-sky` + planetas del poster al 15% + grano. Shards naranja en esquina superior izquierda e inferior derecha. | Al fondo, silueta de la Quebrada en navy-800 (sin tren: el tren es el usuario). |
 | 2 | **Marquee** | Tira "movida tren". | `--navy-900`. | — |
-| 3 | **Qué es** | Dos columnas: texto (Pre-Hackatón online, 35 tickets a la Solar Train Hackathon) + tarjeta con los 3 datos clave en mono: `FORMATO ONLINE` · `TICKETS 35` · `DESTINO SOLAR TRAIN HACKATHON`. | `--navy-900`. | — |
+| 3 | **Qué es** | Dos columnas: texto (Pre-Hackatón online, 30 tickets a la Solar Train Hackathon) + tarjeta con los 3 datos clave en mono: `FORMATO ONLINE` · `TICKETS 30` · `DESTINO SOLAR TRAIN HACKATHON`. | `--navy-900`. | — |
 | 4 | **Cómo funciona** | Pasos Inscribite → Construí → Subite al tren (3.5). | `--navy-950`. | Línea de vía une las cards. |
 | 5 | **Tablero / countdown** | Split-flap en modo apagado o tentativo (3.4). | `--ink-950` franja full-bleed. | Única sección oscura "pura". |
 | 6 | **Criterios** | Hard gate + 5 cards + 50/50 (3.6). | `--navy-900`. | Ancla `#criterios`. |
-| 7 | **Cupos** | 35 + 35 (3.7) + headline "Vas a buildear con los mejores de Argentina." | `--navy-950` con sol naranja grande recortado a la derecha (poster). | — |
+| 7 | **Cupos** | 30 + 30 (3.7) + headline "Vas a buildear con los mejores de Argentina." | `--navy-950` con sol naranja grande recortado a la derecha (poster). | — |
 | 8 | **Workshops** | Tablero "próximamente" (3.8). | `--navy-900`. | Ancla `#workshops`. |
 | 9 | **Entregá tu proyecto** | Form + comprobante (3.10). | `--navy-950`. | Ancla `#entrega`. Visible siempre; deshabilitado hasta que abran entregas. |
 | 10 | **Jurado** | Siluetas "próximamente" (3.9). | `--navy-900`. | — |
@@ -414,13 +414,13 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 │                                                                                │
 │   JUJUY.DEV PRESENTA · PRE-HACKATÓN ONLINE          ┌──────────────┐╭╮┌─────┐  │
 │                                                   ┌─┤   TICKET     │││ STUB│  │
-│   Y vos…                                        ┌─┤ │  (capa 1)    │┆│07/35│  │
+│   Y vos…                                        ┌─┤ │  (capa 1)    │┆│07/30│  │
 │   ¿te ganás                                     │ │ │              │││ ▐▌▐ │  │
 │   tu ticket?                                    │ │ └──────────────┘╰╯└─────┘  │
 │                                                 │ └── capa 2                   │
-│   35 tickets a la Solar Train Hackathon.        └──── capa 3                   │
+│   30 tickets a la Solar Train Hackathon.        └──── capa 3                   │
 │   Pre-Hackatón online de jujuy.dev.                                            │
-│                                                     ● 35 TICKETS · 35 JUJEÑOS  │
+│                                                     ● 30 TICKETS · 30 JUJEÑOS  │
 │   [ Inscribite en Luma → ]  [ Ver cómo funciona ]   □□□□□□□□□□□□□□□□□□□□□□□□□  │
 │                                                                              ◢ │
 └────────────────────────────────────────────────────────────────────────────────┘
@@ -437,7 +437,7 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 │ ¿te ganás            │
 │ tu ticket?           │
 │                      │
-│ 35 tickets a la…     │
+│ 30 tickets a la…     │
 │ [ Inscribite en Luma ]│
 │ [ Ver cómo funciona ]│
 │                      │
@@ -446,10 +446,10 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 │  │  (cuerpo)   ●  │  │
 │ ╭┤ ─ ─ ─ ─ ─ ─ ─ ├╮ │
 │ ╰┤ ADMIT ONE      ├╯ │
-│  │ N° ··/35       │  │
+│  │ N° ··/30       │  │
 │  │ ▐▌▐▌▐    [QR]  │  │
 │  └────────────────┘  │
-│ ● 35 TICKETS         │
+│ ● 30 TICKETS         │
 │ □□□□□ □□□□□ □□□□□ …  │
 └──────────────────────┘
 ```
@@ -461,24 +461,24 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 ### Hero
 - Eyebrow: `JUJUY.DEV PRESENTA · PRE-HACKATÓN ONLINE`
 - H1: **Y vos… ¿te ganás tu ticket?**
-- Bajada: "35 tickets a la Solar Train Hackathon. Buildeá online, subí tu proyecto y subite al tren."
+- Bajada: "30 tickets a la Solar Train Hackathon. Buildeá online, subí tu proyecto y subite al tren."
 - CTA primario: "Inscribite en Luma →" / (TBD) "Inscripción abre pronto" / (cerrado) "Inscripción cerrada"
 - CTA secundario: "Ver cómo funciona"
-- Pill: `35 TICKETS · 35 JUJEÑOS`
+- Pill: `30 TICKETS · 30 JUJEÑOS`
 - Micro: "Online · Jujuy, Argentina · Cierre: por confirmar"
 
 ### Marquee
-`PRÓXIMA SALIDA ◆ PRE-HACKATÓN ◆ 35 TICKETS ◆ ONLINE ◆ ANDÉN JUJUY ◆ IDEAS QUE VIAJAN MÁS LEJOS ◆ SPONSOR SORPRESA A BORDO ◆`
+`PRÓXIMA SALIDA ◆ PRE-HACKATÓN ◆ 30 TICKETS ◆ ONLINE ◆ ANDÉN JUJUY ◆ IDEAS QUE VIAJAN MÁS LEJOS ◆ SPONSOR SORPRESA A BORDO ◆`
 
 ### Qué es
 - H2: "Un pre-hackatón para ganarte el asiento."
-- Texto: "La Solar Train Hackathon tiene cupos contados. El Pre-Hackatón es tu manera de entrar: armás un proyecto, lo entregás acá y los 35 mejores se suben. Es online, así que buildeás desde donde estés en Jujuy."
+- Texto: "La Solar Train Hackathon tiene cupos contados. El Pre-Hackatón es tu manera de entrar: armás un proyecto, lo entregás acá y los 30 mejores se suben. Es online, así que buildeás desde donde estés en Jujuy."
 
 ### Cómo funciona
 - H2: "Tres paradas."
 - 01 **Inscribite** — "Anotate en Luma. Te llega el kit del Pre-Hackatón y la agenda de workshops."
 - 02 **Construí** — "Tenés la semana para buildear. Solo o en equipo. Lo que importa es que funcione y que alguien lo use."
-- 03 **Subite al tren** — "Entregá repo, demo y video. Si quedás en el top 35, tu ticket a la Solar Train Hackathon tiene tu nombre."
+- 03 **Subite al tren** — "Entregá repo, demo y video. Si quedás en el top 30, tu ticket a la Solar Train Hackathon tiene tu nombre."
 
 ### Tablero
 - Apagado: `SALIDA · PRE-HACKATÓN · HORARIO POR CONFIRMAR · ANDÉN JUJ`
@@ -488,20 +488,20 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 
 ### Criterios
 - H2: "Cómo se gana el ticket."
-- Hard gate: "**Para subirte tenés que vivir o residir en Jujuy.** Es condición excluyente para los 35 tickets del Pre."
+- Hard gate: "**Para subirte tenés que vivir o residir en Jujuy.** Es condición excluyente para los 30 tickets del Pre."
 - Utilidad — "¿Resuelve un problema real? ¿Para quién?"
 - Experiencia de usuario — "¿Se entiende solo? ¿Da ganas de volver a usarlo?"
 - Modelo de negocio — "¿Cómo se sostiene? ¿Quién paga y por qué?"
 - Tecnología interesante — "¿Qué tiene de nuevo por adentro? Contanos la decisión técnica que te enorgullece."
 - Tracción — "Mostranos evidencia: usuarios, revenue, waitlist o stars. Número + link o captura."
-- 50/50: "La mitad del puntaje lo pone la organización, la otra mitad el jurado. Suben los 35 con mayor puntaje."
+- 50/50: "La mitad del puntaje lo pone la organización, la otra mitad el jurado. Suben los 30 con mayor puntaje."
 - Nota: "Cada criterio va de 0 a 10."
 
 ### Cupos
 - H2: "Vas a buildear con los mejores de Argentina."
-- Ticket A: `35 · JUJEÑOS` — "Por scoring en el Pre-Hackatón. Vivís o residís en Jujuy."
-- Ticket B: `35 · INVITADOS ESPECIALES` — "De otras provincias. Equipos y empresas ya formadas, invitados por la organización."
-- Texto: "En la Solar Train Hackathon vas a compartir vagón con 35 equipos invitados de todo el país. Setenta personas buildeando en el mismo tren."
+- Ticket A: `30 · JUJEÑOS` — "Por scoring en el Pre-Hackatón. Vivís o residís en Jujuy."
+- Ticket B: `30 · INVITADOS ESPECIALES` — "De otras provincias. Equipos y empresas ya formadas, invitados por la organización. Se gestionan aparte."
+- Texto: "En la Hackatón Tren Solar compartís vagón con 30 invitados especiales de otras provincias: vos y 29 jujeños más, codo a codo con ellos, construyendo mientras la Quebrada pasa por la ventana."
 
 ### Workshops
 - H2: "Workshops de la semana."
@@ -532,8 +532,8 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 - Chip: `CLASIFICADO · SE ABRE EN EL HACKATHON`
 
 ### FAQ
-- "¿Tengo que vivir en Jujuy?" — "Sí, para competir por los 35 tickets del Pre. Si sos de otra provincia, los cupos de invitados especiales se gestionan aparte."
-- "¿Puedo participar en equipo?" — "Sí. Entregás un proyecto por equipo y el ticket es por persona del equipo ganador, hasta donde alcancen los 35."
+- "¿Tengo que vivir en Jujuy?" — "Sí, para competir por los 30 tickets del Pre. Si sos de otra provincia, los cupos de invitados especiales se gestionan aparte."
+- "¿Puedo participar en equipo?" — "Sí. Entregás un proyecto por equipo y el ticket es por persona del equipo ganador, hasta donde alcancen los 30."
 - "¿Qué cuenta como tracción?" — "Usuarios reales, revenue, una waitlist con gente anotada o stars en el repo. Siempre con número y evidencia."
 - "¿El Pre es presencial?" — "No, es 100% online. El tren es después."
 - "¿Qué pasa si no tengo demo deployada?" — "Necesitás algo navegable. Un video solo no alcanza."
@@ -541,7 +541,7 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 
 ### CTA final
 - H2: "Sacá tu ticket."
-- Texto: "35 asientos. Uno puede ser tuyo."
+- Texto: "30 asientos. Uno puede ser tuyo."
 - CTA: "Inscribite en Luma →"
 
 ### Footer
@@ -576,7 +576,7 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 ### `docs/refs/ticket-tokyo-equestrian.jpg`
 - Stack vertical cuerpo/stub → layout mobile del ticket.
 - Grilla label/valor en mono (GATE / LEVEL / ROW / NUMBER) → VAGÓN / ANDÉN / ASIENTO / GATE.
-- Bloque de fecha grande "01 : 8月" → bloque "N° 07/35".
+- Bloque de fecha grande "01 : 8月" → bloque "N° 07/30".
 - Sello circular + barcode chico + "UNAUTHORISED RESALE PROHIBITED" → sello "EMITIDO", barcode y legal del stub.
 - Agujeros de colgar arriba → no se usan (el ticket es digital).
 - **No se toma:** holo pastel arcoíris.
@@ -585,7 +585,7 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 - Lenguaje de textura reactiva a la luz → `--grad-foil` ("foil solar") + grano.
 - Borde interior fino blanco → marco inset 10px del cuerpo.
 - Perforación punteada + scallops → línea dashed y scallops opcionales.
-- Número "33" como pieza coleccionable → el N°/35 como protagonista del stub.
+- Número "33" como pieza coleccionable → el N°/30 como protagonista del stub.
 - **No se toma:** el arcoíris; se reemplaza por navy → naranja → blanco.
 
 ### `docs/refs/ref-labitconf-tickets.jpg`
@@ -602,7 +602,7 @@ Ritmo: alternancia navy-900 / navy-950 cada sección, separadas por una línea d
 
 - Contraste mínimo AA en todo; AAA en texto del stub. CTA siempre navy sobre naranja.
 - Todo lo animado respeta `prefers-reduced-motion`. El marquee se pausa en hover y foco.
-- El ticket hero tiene `alt`/`aria-label` descriptivo: "Ticket Pre-Hackatón jujuy.dev, número por asignar de 35".
+- El ticket hero tiene `alt`/`aria-label` descriptivo: "Ticket Pre-Hackatón jujuy.dev, número por asignar de 30".
 - Orden de tabulación: nav → CTA hero → ticket → secciones. Focus visible siempre (anillo naranja).
 - Breakpoints: 360 (mobile), 768 (tablet), 1024 (desktop), 1440 (wide). El ticket cambia de vertical a horizontal en 1024.
 - Tipografía mínima 14px en texto; 10px solo en mono decorativo del stub con `aria-hidden`.

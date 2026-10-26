@@ -1,5 +1,6 @@
 ---
 import { copy } from '../content/copy';
+import { TICKETS_TOTAL } from '../config';
 
 const { profile: p, ranking: r, auth } = copy;
 ---
@@ -96,7 +97,7 @@ const { profile: p, ranking: r, auth } = copy;
     </p>
     <p class="note" data-auth-note hidden role="status"></p>
     <article class="card tk-panel" id="estado-card" hidden>
-      <p class="kicker mono">TOP 35 · JUJUY</p>
+      <p class="kicker mono">TOP {TICKETS_TOTAL} · JUJUY</p>
       <p class="result" id="estado-result"></p>
       <p class="meta mono" id="estado-meta"></p>
       <p class="private">{r.privateNote}</p>

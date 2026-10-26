@@ -20,7 +20,7 @@ if (mode === 'closed') {
   await p.fill('#f-email', 'x'); await p.locator('#f-email').blur();
   ok((await p.textContent('#e-email')).length > 0, 'error inline email');
   await p.click('#submit');
-  ok((await p.textContent('#e-jujuy')).includes('35 tickets'), 'checkbox Jujuy obligatorio');
+  ok((await p.textContent('#e-jujuy')).includes('30 tickets'), 'checkbox Jujuy obligatorio');
   await sec.screenshot({ path: dir + '/errors.png' });
   await p.fill('#f-proyecto', 'Tren Solar'); await p.fill('#f-responsable', 'Ana Perez');
   await p.fill('#f-email', 'ana@example.com'); await p.check('#f-jujuy'); await p.fill('#f-localidad', 'San Salvador');

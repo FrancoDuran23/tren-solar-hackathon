@@ -8,7 +8,7 @@ const isOpen = config.registration === 'open' && !!config.lumaUrl;
 const isClosed = config.registration === 'closed';
 const state: 'open' | 'closed' | 'soon' = isClosed ? 'closed' : isOpen ? 'open' : 'soon';
 
-const chip = state === 'open' ? 'Inscripción abierta' : '35 tickets en juego';
+const chip = state === 'open' ? 'Inscripción abierta' : `${TICKETS_TOTAL} tickets en juego`;
 const assigned = Math.min(Math.max(config.ticketsAssigned, 0), TICKETS_TOTAL);
 const free = TICKETS_TOTAL - assigned;
 const seats = Array.from({ length: TICKETS_TOTAL }, (_, i) => i < assigned);
@@ -38,7 +38,7 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
     <div class="copy">
       <h1 id="hero-title"><span class="vos">Y vos…</span> <span class="foil">¿te ganás<br />tu ticket?</span></h1>
       <p class="lead">
-        35 tickets a la Hackatón Tren Solar. Buildeá online, subí tu proyecto y subite al tren.
+        {TICKETS_TOTAL} tickets a la Hackatón Tren Solar. Buildeá online, subí tu proyecto y subite al tren.
       </p>
       <div class="ctas">
         {state === 'open' && (
@@ -79,11 +79,11 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
         </div>
       </div>
       <div class="box">
-        <p class="pill mono"><span class="dot"></span>35 TICKETS · 35 JUJEÑOS</p>
+        <p class="pill mono"><span class="dot"></span>{TICKETS_TOTAL} TICKETS · {TICKETS_TOTAL} JUJEÑOS</p>
         <ul class="seats" aria-label={`${free} de ${TICKETS_TOTAL} asientos libres`}>
           {seats.map((taken) => <li class:list={['seat', { taken }]}></li>)}
         </ul>
-        <p class="legend mono">{free === TICKETS_TOTAL ? '35 asientos libres' : `${free} asientos libres`}</p>
+        <p class="legend mono">{free === TICKETS_TOTAL ? `${TICKETS_TOTAL} asientos libres` : `${free} asientos libres`}</p>
       </div>
     </div>
   </div>
@@ -554,7 +554,7 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(7, 10px);
+    grid-template-columns: repeat(6, 10px);
     gap: 4px;
   }
   .seat {
@@ -694,7 +694,7 @@ const ticketLabel = 'Ticket Hackatón Tren Solar · jujuy.dev, número por asign
       align-items: flex-end;
     }
     .seats {
-      grid-template-columns: repeat(35, 10px);
+      grid-template-columns: repeat(30, 10px);
     }
   }
   @media (min-width: 1280px) {

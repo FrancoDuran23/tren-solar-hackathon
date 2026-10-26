@@ -14,15 +14,15 @@
 ## Ticket tope de gama (mezcla de refs)
 - Silueta ticket real: notch / perforación / stub + cuerpo (Clavius + Soul).
 - Mitad “objeto premium”: textura metal / foil / foto (lunar o Quebrada) + círculo o acento sólido naranja (no lime Clavius).
-- Mitad “boarding pass”: grilla tipográfica densa, barcode/QR, Nº de 35, ADMIT ONE (Tokyo + LABITCONF).
-- Datos a mostrar: Pre-Hackatón · JujuyDev · Ticket N° __/35 · fecha cierre · hacker ID.
-- Un solo tier visual para ganadores (35 tickets); variantes General/VIP de las refs = lenguaje de diseño, no tiers de venta.
+- Mitad “boarding pass”: grilla tipográfica densa, barcode/QR, Nº de 30, ADMIT ONE (Tokyo + LABITCONF).
+- Datos a mostrar: Pre-Hackatón · JujuyDev · Ticket N° __/30 · fecha cierre · hacker ID.
+- Un solo tier visual para ganadores (30 tickets); variantes General/VIP de las refs = lenguaje de diseño, no tiers de venta.
 
 ## Landing
 - Base viva: https://pre-hacka-landing.vercel.app/
 - Repo: FrancoDuran23/tren-solar-hackathon (hoy solo README — hay que meter el código)
 - Headline existente OK: “Y vos… ¿te ganás tu ticket?”
-- Countdown + boletería 35 + pasos Inscribite → Construí → Subite al tren
+- Countdown + boletería 30 + pasos Inscribite → Construí → Subite al tren
 - Ticket hero = pieza tope de gama (arriba), no stub flat actual
 
 ## Fuera

@@ -1,17 +1,17 @@
 # Pre-Hackatón — brief (grill en curso, 2026-10-24)
 
 ## Qué es
-Pre-Hackatón online de jujuy.dev: ganate 1 de 35 tickets a la Solar Train Hackathon.
+Pre-Hackatón online de jujuy.dev: ganate 1 de 30 tickets a la Solar Train Hackathon.
 Vibe: “movida tren” en toda la experiencia. Brand: navy + naranja + blanco (poster), logo jujuy.dev.
 
 ## Flujo
 1. Inscripción → Luma (aún no existe; lanzan pronto)
 2. Entrega proyecto → en la page: repo URL + demo URL + video URL
-3. Scoring → hard gate vive/reside Jujuy; 0–10 en utilidad, UX, modelo de negocio, tecnología interesante, **tracción**; 50% org + 50% jurados; top 35
+3. Scoring → hard gate vive/reside Jujuy; 0–10 en utilidad, UX, modelo de negocio, tecnología interesante, **tracción**; 50% org + 50% jurados; top 30
 4. Jurado en page → “próximamente” hasta confirmar nombres
 
 ## Página debe incluir
-- Hero ticket tope de gama (35 ADMIT ONE)
+- Hero ticket tope de gama (30 ADMIT ONE)
 - CTA Luma (cuando exista link)
 - Form/portal de entrega (repo, demo, video)
 - Criterios de scoring visibles
@@ -22,9 +22,10 @@ Vibe: “movida tren” en toda la experiencia. Brand: navy + naranja + blanco (
 ## Visual
 Ver `brief-visual.md` + `docs/refs/`. Front con Fable post-grill.
 
-## Cupos (actualizado)
-- 35 tickets Pre → jujeños (vive/reside Jujuy), vía scoring
-- 35 invitados especiales → otras provincias, empresas ya formadas (detalle vía juje / SPACEXSI)
+## Cupos (actualizado 2026-10-25)
+- 30 tickets Pre → jujeños (vive/reside Jujuy), vía scoring. Esta landing.
+- 30 invitados especiales → otras provincias, empresas ya formadas (detalle vía juje / SPACEXSI). Gestión aparte.
+- Esta landing muestra los dos bloques por separado. El copy de Pre no escribe el total.
 - Mensaje page: van a buildear con los mejores de Argentina
 
 ## Tracción (criterio)

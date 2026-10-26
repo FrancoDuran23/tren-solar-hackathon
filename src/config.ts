@@ -39,11 +39,11 @@ export interface SiteConfig {
   submissions: SubmissionsState;
   workshops: Workshop[];
   jury: Juror[];
-  /** 0–35 */
+  /** 0–30 */
   ticketsAssigned: number;
 }
 
-export const TICKETS_TOTAL = 35;
+export const TICKETS_TOTAL = 30;
 
 export const config: SiteConfig = {
   lumaUrl: null,
