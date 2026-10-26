@@ -48,14 +48,18 @@ const cells: [number, number][] = [];
 ---
 
 <!--
-  Ticket "Hackatón Tren Solar" (ref-b): cuerpo navy/carbón sin foto de escena,
+  Ticket "Hackatón Tren Solar" (ref-b): cuerpo noche con el Tren Solar al atardecer,
   título display, franja holográfica y stub Admit One. Una sola marca jujuy.dev,
   abajo a la izquierda del cuerpo (pestaña de la lámina). Sin sello circular duplicado.
 -->
 <div class:list={['ticket', { ghost }]} aria-hidden={ghost ? 'true' : undefined} data-ticket>
   <div class="body">
+    <!-- Cosmos arriba (planetas del arte del poster) fundido con la foto del tren cinematic -->
+    <img class="scene" src="/brand/solar-train-fondo-franco.webp" alt="" width="1774" height="887" loading="lazy" decoding="async" />
+    <img class="cosmos" src="/brand/solar-train-sky.jpg" alt="" width="1024" height="512" loading="lazy" decoding="async" />
     <i class="stars" aria-hidden="true"></i>
     <i class="shade" aria-hidden="true"></i>
+    <i class="glow" aria-hidden="true"></i>
     <i class="grain" aria-hidden="true"></i>
 
     <p class="corner corner-tl mono">JUJUY<i>/</i>ARGENTINA</p>
@@ -171,16 +175,42 @@ const cells: [number, number][] = [];
     text-transform: uppercase;
   }
 
-  /* ───────── Cuerpo: navy/carbón, sin foto ───────── */
+  /* ───────── Cuerpo: Tren Solar al atardecer ───────── */
   .body {
     position: relative;
     height: var(--body-h);
     flex: none;
     overflow: hidden;
     isolation: isolate;
-    background:
-      radial-gradient(80% 70% at 100% 0%, #1a2234 0%, transparent 58%),
-      linear-gradient(180deg, var(--night-2) 0%, var(--night) 100%);
+    background: var(--night);
+  }
+  .scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Foto 2:1 (tren a la izquierda, sol ~82% del ancho). El cuerpo
+       angosto recorta ~mitad del ancho: 80% deja el sol en la zona
+       clara, a la derecha del shade del título. */
+    object-position: 80% 64%;
+    filter: saturate(0.7) contrast(1.08) brightness(1.02);
+    /* el cielo de la foto se funde hacia el cosmos de arriba */
+    mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.4) 16%, #000 36%);
+  }
+  /* Planetas del arte del poster (recorte superior derecho, sin el título) */
+  .cosmos {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 330px;
+    height: 150px;
+    object-fit: none;
+    object-position: 100% 0;
+    transform: scale(1.05);
+    transform-origin: 100% 0;
+    opacity: 0.9;
+    mask-image: linear-gradient(180deg, #000 0, #000 40%, transparent 100%);
   }
   .stars {
     position: absolute;
@@ -199,7 +229,20 @@ const cells: [number, number][] = [];
   .shade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(7, 9, 15, 0.28) 0%, rgba(7, 9, 15, 0) 32%, rgba(7, 9, 15, 0) 68%, rgba(7, 9, 15, 0.4) 100%);
+    background:
+      linear-gradient(90deg, rgba(7, 9, 15, 0.94) 0%, rgba(7, 9, 15, 0.7) 34%, rgba(7, 9, 15, 0.1) 60%, rgba(7, 9, 15, 0.04) 100%),
+      linear-gradient(180deg, rgba(7, 9, 15, 0.5) 0%, rgba(7, 9, 15, 0) 26%, rgba(7, 9, 15, 0) 66%, rgba(7, 9, 15, 0.6) 100%);
+  }
+  /* Luz del atardecer detrás del tren (naranja quemado), como el destello de la ref */
+  .glow {
+    position: absolute;
+    left: 42%;
+    top: 22%;
+    width: 60%;
+    height: 50%;
+    background: radial-gradient(50% 50% at 50% 50%, rgba(255, 150, 70, 0.4), rgba(255, 120, 50, 0.12) 45%, transparent 70%);
+    filter: blur(6px);
+    mix-blend-mode: screen;
   }
   .grain {
     position: absolute;
@@ -629,6 +672,20 @@ const cells: [number, number][] = [];
     .body {
       width: var(--body-w);
       height: 100%;
+    }
+    .scene {
+      /* Casi el ancho entero: locomotora a la izquierda, sol a la derecha.
+         La franja es más alta acá; se sube la foto para que el tren quede sobre el foil. */
+      object-position: 52% 62%;
+      transform: translateY(-5%);
+    }
+    .cosmos {
+      transform: scale(1.75);
+    }
+    .shade {
+      background:
+        linear-gradient(90deg, rgba(7, 9, 15, 0.96) 0%, rgba(7, 9, 15, 0.8) 30%, rgba(7, 9, 15, 0.14) 56%, rgba(7, 9, 15, 0.04) 100%),
+        linear-gradient(180deg, rgba(7, 9, 15, 0.45) 0%, rgba(7, 9, 15, 0) 24%, rgba(7, 9, 15, 0) 66%, rgba(7, 9, 15, 0.55) 100%);
     }
     .corner {
       top: 20px;

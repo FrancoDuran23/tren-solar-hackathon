@@ -30,7 +30,7 @@ Self-hosted vía paquetes `@fontsource` (subset latino, `font-display: swap`): U
 
 ## Logo (placeholder)
 
-Logos reales de la comunidad en `public/brand/`: `jujuydev-logo-white.webp` (sobre navy: nav, footer, cuerpo del ticket), `jujuydev-logo.webp` (sobre papel: stub del ticket, CTA final), `jujuydev-isotipo.png` (favicon, eyebrow, centro del QR). `solar-train-quebrada.jpg` y `solar-train-sky.jpg` son recortes del poster `guideline-solar-train-poster.jpg` (hero y CTA final). El cuerpo del ticket es navy/foil, sin foto.
+Logos reales de la comunidad en `public/brand/`: `jujuydev-logo-white.webp` (sobre navy: nav, footer, cuerpo del ticket), `jujuydev-logo.webp` (sobre papel: stub del ticket, CTA final), `jujuydev-isotipo.png` (favicon, eyebrow, centro del QR). `solar-train-fondo-franco.webp` es la escena cinematic del cuerpo del ticket; `solar-train-sky.jpg` recorta el cosmos dentro del ticket. `solar-train-quebrada.jpg` y `solar-train-sky.jpg` salen del poster `guideline-solar-train-poster.jpg` y ya no van de fondo de la landing ni del CTA final: esas secciones son navy/carbón.
 
 ## Cuenta, perfil y estado (T16–T18)
 
@@ -71,7 +71,7 @@ Repo destino: `FrancoDuran23/tren-solar-hackathon`. Rama `main` ⇒ producción,
 
 ## Foil del ticket (vgpu, T08/T09)
 
-La franja del ticket se pinta con WebGPU vía [`vgpu`](https://vgpu.sh) (`src/lib/vgpu/foil.{ts,wgsl}`, shader cargado con `@vgpu/wgsl/loader-vite`): lámina procedural sin foto + foil holográfico (perlado brand, difracción sobre contornos grabados, grano) que sigue al puntero y orbita solo en reposo. Se monta en cualquier dispositivo con WebGPU; con `prefers-reduced-motion: reduce` renderiza un único frame estático. Sin WebGPU, o si la GPU falla después de montar, queda el fallback CSS (gradiente holográfico + sheen). El cuerpo del ticket es navy, sin textura fotográfica.
+La franja del ticket se pinta con WebGPU vía [`vgpu`](https://vgpu.sh) (`src/lib/vgpu/foil.{ts,wgsl}`, shader cargado con `@vgpu/wgsl/loader-vite`): lámina procedural sin foto + foil holográfico (perlado brand, difracción sobre contornos grabados, grano) que sigue al puntero y orbita solo en reposo. Se monta en cualquier dispositivo con WebGPU; con `prefers-reduced-motion: reduce` renderiza un único frame estático. Sin WebGPU, o si la GPU falla después de montar, queda el fallback CSS (gradiente holográfico + sheen). El cuerpo del ticket muestra la foto cinematic del tren (`solar-train-fondo-franco.webp`) con el recorte de cosmos; la lámina sigue siendo procedural.
 
 Verificación offscreen sin navegador: `vgpu/node` (Dawn) con `VK_ICD_FILENAMES` apuntando al ICD de SwiftShader de Chrome renderiza `foil.wgsl` a un target y permite leer los píxeles.
 
