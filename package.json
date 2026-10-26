@@ -11,7 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "node --experimental-strip-types --test src/lib/profile.test.ts src/lib/ranking-input.test.ts src/lib/secret.test.ts src/lib/entrega-window.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/profile.test.ts src/lib/ranking-input.test.ts src/lib/secret.test.ts src/lib/entrega-window.test.ts src/lib/route-tour.test.ts",
     "astro": "astro"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-/* Mapa de recorrido Volcán → Tilcara, paleta Pre-Hackatón: cosmos navy, ruta naranja, plata para vías y texto.
+/* Mapa de recorrido ida y vuelta Volcán ↔ Tilcara, paleta Pre-Hackatón: cosmos navy, ruta naranja, plata para vías y texto.
    Tokens desde src/styles/tokens.css. */
 .rmap {
   --acc: var(--orange-500);
@@ -111,6 +111,17 @@
   stroke-width: 3px;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+/* Chevrons a los dos lados de la misma vía: ida hacia Tilcara, vuelta hacia Volcán. */
+.rt-chev {
+  fill: none;
+  stroke: var(--acc);
+  stroke-width: 1.8px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.rt-chev.vuelta {
+  stroke: var(--silver);
 }
 .pk {
   fill: #4a5468;
@@ -231,27 +242,42 @@
 .rmap-detail {
   border-top: 1px solid var(--line);
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   grid-template-columns: auto 1fr auto;
   align-items: end;
   column-gap: 28px;
   padding: 12px 20px 14px;
 }
-.rmap-detail .rmap-dk {
-  grid-area: 1 / 1;
+.rmap-detail .rmap-way {
+  grid-area: 1 / 1 / 1 / -1;
 }
-.rmap-detail .rmap-dn {
+.rmap-detail .rmap-dk {
   grid-area: 2 / 1;
 }
+.rmap-detail .rmap-dn {
+  grid-area: 3 / 1;
+}
 .rmap-detail .rmap-dd {
-  grid-area: 2 / 2;
+  grid-area: 3 / 2;
   margin: 0;
 }
 .rmap-detail .rmap-dc {
   text-align: right;
-  grid-area: 2 / 3;
+  grid-area: 3 / 3;
   margin: 0;
   line-height: 1.3;
+}
+.rmap-way {
+  margin: 0 0 8px;
+  font-family: var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange-300);
+  font-size: 11px;
+  font-weight: 700;
+}
+.rmap-way.is-vuelta {
+  color: var(--silver);
 }
 .rmap-dk {
   font-family: var(--f-mono);
@@ -325,6 +351,19 @@
   border-color: var(--road);
   border-top-style: dashed;
 }
+.lg-both {
+  border: 0;
+  width: auto;
+  height: auto;
+  color: var(--acc);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+.lg-both::before {
+  content: '↔';
+}
 
 /* Chips de estaciones */
 .rmap-chips {
@@ -395,6 +434,7 @@
     row-gap: 0;
     padding: 12px 16px;
   }
+  .rmap-detail .rmap-way,
   .rmap-detail .rmap-dk,
   .rmap-detail .rmap-dn,
   .rmap-detail .rmap-dd,
