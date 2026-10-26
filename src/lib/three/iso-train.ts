@@ -62,8 +62,9 @@ export interface IsoTrainHandle {
   destroy(): void;
 }
 
-/** Unidades del SVG por unidad de mundo (largo del dúo ≈ 10 u → ≈ 95 px del viewBox) */
-const SCALE = 9.5;
+/** Unidades del SVG por unidad de mundo (largo del dúo ≈ 10 u → ≈ 62 px del viewBox).
+ *  T27: 6.2 ≈ 0.65 × los 9.5 de T26; el dúo queda proporcional al trazado y no tapa labels. */
+const SCALE = 6.2;
 /** Azimut de cámara (rad): 0 mira a −z; con ~0.78 un tren que va "a la derecha" muestra el lateral */
 const AZ = 0.78;
 /** Elevación de cámara (rad): 35.26° es la isométrica exacta; algo menos muestra más lateral */
