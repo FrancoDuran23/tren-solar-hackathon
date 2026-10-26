@@ -11,8 +11,10 @@
  * path, a una distancia fija (en unidades de mundo) del centro del tren, así en las
  * curvas los dos coches giran de verdad. Las ruedas giran con el avance.
  *
- * Movimiento: `tour()` recorre Volcán → Tilcara (ida) avisando cada estación que pasa;
- * `goTo(i)` se desplaza con easing hasta la estación i. Sin animación en curso no hay
+ * Movimiento: `tour()` hace la ida (Volcán → Tilcara) y la vuelta por la misma vía
+ * (Tilcara → Volcán), avisando cada estación que pasa; `goTo(i)` corta el tour y va
+ * con easing hasta la estación i. El dúo tiene cabina en los dos extremos, así la
+ * vuelta queda con la otra nariz adelante. Sin animación en curso no hay
  * requestAnimationFrame; fuera del viewport tampoco.
  */
 import {
@@ -34,6 +36,7 @@ import {
   WebGLRenderer,
 } from 'three';
 import { buildSolarTrain, CAR_LEN, GAP, CARS } from './solar-train';
+import { stationReached, type LegDir } from '../route-tour';
 
 export interface IsoTrainOptions {
   /** Path de la ruta (coords del viewBox). Las longitudes de `stops` son sobre este path. */
@@ -46,8 +49,12 @@ export interface IsoTrainOptions {
   start?: number;
   /** Sin animación: salta directo */
   reducedMotion?: boolean;
-  /** Se llama cuando el tren, en el tour, pasa por una estación */
-  onStation?: (i: number) => void;
+  /** Se llama cuando el tren, en el tour, pasa por una estación. `dir` es la del tramo. */
+  onStation?: (i: number, dir: LegDir) => void;
+  /** Arranca un tramo del tour: +1 ida, −1 vuelta */
+  onLeg?: (dir: LegDir) => void;
+  /** El tour (ida y vuelta) terminó o el usuario lo cortó */
+  onTourEnd?: () => void;
   /** Overrides de encuadre (tuning) */
   view?: Partial<{ scale: number; az: number; el: number }>;
 }
@@ -55,7 +62,7 @@ export interface IsoTrainOptions {
 export interface IsoTrainHandle {
   /** Va con easing a la estación i (cancela el tour) */
   goTo(i: number): void;
-  /** Recorre desde la estación actual hasta la última, avisando con onStation */
+  /** Ida hasta la última estación y vuelta a la primera, por la misma vía */
   tour(): void;
   /** Hay animación en curso */
   moving(): boolean;
@@ -69,7 +76,7 @@ const SCALE = 6.2;
 const AZ = 0.78;
 /** Elevación de cámara (rad): 35.26° es la isométrica exacta; algo menos muestra más lateral */
 const EL = 0.47;
-/** Duración del tour completo (s) */
+/** Duración de cada tramo del tour (ida o vuelta), en segundos */
 const TOUR_SECONDS = 16;
 /** Velocidad máx. al ir a una estación (px del viewBox por segundo) */
 const GO_SPEED = 240;
@@ -266,6 +273,13 @@ export function mountIsoTrain(canvas: HTMLCanvasElement, opts: IsoTrainOptions):
   const render = () => renderer.render(scene, camera);
 
   /* Estado de animación */
+  interface Leg {
+    to: number;
+    dir: LegDir;
+    seconds: number;
+    /** Pausa al llegar, antes del tramo siguiente (ms). 0 si cierra el tour. */
+    dwell: number;
+  }
   let cur = centers[opts.start ?? 0] ?? 0;
   let from = cur;
   let to = cur;
@@ -273,42 +287,35 @@ export function mountIsoTrain(canvas: HTMLCanvasElement, opts: IsoTrainOptions):
   let dur = 0;
   let ease = easeInOutCubic;
   let touring = false;
+  let dir: LegDir = 1;
+  /** Pausa que corresponde al tramo que está en curso, se aplica al llegar */
+  let legDwell = 0;
+  let dwellUntil = 0;
+  let queue: Leg[] = [];
   let lastStation = -1;
   let raf = 0;
   let visible = true;
   let alive = true;
 
-  const nearestPassed = (l: number) => {
-    let best = -1;
-    for (let i = 0; i < centers.length; i++) if (l >= centers[i]! - 1) best = i;
-    return best;
-  };
-
-  const tick = (now: number) => {
-    raf = 0;
-    if (!alive || !visible) return;
-    const k = dur > 0 ? Math.min(1, (now - t0) / dur) : 1;
-    cur = from + (to - from) * ease(k);
-    place(cur);
-    render();
-    if (touring) {
-      const st = nearestPassed(cur);
-      if (st !== lastStation && st >= 0) {
-        lastStation = st;
-        opts.onStation?.(st);
-      }
-    }
-    if (k < 1) raf = requestAnimationFrame(tick);
-    else {
-      touring = false;
-      dur = 0;
+  const noteStation = () => {
+    if (!touring) return;
+    const st = stationReached(centers, cur, dir);
+    if (st !== lastStation && st >= 0) {
+      lastStation = st;
+      opts.onStation?.(st, dir);
     }
   };
-  const start = () => {
-    if (!alive || !visible || raf || document.hidden) return;
-    raf = requestAnimationFrame(tick);
+  const endTour = () => {
+    const was = touring;
+    touring = false;
+    queue = [];
+    dwellUntil = 0;
+    legDwell = 0;
+    dur = 0;
+    if (was) opts.onTourEnd?.();
   };
-  const animateTo = (target: number, seconds: number, e: (k: number) => number) => {
+  /** Arma un desplazamiento. Devuelve false si saltó directo (reduced motion o duración 0). */
+  const arm = (target: number, seconds: number, e: (k: number) => number) => {
     from = cur;
     to = target;
     if (reduced || seconds <= 0) {
@@ -316,20 +323,85 @@ export function mountIsoTrain(canvas: HTMLCanvasElement, opts: IsoTrainOptions):
       cur = target;
       place(cur);
       render();
-      return;
+      return false;
     }
     dur = seconds * 1000;
     ease = e;
     t0 = performance.now();
-    start();
+    return true;
   };
+  const beginLeg = (leg: Leg, announce = true) => {
+    dir = leg.dir;
+    legDwell = leg.dwell;
+    lastStation = stationReached(centers, cur, dir);
+    if (announce) opts.onLeg?.(dir);
+    return arm(leg.to, leg.seconds, easeInOutSine);
+  };
+
+  const tick = (now: number) => {
+    raf = 0;
+    if (!alive || !visible) return;
+    if (dwellUntil) {
+      if (now < dwellUntil) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      dwellUntil = 0;
+      const next = queue.shift();
+      if (!next || !touring) {
+        endTour();
+        return;
+      }
+      // La vuelta ya se anunció al empezar la pausa en Tilcara.
+      if (!beginLeg(next, false)) {
+        endTour();
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+      return;
+    }
+    const k = dur > 0 ? Math.min(1, Math.max(0, (now - t0) / dur)) : 1;
+    cur = from + (to - from) * ease(k);
+    place(cur);
+    render();
+    noteStation();
+    if (k < 1) {
+      raf = requestAnimationFrame(tick);
+      return;
+    }
+    dur = 0;
+    if (touring && queue.length) {
+      if (legDwell > 0) {
+        const next = queue[0]!;
+        dir = next.dir;
+        lastStation = stationReached(centers, cur, dir);
+        opts.onLeg?.(dir);
+        dwellUntil = now + legDwell;
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const next = queue.shift()!;
+      if (!beginLeg(next)) {
+        endTour();
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+      return;
+    }
+    if (touring) endTour();
+  };
+  const start = () => {
+    if (!alive || !visible || raf || document.hidden) return;
+    raf = requestAnimationFrame(tick);
+  };
+  const pending = () => dur > 0 || dwellUntil > 0;
 
   const io = new IntersectionObserver(
     (entries) => {
       visible = entries.some((e) => e.isIntersecting);
       if (visible) {
         // Al volver, retomamos la animación donde quedó en tiempo real
-        if (dur > 0) start();
+        if (pending()) start();
         else render();
       } else if (raf) {
         cancelAnimationFrame(raf);
@@ -343,7 +415,7 @@ export function mountIsoTrain(canvas: HTMLCanvasElement, opts: IsoTrainOptions):
     if (document.hidden && raf) {
       cancelAnimationFrame(raf);
       raf = 0;
-    } else if (dur > 0) start();
+    } else if (pending()) start();
   };
   document.addEventListener('visibilitychange', onVis);
   const ro = new ResizeObserver(resize);
@@ -354,19 +426,46 @@ export function mountIsoTrain(canvas: HTMLCanvasElement, opts: IsoTrainOptions):
 
   return {
     goTo(i) {
+      const was = touring;
       touring = false;
+      queue = [];
+      dwellUntil = 0;
+      legDwell = 0;
       const target = centers[i] ?? 0;
       const secs = Math.min(2.4, Math.max(0.8, Math.abs(target - cur) / GO_SPEED));
-      animateTo(target, secs, easeInOutCubic);
+      if (arm(target, secs, easeInOutCubic)) start();
+      if (was) opts.onTourEnd?.();
     },
     tour() {
+      if (reduced || touring) return;
+      const first = centers[0] ?? 0;
       const last = centers[centers.length - 1] ?? total;
-      if (reduced || cur >= last - 1) return;
+      const span = Math.max(1, last - first);
+      queue = [];
+      dwellUntil = 0;
       touring = true;
-      lastStation = nearestPassed(cur);
-      animateTo(last, TOUR_SECONDS * ((last - cur) / Math.max(1, last - (centers[0] ?? 0))), easeInOutSine);
+      const vuelta: Leg = { to: first, dir: -1, seconds: TOUR_SECONDS, dwell: 0 };
+      if (cur < last - 2) {
+        dir = 1;
+        legDwell = 650;
+        lastStation = stationReached(centers, cur, 1);
+        opts.onLeg?.(1);
+        queue.push(vuelta);
+        if (!arm(last, TOUR_SECONDS * ((last - cur) / span), easeInOutSine)) {
+          touring = false;
+          queue = [];
+          return;
+        }
+        start();
+        return;
+      }
+      if (!beginLeg({ ...vuelta, seconds: TOUR_SECONDS * ((cur - first) / span) })) {
+        touring = false;
+        return;
+      }
+      start();
     },
-    moving: () => dur > 0,
+    moving: () => pending(),
     destroy() {
       alive = false;
       if (raf) cancelAnimationFrame(raf);
