@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ROUTE_SVG } from './route-map-svg';
 import { STOPS, route } from '../../content/route';
+import type { IsoTrainHandle } from '../../lib/three/iso-train';
 import './route-map.css';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -15,15 +16,26 @@ interface Geo {
 
 /**
  * Mapa interactivo Volcán → Tilcara. Island React: al entrar en viewport anima la ruta
- * (stroke-dash); click en un hotspot o chip selecciona la estación y mueve el marcador.
+ * (stroke-dash) y el Tren Solar 3D isométrico (three.js, canvas sobre el SVG) hace el
+ * recorrido completo marcando cada estación; click en un hotspot o chip selecciona la
+ * estación y el tren va hasta ahí con easing. Sin WebGL queda el marcador 2D.
  */
 export default function RouteMap() {
   const [sel, setSel] = useState(0);
   const [on, setOn] = useState(false);
+  const [iso, setIso] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const geo = useRef<Geo | null>(null);
+  const train = useRef<IsoTrainHandle | null>(null);
+  /** La última selección vino del usuario (chip/hotspot), no del tren en su recorrido */
+  const byUser = useRef(false);
+  const pick = (i: number) => {
+    byUser.current = true;
+    setSel(i);
+  };
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -62,6 +74,30 @@ export default function RouteMap() {
     trv.setAttribute('transform', `translate(${p0.x} ${p0.y})`);
     geo.current = { path, trv, lens, total, cur: lens[0] ?? 0 };
 
+    // Tren 3D isométrico: three en su propio chunk, montado sólo si hay WebGL
+    let dead = false;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      import('../../lib/three/iso-train')
+        .then(({ mountIsoTrain }) => {
+          if (dead) return;
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          train.current = mountIsoTrain(canvas, {
+            path,
+            stops: lens,
+            viewBox: { w: 680, h: 385 },
+            start: 0,
+            reducedMotion: reduced,
+            onStation: (i) => {
+              byUser.current = false;
+              setSel(i);
+            },
+          });
+          setIso(true);
+        })
+        .catch((err) => console.warn('[iso-train] sin WebGL, queda el marcador 2D', err));
+    }
+
     const io = new IntersectionObserver(
       ([e]) => {
         if (e?.isIntersecting) setOn(true);
@@ -80,11 +116,19 @@ export default function RouteMap() {
     onScroll();
 
     return () => {
+      dead = true;
       io.disconnect();
       sc?.removeEventListener('scroll', onScroll);
       trv.remove();
+      train.current?.destroy();
+      train.current = null;
     };
   }, []);
+
+  // Al entrar en viewport, con el tren montado, arranca el recorrido Volcán → Tilcara
+  useEffect(() => {
+    if (on && iso && !byUser.current) train.current?.tour();
+  }, [on, iso]);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -94,6 +138,8 @@ export default function RouteMap() {
     const from = g.cur;
     const to = g.lens[sel] ?? 0;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Selección del usuario: el tren 3D va a la estación (y corta el recorrido automático)
+    if (byUser.current) train.current?.goTo(sel);
     const dur = reduce ? 0 : 900;
     const t0 = performance.now();
     let raf = 0;
@@ -108,10 +154,11 @@ export default function RouteMap() {
     };
     raf = requestAnimationFrame(step);
 
-    // Si el mapa está en modo scroll (mobile), centrar la estación elegida.
+    // Si el mapa está en modo scroll (mobile), centrar la estación elegida por el usuario
+    // (el recorrido automático no mueve el scroll).
     const sc = scrollRef.current;
     const st = STOPS[sel];
-    if (sc && st && sc.scrollWidth > sc.clientWidth + 4) {
+    if (byUser.current && sc && st && sc.scrollWidth > sc.clientWidth + 4) {
       const x = (st.x / 100) * sc.scrollWidth - sc.clientWidth / 2;
       sc.scrollTo({ left: Math.max(0, x), behavior: reduce ? 'auto' : 'smooth' });
     }
@@ -121,7 +168,7 @@ export default function RouteMap() {
   const s = STOPS[sel]!;
 
   return (
-    <div ref={rootRef} className={`rmap${on ? ' route-on' : ''}`}>
+    <div ref={rootRef} className={`rmap${on ? ' route-on' : ''}${iso ? ' has-iso' : ''}`}>
       <figure className="rmap-map tk-panel tk-corner">
         <div className="rmap-scroll" ref={scrollRef}>
           <div className="rmap-inner">
@@ -133,6 +180,7 @@ export default function RouteMap() {
               aria-label={route.mapLabel}
               dangerouslySetInnerHTML={{ __html: ROUTE_SVG }}
             />
+            <canvas ref={canvasRef} className="rmap-iso" aria-hidden="true" />
             {STOPS.map((st, i) => (
               <button
                 key={st.id}
@@ -141,7 +189,7 @@ export default function RouteMap() {
                 style={{ left: `${st.x}%`, top: `${st.y}%` }}
                 aria-pressed={i === sel}
                 aria-label={route.selectStation(st.name)}
-                onClick={() => setSel(i)}
+                onClick={() => pick(i)}
               />
             ))}
           </div>
@@ -184,7 +232,7 @@ export default function RouteMap() {
             type="button"
             className={`rmap-chip${i === sel ? ' sel' : ''}`}
             aria-pressed={i === sel}
-            onClick={() => setSel(i)}
+            onClick={() => pick(i)}
           >
             <span className="rn">{String(i + 1).padStart(2, '0')}</span> {st.name}
           </button>

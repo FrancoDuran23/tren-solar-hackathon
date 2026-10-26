@@ -188,12 +188,26 @@
   font-size: 10.5px;
 }
 
-/* Marcador que viaja por la ruta */
+/* Marcador que viaja por la ruta (fallback sin WebGL) */
 .rmap-trv circle.h {
   fill: var(--acc-halo);
 }
 .rmap-trv circle.c {
   fill: var(--white);
+}
+.has-iso .rmap-trv {
+  display: none;
+}
+
+/* Tren Solar 3D isométrico: canvas transparente del tamaño exacto del SVG (viewBox 680×385),
+   no captura el puntero (los hotspots quedan arriba) */
+.rmap-iso {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
 }
 
 /* Hotspots invisibles sobre cada estación */
