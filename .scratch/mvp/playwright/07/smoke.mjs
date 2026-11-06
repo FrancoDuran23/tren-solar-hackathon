@@ -1,4 +1,4 @@
-// Uso: node smoke.mjs <baseUrl> [closed|open]   (open requiere config.submissions='open'; sin ENTREGA_WEBHOOK_URL ⇒ 501)
+// Uso: node smoke.mjs <baseUrl> [closed|open]   (open requiere config.submissions='open'; sin sesión el envío muestra el toast)
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -53,7 +53,7 @@ for (const [name, viewport] of Object.entries(sizes)) {
     await p.fill('#f-repo', 'https://github.com/a/b'); await p.fill('#f-demo', 'https://demo.app'); await p.fill('#f-video', 'https://youtu.be/abc');
     await p.click('#submit');
     await p.waitForSelector('#toast:not([hidden])');
-    ok(true, `${name}: envío ⇒ estado error de servidor (501 sin webhook)`);
+    ok(true, `${name}: envío sin sesión ⇒ toast, datos en el form`);
     await sec.screenshot({ path: `${dir}/${name}-form-server-error.png` });
   }
   ok(errors.filter((e) => !/501/.test(e)).length === 0, `${name}: sin errores de consola ${errors.join(' | ')}`);

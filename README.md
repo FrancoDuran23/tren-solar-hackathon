@@ -46,7 +46,7 @@ Ver `.env.example`.
 
 | Variable | Descripción |
 |---|---|
-| `ENTREGA_WEBHOOK_URL` | Destino exportable de `/api/entrega` (endpoint Formspree o webhook de Google Apps Script). Si falta, el endpoint responde `501` y la UI muestra el error de servidor. Con valor, la route valida de nuevo, aplica honeypot (`website`) + rate-limit (5 envíos / 10 min por IP, en memoria) y hace `POST` JSON con los campos + `hackerId` + `submittedAt`. |
+| `ENTREGA_WEBHOOK_URL` | Reenvío opcional de `/api/entrega` (Formspree o webhook de Google Apps Script). La entrega se guarda en Neon (tabla `entrega`, una por usuario) aunque esta variable no esté. Si el webhook falta o falla, quien envió igual recibe `200` y su Hacker ID. La route valida de nuevo, aplica honeypot (`website`) + rate-limit (5 envíos / 10 min por IP, en memoria) y, si hay URL, hace `POST` JSON con los campos + `hackerId` + `submittedAt` + `userId`. |
 
 `config.submissions = 'closed'` deshabilita el form y hace que la API responda `403`. Smoke: `.scratch/mvp/playwright/06/smoke.mjs`.
 
@@ -58,7 +58,7 @@ Repo destino: `FrancoDuran23/tren-solar-hackathon`. Rama `main` ⇒ producción,
 
 1. Pushear el código al repo: `git remote add origin git@github.com:FrancoDuran23/tren-solar-hackathon.git && git push -u origin main` (y la rama de PR para el preview).
 2. Vercel → Add New Project → importar `FrancoDuran23/tren-solar-hackathon`. Production Branch = `main`; Node.js 22.x en Settings → General (Astro 7 exige ≥ 22.23.4).
-3. Environment Variables (Production + Preview): `ENTREGA_WEBHOOK_URL` (ver arriba) y, para el ingreso con Google, las de `docs/auth-ranking.md` (`DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_SECRET`, `BETTER_AUTH_URL`). Sin el webhook el form responde 501; sin las de auth el ingreso responde 503 y la landing igual se publica.
+3. Environment Variables (Production + Preview): las de `docs/auth-ranking.md` (`DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_SECRET`, `BETTER_AUTH_URL`). `ENTREGA_WEBHOOK_URL` es opcional. Sin el webhook la entrega igual se guarda en Neon; sin las de auth el ingreso responde 503 y la landing igual se publica.
 4. Cada PR genera un preview automático (`*.vercel.app`); el merge a `main` despliega producción.
 5. CLI alternativa: `npx vercel link` y `npx vercel` (preview) / `npx vercel --prod`.
 6. Antes de abrir inscripción: poner el link real en `lumaUrl` y `registration: 'open'` en `src/config.ts` (no está cargado; no inventar el link).

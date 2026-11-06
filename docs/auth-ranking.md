@@ -2,7 +2,7 @@
 
 Ingreso **solo con Google** (Better Auth) y datos en **Neon Postgres**. No hay email/contraseña ni lista pública de ranking.
 
-Sin estas variables el build pasa igual: el botón "Entrar con Google" avisa que el ingreso todavía no está habilitado, y `POST /api/entrega` sigue el stub de T06.
+Sin estas variables el build pasa igual: el botón "Entrar con Google" avisa que el ingreso todavía no está habilitado. Sin sesión, `POST /api/entrega` responde 401 y no guarda.
 
 ## Variables
 
@@ -16,7 +16,7 @@ Copiar `.env.example` a `.env` en local. En Vercel: Project → Settings → Env
 | `GOOGLE_CLIENT_SECRET` | sí | OAuth client secret. |
 | `ADMIN_SECRET` | para el ranking | `openssl rand -base64 32`. Solo el `POST /api/admin/ranking`. |
 | `BETTER_AUTH_URL` | en producción | Origen canónico, sin barra final: `https://tren-solar-hackathon.vercel.app`. En local **dejarla vacía**: el callback se arma con el host del request (`localhost` o un preview `*.vercel.app`). |
-| `ENTREGA_WEBHOOK_URL` | no | Sigue siendo el destino del form (T06). |
+| `ENTREGA_WEBHOOK_URL` | no | Reenvío opcional, después de guardar en `entrega`. Si falta o el POST falla, la entrega igual queda guardada. |
 
 `DATABASE_URL` de migraciones largas puede ser el string **directo** (sin `-pooler`). La app en Vercel usa el pooled.
 
@@ -29,6 +29,7 @@ Copiar `.env.example` a `.env` en local. En Vercel: Project → Settings → Env
 La primera request autenticada crea las tablas de Better Auth (`user`, `session`, `account`, `verification`) y las nuestras:
 
 - `profile` — una fila por `user.id` (nombre, Jujuy, localidad, GitHub, one-liner).
+- `entrega` — una fila por `user.id` (proyecto, repo, demo, video y el resto del form, más `hacker_id`). Reenviar actualiza esa fila hasta el cierre.
 - `ranking` — una fila por email, con `in_top` y `updated_at`.
 - `ranking_meta` — una sola fila (`id = 1`) con la etiqueta de la última semana.
 
@@ -56,7 +57,7 @@ Los previews de Vercel (`https://<rama>-<proyecto>.vercel.app`) solo van a poder
 2. `#perfil`: email de solo lectura, nombre, "Vivo o resido en Jujuy", localidad, GitHub, una línea. El medidor va de 0 a 100 de a 20.
 3. El 100% pide los cinco: nombre y apellido, confirmación de Jujuy en sí, localidad (2–80, solo si Jujuy), `https://github.com/usuario` o `…/usuario/repo`, y una línea de 3–120 caracteres.
 4. `#mi-estado`: con perfil al 100%, una sola frase — **Estás en el top 30** o **Todavía no estás en el top** — más la etiqueta de la semana si la organización la mandó. No hay listas ni puntajes.
-5. `#entrega`: si el auth está configurado, hace falta sesión y perfil al 100%. El email que se despacha es el de Google (`userId` viaja en el webhook). Si el auth no está configurado, el form sigue como en T06.
+5. `#entrega`: hace falta sesión y perfil al 100%. El email que se guarda es el de Google. Hay una entrega por cuenta; volver a enviar la actualiza hasta el cierre y conserva el Hacker ID. Si `ENTREGA_WEBHOOK_URL` está definida, `userId` viaja en ese POST. Si no está, la fila igual queda en Neon.
 
 ## Ranking del fin de semana
 
