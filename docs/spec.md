@@ -91,12 +91,12 @@ Convención: `H1`, `I1`… = letra de grupo + número. Cada historia tiene crite
 - **E6.** Como participante, quiero un error de servidor claro ("No pudimos despachar tu proyecto. Probá de nuevo en un minuto.") sin perder lo que escribí, para reintentar.
 - **E7.** Como visitante, antes de que abran las entregas, quiero ver el form visible pero deshabilitado con banner explicativo, para saber qué voy a tener que preparar.
 - **E8.** Como organización, quiero recibir cada entrega estructurada (campos + timestamp) en un destino que pueda exportar a planilla, para alimentar el scoring offline.
-  *CA:* ver decisión §4.6.
+  *CA:* la fila vive en Neon (§4.6). Un webhook, si está configurado, recibe el mismo JSON y no es necesario para que el envío cuente.
 - **E9.** Como participante, quiero poder reenviar una corrección (misma persona/email), para arreglar un link roto.
-  *CA:* la última entrega por email gana; queda historial de las anteriores en el destino.
+  *CA:* una fila por cuenta. El reenvío pisa los campos hasta el cierre y conserva el Hacker ID del primer envío.
 - **E10.** Como organización, quiero un honeypot y un límite básico de envíos por IP en el endpoint, para frenar spam sin captcha pesado.
 - **E11.** Como participante con cuenta, quiero que la entrega quede atada a mi email de Google y que no se pueda despachar sin perfil al 100%.
-  *CA:* si el auth está configurado, `POST /api/entrega` exige sesión y `profileCompleteness === 100`, y pisa el email con el de Google. Si faltan los secretos, el endpoint sigue el comportamiento de §4.6.
+  *CA:* `POST /api/entrega` exige sesión de Google y `profileCompleteness === 100`, y pisa el email con el de Google. Sin sesión responde `401`. Sin perfil al 100% responde `403`.
 
 ### A — Cuenta (Google)
 
@@ -197,17 +197,15 @@ Los textos de FAQ, criterios y pasos viven en archivos de contenido tipados, no 
 Sin backend pesado en MVP. Decisión:
 
 - **UI**: form en la landing (isla), validación client-side según `design.md §3.10`.
-- **Transporte (MVP)**: **una API route serverless de Vercel** (`/api/entrega`) que valida de nuevo en servidor, aplica honeypot + rate-limit simple, y **reenvía a un destino exportable**. Opciones de destino, en orden de preferencia:
-  1. **Formspree** (o equivalente) vía `fetch` desde la route, con el endpoint en variable de entorno. Cero infra propia.
-  2. **Google Sheets / webhook** (Apps Script) si la organización prefiere planilla directa.
-- **Stub inicial**: si no hay variable de entorno de destino, el endpoint responde `501` con mensaje claro y la UI muestra el error de servidor (E6); en dev puede loguear el payload. Así el front se desarrolla y prueba sin bloquearse por el backend (pendiente en `design.md §8`).
-- **Hacker ID**: `JDV-2026-####` generado por el servidor (secuencial o hash corto). Si el destino no permite secuencial, usar hash corto y mostrarlo igual en el comprobante.
+- **Transporte**: **una API route serverless de Vercel** (`/api/entrega`) que valida de nuevo en servidor, aplica honeypot + rate-limit simple, y **guarda una fila en Neon** (tabla `entrega`, la misma base que el perfil). Una fila por `user.id`. El reenvío hace upsert: pisa repo, demo, video y el resto de los campos, y conserva `hacker_id` y `submitted_at` del primer envío. `updated_at` es la hora del último envío.
+- **Webhook opcional**: si `ENTREGA_WEBHOOK_URL` está definida (Formspree o Apps Script), después de guardar se reenvía el JSON (`campos + hackerId + submittedAt + userId`). Si la variable falta, está vacía o el POST falla, la respuesta sigue siendo éxito. No hay `501` por destino ausente.
+- **Hacker ID**: `JDV-2026-####` generado por el servidor en el primer envío (hash corto) y reutilizado en cada actualización. Se muestra igual en el comprobante.
 - **Comprobante**: se muestra en pantalla y se descarga (PNG/HTML); el envío por email depende del destino elegido y no bloquea el MVP.
 - **Evidencia de tracción**: solo por **URL** en MVP. La subida de archivos (png/jpg ≤ 5 MB de `design.md`) queda como mejora posterior para no sumar storage.
 - **Anti-abuso**: honeypot, límite por IP, payload máximo, sanitización. Sin captcha en MVP.
 - **Datos personales**: solo los del form; sin tracking de terceros. Nota de privacidad (F3).
 - **Cierre**: `submissions: 'closed'` desactiva el form en UI **y** el endpoint rechaza con `403`.
-- **Con auth configurado (T16–T18)**: además, la entrega exige sesión de Google y perfil al 100% (§4.9). El email del payload es el de la cuenta, y se agrega `userId`. Sin las variables de auth, este gate no se aplica y el endpoint se comporta como el stub de arriba.
+- **Con la cuenta (T16–T18)**: la entrega exige sesión de Google y perfil al 100% (§4.9). El email guardado es el de la cuenta, y el payload agrega `userId`. Sin sesión responde `401` y no escribe. Sin perfil al 100% responde `403`.
 
 ### 4.7 Ticket y motion
 
@@ -232,6 +230,7 @@ Stack elegido: **Better Auth** (solo Google, sin email/contraseña) + **Neon Pos
 | Handler | `src/pages/api/auth/[...all].ts` |
 | Sesión para la UI | `GET /api/me` (la landing sigue estática; el estado se pide en el cliente) |
 | Perfil | `PUT /api/profile`, tabla `profile` por `user.id` |
+| Entrega | `POST /api/entrega`, tabla `entrega` por `user.id` |
 | Estado propio | `GET /api/me` incluye `ranking` solo si `profileCompleteness === 100` |
 | Publicación semanal | `POST /api/admin/ranking` |
 
@@ -241,7 +240,9 @@ Stack elegido: **Better Auth** (solo Google, sin email/contraseña) + **Neon Pos
 
 **Actualización de la organización (reemplazo total, no incremental).** Cada fin de semana se manda la lista completa de quienes están en el top. Esos emails quedan `inTop=true`; cualquier otra fila pasa a `inTop=false`. No hay UI de admin. Detalle, variables y el `curl` están en `docs/auth-ranking.md`.
 
-**Sin secretos.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_SECRET` y `BETTER_AUTH_URL` son opcionales en el schema de Astro. Si faltan, `astro check` / `astro build` pasan, el botón de ingreso avisa que todavía no está habilitado y `/api/auth/*` responde 503. La entrega anónima sigue el stub de §4.6.
+**Entrega.** Tabla `entrega`, una fila por `user.id`, creada en el mismo `ensureAppSchema` que `profile`. Guarda el proyecto, el responsable, el email de Google, Jujuy, la localidad, repo, demo, video, tracción y descripción, más `hacker_id`, `submitted_at` (primer envío) y `updated_at`. No hay pantalla para listar entregas.
+
+**Sin secretos.** `DATABASE_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `ADMIN_SECRET` y `BETTER_AUTH_URL` son opcionales en el schema de Astro. Si faltan, `astro check` / `astro build` pasan, el botón de ingreso avisa que todavía no está habilitado y `/api/auth/*` responde 503. Sin sesión, `POST /api/entrega` responde 401 y no guarda.
 
 **Sponsor.** Nada de esto nombra al sponsor del hackathon.
 
@@ -253,7 +254,7 @@ Fuera del alcance de este spec y del MVP:
 
 1. **App de scoring interno**: el puntaje (organización + jurados) se calcula offline/en planilla. La landing solo explica los criterios.
 2. **Login con email y contraseña, magic links y panel de scoring.** El ingreso es solo con Google (§4.9). El puntaje de organización y jurado se sigue calculando offline.
-3. **CRUD de proyectos**: sin panel para ver/editar/borrar entregas dentro de la web; la organización las ve en el destino exportable (§4.6).
+3. **CRUD de proyectos**: sin panel para ver, editar o borrar entregas dentro de la web. La fila queda en Neon (§4.6). El webhook, si existe, es solo un reenvío.
 4. **App móvil** (nativa o PWA instalable).
 5. Pasarela de pago o venta de tickets (los tickets no se compran).
 6. Hosting de archivos/capturas de tracción (solo URL).

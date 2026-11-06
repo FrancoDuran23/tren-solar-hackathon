@@ -1,4 +1,5 @@
 import type { Pool } from 'pg';
+import { CREATE_ENTREGA_SQL } from '../lib/entrega-record';
 
 /** Tablas propias. Las de Better Auth las crea su migrador antes de esto. */
 const APP_SQL = `
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS ranking_meta (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   CONSTRAINT ranking_meta_singleton CHECK (id = 1)
 );
-`;
+${CREATE_ENTREGA_SQL}`;
 
 export async function ensureAppSchema(pool: Pool): Promise<void> {
   await pool.query(APP_SQL);

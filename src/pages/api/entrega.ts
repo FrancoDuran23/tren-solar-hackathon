@@ -3,7 +3,9 @@ import { ENTREGA_WEBHOOK_URL } from 'astro:env/server';
 import { copy } from '../../content/copy';
 import { MAX_PAYLOAD, coerceEntrega, validateEntrega } from '../../lib/entrega';
 import { entregaEditsOpen } from '../../lib/entrega-window';
+import { finishEntrega, postEntregaWebhook } from '../../lib/entrega-submit';
 import { profileCompleteness } from '../../lib/profile';
+import { saveEntrega } from '../../server/entrega-store';
 import { readProfile } from '../../server/profile-store';
 import { currentUser } from '../../server/session';
 
@@ -88,27 +90,12 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const errors = validateEntrega(input);
   if (Object.keys(errors).length > 0) return json(422, { ok: false, error: 'Revisá los campos.', errors });
 
-  const dest = ENTREGA_WEBHOOK_URL;
   const id = await hackerId(input.email, at);
-  const payload = { ...input, hackerId: id, submittedAt: at, userId };
-
-  if (!dest) {
-    if (import.meta.env.DEV) console.log('[entrega] (stub, sin ENTREGA_WEBHOOK_URL)', payload);
-    return json(501, { ok: false, error: 'Destino de entregas no configurado todavía.' });
-  }
-
-  try {
-    const res = await fetch(dest, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return json(502, { ok: false, error: 'No pudimos despachar tu proyecto.' });
-  } catch {
-    return json(502, { ok: false, error: 'No pudimos despachar tu proyecto.' });
-  }
-  return json(200, { ok: true, hackerId: id, at });
+  const result = await finishEntrega(
+    { userId, hackerId: id, at, input },
+    { save: saveEntrega, webhookUrl: ENTREGA_WEBHOOK_URL, post: postEntregaWebhook },
+  );
+  return json(result.status, result.body);
 };
 
 export const ALL: APIRoute = () => json(405, { ok: false, error: 'Método no permitido.' }, { allow: 'POST' });

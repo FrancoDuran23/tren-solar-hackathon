@@ -1,4 +1,4 @@
-// Uso: node smoke.mjs <closed|open> <baseUrl>   (open requiere config.submissions='open'; ENTREGA_WEBHOOK_URL sin definir ⇒ 501)
+// Uso: node smoke.mjs <closed|open> <baseUrl>   (open requiere config.submissions='open'; sin sesión el POST no guarda)
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -35,7 +35,7 @@ if (mode === 'closed') {
   await p.click('#submit');
   if (!process.env.EXPECT_SUCCESS) {
     await p.waitForSelector('#toast:not([hidden])');
-    ok(await p.inputValue('#f-proyecto') === 'Tren Solar', '501 ⇒ toast y datos conservados');
+    ok(await p.inputValue('#f-proyecto') === 'Tren Solar', 'error de API ⇒ toast y datos conservados');
     await sec.screenshot({ path: dir + '/server-error.png' });
   }
   const r = await p.request.post(base + '/api/entrega', { data: { website: 'bot' } });
