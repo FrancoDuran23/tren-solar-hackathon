@@ -27,6 +27,8 @@ const { auth, entrega } = copy;
       <a href="#perfil" id="entrega-auth-link" hidden>Completar perfil</a>
     </p>
 
+    <p class="banner mono" id="entrega-saved" role="status" hidden></p>
+
     <div class="card">
       <form id="entrega-form" novalidate>
         <fieldset disabled>
@@ -234,6 +236,36 @@ const { auth, entrega } = copy;
   let gate: 'unknown' | 'open' | 'blocked' = 'unknown';
   let gateMessage = '';
   let entregaPrefilled = false;
+  let savedLoaded = false;
+  const savedBanner = $('entrega-saved');
+
+  /** Trae la entrega ya guardada y la carga en el form para editarla. */
+  async function loadSaved() {
+    if (savedLoaded) return;
+    try {
+      const res = await fetch('/api/entrega', { credentials: 'same-origin', headers: { accept: 'application/json' } });
+      if (!res.ok) return;
+      const body = await res.json().catch(() => null);
+      savedLoaded = true;
+      const saved = body?.entrega;
+      if (!saved?.input) return;
+      for (const f of FIELDS) {
+        if (f === 'email') continue;
+        const v = (saved.input as Record<string, unknown>)[f];
+        if (f === 'jujuy') ctl(f).checked = v === true;
+        else if (typeof v === 'string') ctl(f).value = v;
+      }
+      entregaPrefilled = true;
+      last = { id: saved.hackerId, name: saved.input.proyecto, at: saved.updatedAt };
+      $('s-id').textContent = saved.hackerId;
+      livePreview();
+      const when = new Date(saved.updatedAt).toLocaleString('es-AR');
+      savedBanner.textContent = `Ya entregaste "${saved.input.proyecto}" (${saved.hackerId}, último envío ${when}). Estos son tus datos guardados: editá lo que quieras y volvé a enviar.`;
+      savedBanner.hidden = false;
+    } catch {
+      /* sin precarga: el form sigue usable */
+    }
+  }
 
   function applyGate(me: MeResponse) {
     const email = ctl('email');
@@ -279,6 +311,7 @@ const { auth, entrega } = copy;
       gate = 'open';
       fieldset.disabled = false;
       authBanner.hidden = true;
+      void loadSaved();
       return;
     }
     block(`${copy.auth.entregaNeedProfile} Ahora está al ${me.profile?.completeness ?? 0}%.`, { profile: true });
@@ -379,7 +412,7 @@ const { auth, entrega } = copy;
   h2 { font-family: var(--font-display); font-weight: 900; font-size: var(--fs-h2); line-height: var(--lh-h2); margin: 0 0 var(--sp-4); }
   .lead { color: var(--text-muted); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 62ch; margin: 0; }
   .window { color: var(--white); font-size: var(--fs-lead); line-height: var(--lh-lead); max-width: 62ch; margin: var(--sp-4) 0 var(--sp-8); }
-  #entrega-locked[hidden] { display: none; }
+  #entrega-locked[hidden], #entrega-saved[hidden] { display: none; }
   .mono { font-family: var(--font-mono); }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
   .banner { display: inline-block; border: 1px solid var(--orange-500); color: var(--orange-300); border-radius: var(--r-sm); padding: var(--sp-2) var(--sp-4); font-size: var(--fs-small); margin: 0 0 var(--sp-6); }

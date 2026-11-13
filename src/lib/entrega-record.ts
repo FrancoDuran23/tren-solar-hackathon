@@ -189,3 +189,19 @@ export async function queryUpsert(query: SqlQuery, write: EntregaWrite): Promise
   if (!row) throw new Error('No se pudo guardar la entrega');
   return mapEntregaRow(row);
 }
+
+export const SELECT_ENTREGA_SQL = `
+SELECT
+  user_id, hacker_id, email, proyecto, responsable, jujuy, localidad,
+  repo, demo, video, traction_tipo, traction_numero, traction_evidencia,
+  descripcion, submitted_at, updated_at
+FROM entrega
+WHERE user_id = $1
+`;
+
+/** Lee la entrega guardada del usuario (o null si todavía no entregó). */
+export async function queryRead(query: SqlQuery, userId: string): Promise<StoredEntrega | null> {
+  const { rows } = await query(SELECT_ENTREGA_SQL, [userId]);
+  const row = rows[0];
+  return row ? mapEntregaRow(row) : null;
+}

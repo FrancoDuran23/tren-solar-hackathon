@@ -5,7 +5,7 @@ import { MAX_PAYLOAD, coerceEntrega, validateEntrega } from '../../lib/entrega';
 import { entregaEditsOpen } from '../../lib/entrega-window';
 import { finishEntrega, postEntregaWebhook } from '../../lib/entrega-submit';
 import { profileCompleteness } from '../../lib/profile';
-import { saveEntrega } from '../../server/entrega-store';
+import { readEntrega, saveEntrega } from '../../server/entrega-store';
 import { readProfile } from '../../server/profile-store';
 import { currentUser } from '../../server/session';
 
@@ -98,4 +98,21 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   return json(result.status, result.body);
 };
 
-export const ALL: APIRoute = () => json(405, { ok: false, error: 'Método no permitido.' }, { allow: 'POST' });
+/** Devuelve la entrega guardada del usuario logueado, para precargar el form y poder editarla. */
+export const GET: APIRoute = async ({ request }) => {
+  try {
+    const who = await currentUser(request);
+    if (!who.configured || !who.user) return json(401, { ok: false, entrega: null });
+    const saved = await readEntrega(who.user.id);
+    if (!saved) return json(200, { ok: true, entrega: null });
+    return json(200, {
+      ok: true,
+      entrega: { hackerId: saved.hackerId, submittedAt: saved.submittedAt, updatedAt: saved.updatedAt, input: saved.input },
+    });
+  } catch (err) {
+    console.error('[entrega] lectura', err instanceof Error ? err.message : 'error');
+    return json(503, { ok: false, entrega: null });
+  }
+};
+
+export const ALL: APIRoute = () => json(405, { ok: false, error: 'Método no permitido.' }, { allow: 'GET, POST' });
