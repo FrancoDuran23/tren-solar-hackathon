@@ -8,7 +8,7 @@ export function entregaDeadlineMs(): number {
   return Date.parse(dates.buildEndIso);
 }
 
-/** Inclusive: a las 23:59 del 13 de noviembre de 2026 (ART) todavía se puede actualizar. */
+/** Inclusive: a las 23:59 del 15 de noviembre de 2026 (ART) todavía se puede actualizar. */
 export function entregaEditsOpen(now: number = Date.now()): boolean {
   const end = entregaDeadlineMs();
   return Number.isFinite(end) && now <= end;

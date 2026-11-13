@@ -10,7 +10,7 @@ test('ventana de edición de la entrega', async (t) => {
     assert.equal(entregaEditsOpen(end), true);
   });
 
-  await t.test('queda cerrada un milisegundo después del 13 de noviembre de 2026, 23:59 ART', () => {
+  await t.test('queda cerrada un milisegundo después del 15 de noviembre de 2026, 23:59 ART', () => {
     assert.equal(entregaEditsOpen(end + 1), false);
   });
 
@@ -20,8 +20,8 @@ test('ventana de edición de la entrega', async (t) => {
   });
 
   await t.test('el cierre es el iso de dates.ts', () => {
-    assert.equal(dates.buildEndIso, '2026-11-13T23:59:00-03:00');
-    assert.match(dates.buildEndLabel, /13 de noviembre de 2026/);
+    assert.equal(dates.buildEndIso, '2026-11-15T23:59:00-03:00');
+    assert.match(dates.buildEndLabel, /15 de noviembre de 2026/);
     assert.match(dates.buildEndLabel, /23:59/);
   });
 });
