@@ -394,15 +394,39 @@ const { auth, entrega } = copy;
     }
   });
 
-  $('download').addEventListener('click', () => {
+  $('download').addEventListener('click', async () => {
     if (!last) return;
-    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-    const html = `<!doctype html><meta charset="utf-8"><title>Comprobante ${esc(last.id)}</title><body style="font-family:monospace;background:#f2f0ea;color:#0e0f12;max-width:420px;margin:40px auto;padding:24px;border:2px dashed #0e0f12"><h1>PROYECTO A BORDO</h1><h2>${esc(last.id)}</h2><p>${esc(last.name)}</p><p>${esc(new Date(last.at).toLocaleString('es-AR'))}</p><p>jujuy.dev · Hackatón Tren Solar</p></body>`;
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-    a.download = `comprobante-${last.id}.html`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    const btn = $('download') as HTMLButtonElement;
+    btn.disabled = true;
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ unit: 'mm', format: 'a5', orientation: 'landscape' });
+      const W = doc.internal.pageSize.getWidth();
+      const H = doc.internal.pageSize.getHeight();
+      doc.setFillColor(242, 240, 234);
+      doc.rect(0, 0, W, H, 'F');
+      doc.setDrawColor(14, 15, 18);
+      doc.setLineWidth(0.5);
+      doc.setLineDashPattern([2, 1.5], 0);
+      doc.rect(20, 20, W - 40, H - 40);
+      doc.setLineDashPattern([], 0);
+      doc.setTextColor(14, 15, 18);
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(22);
+      doc.text('PROYECTO A BORDO', 32, 42);
+      doc.setFontSize(16);
+      doc.text(last.id, 32, 56);
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(13);
+      doc.text(doc.splitTextToSize(last.name, W - 64), 32, 72);
+      const when = new Date(last.at).toLocaleString('es-AR', { timeZone: 'America/Argentina/Jujuy', hour12: false });
+      doc.setFontSize(11);
+      doc.text(`Enviado: ${when} (hora de Argentina)`, 32, 88);
+      doc.text('jujuy.dev · Hackatón Tren Solar', 32, 100);
+      doc.save(`comprobante-${last.id}.pdf`);
+    } finally {
+      btn.disabled = false;
+    }
   });
 </script>
 
